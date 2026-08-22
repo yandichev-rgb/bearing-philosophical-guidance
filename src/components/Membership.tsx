@@ -1,5 +1,8 @@
+import { Link } from "@tanstack/react-router";
+
 import { MEMBERSHIP } from "@/config/membership";
 import { SectionLabel } from "./SectionLabel";
+
 
 export function Membership({ onStart }: { onStart: () => void }) {
   return (
