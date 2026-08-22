@@ -367,9 +367,27 @@ export function InquiryModal({
 
         ) : (
           <div>
+            {offerResume ? (
+              <div className="mb-8 border border-ink/25 bg-papyrus-light/70 p-5">
+                <p className="label text-oxblood">Unfinished inquiry</p>
+                <p className="mt-3 leading-relaxed text-ink-soft">
+                  You left answers here on this device. Pick them up where you stopped, or begin
+                  again.
+                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-6">
+                  <button type="button" className="btn-ink" onClick={resumeDraft}>
+                    Resume my answers <span aria-hidden="true">→</span>
+                  </button>
+                  <button type="button" onClick={startFresh} className="link-underline">
+                    Start fresh
+                  </button>
+                </div>
+              </div>
+            ) : null}
             <p className="label text-ink-soft">
               Question {step + 1} of {questions.length}
             </p>
+
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
               {current.title}
             </h2>
