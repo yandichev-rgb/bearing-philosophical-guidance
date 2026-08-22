@@ -4,6 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  emptyAnswers,
+  useInquiryDraft,
+  type InquiryAnswers,
+} from "@/hooks/useInquiryDraft";
+
 import { readingHeading } from "@/lib/reading-heading";
 import { MEMBERSHIP } from "@/config/membership";
 import {
