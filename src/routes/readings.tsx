@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { listMyReadings, myReadingCosts } from "@/lib/readings.functions";
 import { readingHeading } from "@/lib/reading-heading";
 import { Seal, Wordmark } from "@/components/Seal";
-import { philosophers } from "@/data/philosophers";
 
 const title = "Your readings · Bearing";
 const description = "The inquiries you have brought to Bearing and the readings you saved.";
@@ -24,10 +23,6 @@ export const Route = createFileRoute("/readings")({
   }),
   component: Readings,
 });
-
-function nameFor(slug: string) {
-  return philosophers.find((p) => p.slug === slug)?.name ?? slug;
-}
 
 function Readings() {
   const { session, loading } = useAuth();
