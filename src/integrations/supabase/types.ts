@@ -14,7 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inquiries: {
+        Row: {
+          created_at: string
+          id: string
+          situation: string
+          stakes: string | null
+          tried: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          situation: string
+          stakes?: string | null
+          tried?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          situation?: string
+          stakes?: string | null
+          tried?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      memberships: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          plan: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          plan?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          plan?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      readings: {
+        Row: {
+          assumption: string
+          created_at: string
+          exercise: string
+          headline: string
+          id: string
+          inquiry_id: string
+          note: string
+          noticed: string
+          philosopher_slug: string
+          principle: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          assumption: string
+          created_at?: string
+          exercise: string
+          headline: string
+          id?: string
+          inquiry_id: string
+          note: string
+          noticed: string
+          philosopher_slug: string
+          principle: string
+          question: string
+          user_id: string
+        }
+        Update: {
+          assumption?: string
+          created_at?: string
+          exercise?: string
+          headline?: string
+          id?: string
+          inquiry_id?: string
+          note?: string
+          noticed?: string
+          philosopher_slug?: string
+          principle?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "readings_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "inquiries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
