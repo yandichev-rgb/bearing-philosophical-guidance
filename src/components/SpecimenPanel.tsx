@@ -19,22 +19,26 @@ type Phase = "typing" | "composing" | "reading" | "holding";
 export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) => void }) {
   const still = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [typed, setTyped] = useState("");
-  const [revealed, setRevealed] = useState(0);
-  const [phase, setPhase] = useState<Phase>("typing");
+  // Nothing animates until a reader chooses a specimen; the first one sits finished.
+  const [run, setRun] = useState(0);
+  const [typed, setTyped] = useState(specimens[0]!.question);
+  const [revealed, setRevealed] = useState(specimens[0]!.sections.length);
+  const [phase, setPhase] = useState<Phase>("holding");
   const paused = useRef(false);
   const current = specimens[index]!;
 
-  // Reduced motion: show the finished specimen, no sequencing.
-  useEffect(() => {
-    if (!still) return;
-    setTyped(current.question);
-    setRevealed(current.sections.length);
-    setPhase("holding");
-  }, [still, current]);
+  const select = (i: number) => {
+    setIndex(i);
+    setRun((value) => value + 1);
+  };
 
   useEffect(() => {
-    if (still) return;
+    if (still || run === 0) {
+      setTyped(current.question);
+      setRevealed(current.sections.length);
+      setPhase("holding");
+      return;
+    }
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
     const at = (ms: number, run: () => void) => {
@@ -65,18 +69,16 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
           at(COMPOSE_PAUSE + i * SECTION_GAP, () => setRevealed(i + 1));
         });
         at(COMPOSE_PAUSE + current.sections.length * SECTION_GAP, () => setPhase("holding"));
-        at(COMPOSE_PAUSE + current.sections.length * SECTION_GAP + HOLD, () => {
-          if (!paused.current) setIndex((value) => (value + 1) % specimens.length);
-        });
       });
     };
-    timers.push(setTimeout(tick, 500));
+    timers.push(setTimeout(tick, 300));
 
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
     };
-  }, [index, still, current]);
+  }, [run, still, current]);
+
 
   return (
     <div
