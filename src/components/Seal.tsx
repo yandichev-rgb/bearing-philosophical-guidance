@@ -58,19 +58,7 @@ export function Seal({ size = 36, className = "", tone = "ink", detail }: SealPr
         </g>
       )}
 
-      {level === "full" && (
-        <g
-          fill={ink}
-          textAnchor="middle"
-          style={{ fontFamily: "var(--font-seal)", fontSize: 6.4, letterSpacing: "0.02em" }}
-        >
-          <text x="46.2" y="17.8" dominantBaseline="middle">A</text>
-          <text x="46.2" y="46.2" dominantBaseline="middle">P</text>
-          <text x="17.8" y="46.2" dominantBaseline="middle">S</text>
-          <text x="17.8" y="17.8" dominantBaseline="middle">M</text>
-
-        </g>
-      )}
+      
 
       {/* Pivot */}
       <circle cx="32" cy="32" r={level === "minimal" ? 3 : 1.9} fill={ink} />
