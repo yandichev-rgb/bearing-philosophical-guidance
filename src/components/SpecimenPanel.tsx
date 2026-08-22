@@ -25,7 +25,21 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
   const [revealed, setRevealed] = useState(specimens[0]!.sections.length);
   const [phase, setPhase] = useState<Phase>("holding");
   const paused = useRef(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const current = specimens[index]!;
+
+  // Chat-like behaviour: each new section scrolls into view inside the fixed
+  // window instead of stretching the page.
+  useEffect(() => {
+    const node = bodyRef.current;
+    if (!node) return;
+    if (revealed <= 1) {
+      node.scrollTop = 0;
+      return;
+    }
+    node.scrollTo({ top: node.scrollHeight, behavior: still ? "auto" : "smooth" });
+  }, [revealed, still, index]);
+
 
   const select = (i: number) => {
     setIndex(i);
