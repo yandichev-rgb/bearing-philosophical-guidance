@@ -16,13 +16,13 @@ export function SiteFooter() {
 
         <nav aria-label="Footer" className="flex flex-col gap-4">
           <p className="label text-oxblood">The site</p>
-          <a href="#lyceum" className="nav-link self-start">
+          <a href="/#lyceum" className="nav-link self-start">
             The Lyceum
           </a>
-          <a href="#how-it-works" className="nav-link self-start">
+          <a href="/#how-it-works" className="nav-link self-start">
             How it works
           </a>
-          <a href="#membership" className="nav-link self-start">
+          <a href="/#membership" className="nav-link self-start">
             Membership
           </a>
           <a href="/privacy" className="nav-link self-start">
