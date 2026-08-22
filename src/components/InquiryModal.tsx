@@ -244,25 +244,66 @@ export function InquiryModal({
           <div>
             <p className="label text-oxblood">{readingHeading(slug)}</p>
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
-              This mind is open to members.
+              Your reading is written. Membership opens it.
             </h2>
             <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
-              Your answers are kept. Aristotle is free for everyone. Membership opens the rest of
-              the Lyceum, with unlimited readings and follow up questions.
+              You have asked a real question, and this mind is the one suited to answer it. Your
+              answers are kept exactly as you wrote them. Join the Lyceum and the reading is yours,
+              along with every other thinker in the collection.
             </p>
+
+            <ul className="mt-9 grid gap-px border border-ink/25 bg-ink/25">
+              {MEMBERSHIP.benefits.map((benefit) => (
+                <li
+                  key={benefit}
+                  className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink"
+                >
+                  <span aria-hidden="true" className="mt-1 text-oxblood">
+                    ✦
+                  </span>
+                  <span>{benefit}</span>
+                </li>
+              ))}
+              <li className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink">
+                <span aria-hidden="true" className="mt-1 text-oxblood">
+                  ✦
+                </span>
+                <span>Readings you can return to, written in plain language you can act on.</span>
+              </li>
+            </ul>
+
+            <div className="mt-6 grid gap-px border border-ink/25 bg-ink/25 sm:grid-cols-2">
+              {MEMBERSHIP.plans.map((plan) => (
+                <div key={plan.priceId} className="bg-papyrus-light/60 p-6">
+                  <p className="label text-ink-soft">{plan.label}</p>
+                  <p className="display-sm mt-3 text-ink">
+                    {plan.price}{" "}
+                    <span className="text-base font-normal text-ink-soft">{plan.cadence}</span>
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{plan.note}</p>
+                </div>
+              ))}
+            </div>
+
             <div className="mt-9 flex flex-wrap items-center gap-6">
               <Link to="/membership" className="btn-ink">
-                See membership
+                Join the Lyceum <span aria-hidden="true">→</span>
               </Link>
               <button
                 type="button"
                 onClick={() => setNeedsMembership(false)}
                 className="link-underline"
               >
-                Back
+                Back to my answers
               </button>
             </div>
+
+            <p className="mt-8 border-t border-ink/20 pt-5 text-sm leading-relaxed text-ink-soft">
+              Prefer to read first? Aristotle stays free for everyone, up to{" "}
+              {MEMBERSHIP.freeReadingsPerDay} readings a day.
+            </p>
           </div>
+
         ) : (
           <div>
             <p className="label text-ink-soft">
