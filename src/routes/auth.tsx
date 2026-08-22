@@ -5,6 +5,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
 import { PageFrame, Sheet } from "@/components/PageFrame";
 import { Reveal } from "@/components/Reveal";
+import { publicSiteUrl } from "@/lib/site-url";
 
 const title = "Sign in · Bearing";
 const description = "Sign in to keep your inquiries and your readings in one place.";
