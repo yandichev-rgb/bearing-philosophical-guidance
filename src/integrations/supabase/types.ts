@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {
+          completion_tokens: number
+          cost_usd: number
+          created_at: string
+          id: string
+          model: string
+          philosopher_slug: string
+          prompt_tokens: number
+          tier: string
+          user_id: string | null
+        }
+        Insert: {
+          completion_tokens?: number
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          model: string
+          philosopher_slug: string
+          prompt_tokens?: number
+          tier?: string
+          user_id?: string | null
+        }
+        Update: {
+          completion_tokens?: number
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          model?: string
+          philosopher_slug?: string
+          prompt_tokens?: number
+          tier?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      free_reading_quota: {
+        Row: {
+          day: string
+          updated_at: string
+          used: number
+          visitor_hash: string
+        }
+        Insert: {
+          day?: string
+          updated_at?: string
+          used?: number
+          visitor_hash: string
+        }
+        Update: {
+          day?: string
+          updated_at?: string
+          used?: number
+          visitor_hash?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string
@@ -153,7 +210,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      ai_spend_today: { Args: never; Returns: number }
+      claim_free_reading: {
+        Args: { _daily_limit: number; _visitor_hash: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
