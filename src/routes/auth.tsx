@@ -49,7 +49,7 @@ function AuthPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/readings` },
+        options: { emailRedirectTo: publicSiteUrl("/readings") },
       });
       setMessage(error ? error.message : "Check your email to confirm your account.");
     }
