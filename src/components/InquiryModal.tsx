@@ -4,6 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  emptyAnswers,
+  useInquiryDraft,
+  type InquiryAnswers,
+} from "@/hooks/useInquiryDraft";
+
 import { readingHeading } from "@/lib/reading-heading";
 import { MEMBERSHIP } from "@/config/membership";
 import {
@@ -104,13 +110,7 @@ export function InquiryModal({
   philosopherSlug?: string;
 }) {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({
-    situation: "",
-    tried: "",
-    stakes: "",
-    kind: "",
-    duration: "",
-  });
+  const [answers, setAnswers] = useState<InquiryAnswers>(emptyAnswers);
   const [reading, setReading] = useState<Reading | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +121,7 @@ export function InquiryModal({
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
+  const draft = useInquiryDraft(answers, step, { active: open && reading === null });
 
   if (!open) return null;
 
@@ -130,6 +131,23 @@ export function InquiryModal({
   const chips = current.chips;
   const requiredEmpty = !current.optional && value.trim().length === 0;
   const slug = reading?.philosopherSlug ?? philosopherSlug;
+  const untouched = [answers.situation, answers.tried, answers.stakes].every(
+    (field) => field.trim().length === 0,
+  );
+  const offerResume = draft.restored !== null && untouched && !isResult && !needsMembership;
+
+  const resumeDraft = () => {
+    if (!draft.restored) return;
+    setAnswers(draft.restored.answers);
+    setStep(Math.min(draft.restored.step, questions.length - 1));
+    draft.dismissRestored();
+  };
+
+  const startFresh = () => {
+    setAnswers(emptyAnswers);
+    setStep(0);
+    draft.clear();
+  };
 
   const close = () => {
     onClose();
@@ -139,6 +157,7 @@ export function InquiryModal({
     setError(null);
     setNeedsMembership(false);
   };
+
 
   const advance = async () => {
     if (step < questions.length - 1) {
@@ -183,6 +202,8 @@ export function InquiryModal({
     try {
       await save({ data: { answers, reading } });
       setSaved(true);
+      draft.clear();
+
     } catch {
       setError("Your reading could not be saved. Try again in a moment.");
     }
@@ -348,9 +369,27 @@ export function InquiryModal({
 
         ) : (
           <div>
+            {offerResume ? (
+              <div className="mb-8 border border-ink/25 bg-papyrus-light/70 p-5">
+                <p className="label text-oxblood">Unfinished inquiry</p>
+                <p className="mt-3 leading-relaxed text-ink-soft">
+                  You left answers here on this device. Pick them up where you stopped, or begin
+                  again.
+                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-6">
+                  <button type="button" className="btn-ink" onClick={resumeDraft}>
+                    Resume my answers <span aria-hidden="true">→</span>
+                  </button>
+                  <button type="button" onClick={startFresh} className="link-underline">
+                    Start fresh
+                  </button>
+                </div>
+              </div>
+            ) : null}
             <p className="label text-ink-soft">
               Question {step + 1} of {questions.length}
             </p>
+
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
               {current.title}
             </h2>
@@ -427,6 +466,13 @@ export function InquiryModal({
                 </button>
               ) : null}
             </div>
+
+            {draft.savedAt && !offerResume ? (
+              <p className="label mt-6 text-ink-soft" role="status">
+                Your answers are kept on this device. You can close this and come back.
+              </p>
+            ) : null}
+
 
             {error ? (
               <p className="mt-5 text-sm text-oxblood" role="status">
