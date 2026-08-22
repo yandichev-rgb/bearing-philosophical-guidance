@@ -40,10 +40,10 @@ export function Seal({ size = 36, className = "", tone = "ink", detail }: SealPr
 
       {level === "full" && (
         <g stroke={hair} strokeWidth="0.7" opacity="0.85">
-          <line x1="32" y1="32" x2="47" y2="17" />
-          <line x1="32" y1="32" x2="47" y2="47" />
-          <line x1="32" y1="32" x2="17" y2="47" />
-          <line x1="32" y1="32" x2="17" y2="17" />
+          <line x1="32" y1="32" x2="41.5" y2="22.5" />
+          <line x1="32" y1="32" x2="41.5" y2="41.5" />
+          <line x1="32" y1="32" x2="22.5" y2="41.5" />
+          <line x1="32" y1="32" x2="22.5" y2="22.5" />
         </g>
       )}
 
@@ -64,10 +64,10 @@ export function Seal({ size = 36, className = "", tone = "ink", detail }: SealPr
           textAnchor="middle"
           style={{ fontFamily: "var(--font-seal)", fontSize: 6.4, letterSpacing: "0.02em" }}
         >
-          <text x="51.4" y="12.6" dominantBaseline="middle">A</text>
-          <text x="51.4" y="51.4" dominantBaseline="middle">P</text>
-          <text x="12.6" y="51.4" dominantBaseline="middle">S</text>
-          <text x="12.6" y="12.6" dominantBaseline="middle">M</text>
+          <text x="46.2" y="17.8" dominantBaseline="middle">A</text>
+          <text x="46.2" y="46.2" dominantBaseline="middle">P</text>
+          <text x="17.8" y="46.2" dominantBaseline="middle">S</text>
+          <text x="17.8" y="17.8" dominantBaseline="middle">M</text>
 
         </g>
       )}
