@@ -27,7 +27,6 @@ export const MEMBERSHIP = {
     "Unlimited readings, with no daily limit.",
     "Every mind in the Lyceum, not only Aristotle.",
     "Your full reading history, kept with the inquiry that produced it.",
-    "Read one question through several philosophers side by side.",
-    "Ask follow up questions on any reading.",
   ],
 };
+
