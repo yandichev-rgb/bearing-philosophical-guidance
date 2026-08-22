@@ -60,16 +60,26 @@ const PROTOTYPE: Reading = {
   note: "This reading applies Aristotle's method to what you described. It is for reflection, not clinical, legal, medical, or financial advice.",
 };
 
-export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function InquiryModal({
+  open,
+  onClose,
+  philosopherSlug = "aristotle",
+}: {
+  open: boolean;
+  onClose: () => void;
+  philosopherSlug?: string;
+}) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({ situation: "", tried: "", stakes: "" });
   const [reading, setReading] = useState<Reading | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsMembership, setNeedsMembership] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const { session } = useAuth();
   const generate = useServerFn(generateFreeReading);
+  const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
 
   if (!open) return null;
@@ -77,6 +87,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
   const isResult = reading !== null;
   const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
+  const slug = reading?.philosopherSlug ?? philosopherSlug;
 
   const close = () => {
     onClose();
@@ -84,6 +95,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
     setReading(null);
     setSaved(false);
     setError(null);
+    setNeedsMembership(false);
   };
 
   const advance = async () => {
@@ -93,16 +105,29 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
     }
     setPending(true);
     setError(null);
+    setNeedsMembership(false);
+
+    const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
     try {
-      const result = (await generate({ data: answers })) as Reading;
+      const result = memberPath
+        ? ((await generateAs({ data: { ...answers, philosopherSlug } })) as Reading)
+        : ((await generate({ data: answers })) as Reading);
       setReading(result);
-    } catch {
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "";
+      if (philosopherSlug !== "aristotle" && (!session || /membership/i.test(message))) {
+        setNeedsMembership(true);
+        setError(null);
+        setPending(false);
+        return;
+      }
       setError("The reading could not be prepared right now. Here is the sample reading instead.");
       setReading(PROTOTYPE);
     } finally {
       setPending(false);
     }
   };
+
 
   const persist = async () => {
     if (!reading) return;
