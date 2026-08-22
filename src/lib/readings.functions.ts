@@ -18,8 +18,8 @@ const answersSchema = z.object({
       "A fear I keep meeting",
     ])
     .or(z.literal(""))
-    .optional(),
-  duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).optional(),
+    .default(""),
+  duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
 });
 
 const readingSchema = z.object({
