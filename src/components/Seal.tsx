@@ -26,7 +26,7 @@ export function Seal({ size = 36, className = "", tone = "ink" }: SealProps) {
       <circle cx="32" cy="32" r="24.5" fill="none" stroke={inner} strokeWidth="1" />
       <circle cx="32" cy="3.6" r="3.4" fill={ink} />
       <text
-        x="34.5"
+        x="33"
         y="33.5"
         textAnchor="middle"
         dominantBaseline="central"
