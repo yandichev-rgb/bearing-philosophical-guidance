@@ -2,6 +2,9 @@
  * Hand written demonstration readings for the hero specimen panel.
  * These are fixed copy, not generated. No AI call, no cost, no drift.
  * Each specimen matches one concern chip and one philosopher.
+ *
+ * Voice rule: specific situations, ordinary lives, direct address.
+ * Never "Aristotle would say", never first person as the philosopher.
  */
 
 export type Specimen = {
@@ -19,182 +22,188 @@ export type Specimen = {
 
 export const specimens: Specimen[] = [
   {
-    id: "comparison",
-    chip: "Comparing myself",
-    kind: "A pattern that repeats",
-    question: "I cannot stop measuring my life against everyone else's.",
-    philosopher: "Marcus Aurelius",
-    method: "Stoicism",
-    sections: [
-      {
-        heading: "What stands out",
-        body: "You are weighing your whole life against the parts of other lives you are shown. The comparison is not unfair because you lose it. It is unfair because you never agreed to the terms.",
-      },
-      {
-        heading: "The question",
-        body: "If nobody could see the result, would you still want the thing you are chasing?",
-      },
-      {
-        heading: "The principle",
-        body: "What other people think of you sits outside your control. Your effort, your attention, and your standards sit inside it. Spend yourself there.",
-      },
-      {
-        heading: "The practice",
-        body: "For one week, open the feed only once a day, and write one line afterward about what you actually did that day.",
-      },
-      {
-        heading: "Sit with this",
-        body: "The envy is information. It tells you what you want. It does not tell you it is yours.",
-      },
-    ],
-  },
-  {
-    id: "decision",
-    chip: "A decision I keep delaying",
+    id: "job-offer",
+    chip: "A job offer I keep re-reading",
     kind: "A decision to make",
-    question: "I have been circling the same choice for months and cannot commit.",
+    question:
+      "I have an offer for $22k more, an hour further away, and a manager who checks in on weekends. I have re-read the email for nine days.",
     philosopher: "Aristotle",
     method: "Virtue ethics",
     sections: [
       {
         heading: "What stands out",
-        body: "You describe this as a lack of information, but you have gathered plenty. What is missing is not another fact. It is a willingness to accept the cost of either road.",
+        body: "You have not asked which job pays better. You already know. You keep opening the email because you are hoping the number will start to feel like permission, and it has not, nine days running.",
       },
       {
         heading: "The question",
-        body: "Which version of yourself does each option practise, day after day?",
+        body: "Picture a Tuesday in March next year, 7pm, in each job. Where are you sitting, and who is waiting for you?",
       },
       {
         heading: "The principle",
-        body: "Character is built by repetition, not by resolve. A choice matters because of the habit it starts, and delay is itself a habit you are training.",
+        body: "A life is made of its ordinary days, not its offer letters. The right choice is the one whose Tuesdays you can practise for years without becoming someone you would rather not be.",
       },
       {
         heading: "The practice",
-        body: "Set a date this month. Write the two costs plainly, choose the one you can live beside, and act small on it within a day.",
+        body: "Tonight, write the two Tuesdays out in full, in plain sentences. Tomorrow, ask the new manager one direct question: what happened the last three weekends. Decide by Friday.",
       },
       {
         heading: "Sit with this",
-        body: "Waiting is not neutral. It is a quiet vote for the life you already have.",
+        body: "Nine days of re-reading is an answer you have not agreed to hear yet.",
       },
     ],
   },
   {
-    id: "resentment",
-    chip: "Resentment I carry",
+    id: "sister",
+    chip: "My sister still has not called",
     kind: "A relationship",
-    question: "I keep replaying what they did and it still colours everything.",
+    question:
+      "My sister said something about my parenting at Easter. It is August. I have drafted a text about it maybe thirty times and sent none of them.",
     philosopher: "Seneca",
     method: "Stoicism",
     sections: [
       {
         heading: "What stands out",
-        body: "You are still paying rent on an event that has ended. The injury took an hour. The rehearsal has taken a year, and you are running it yourself.",
+        body: "The remark took four seconds. You have carried it for four months, and the thirty drafts were not attempts to reach her. They were rehearsals of being right, and each one made the silence a little heavier to break.",
       },
       {
         heading: "The question",
-        body: "What are you protecting by keeping the grievance warm?",
+        body: "Do you want the apology, or do you want your sister back? Answer honestly, because they need different sentences.",
       },
       {
         heading: "The principle",
-        body: "Anger promises justice and delivers occupation. You can hold someone responsible without handing them your attention every evening.",
+        body: "Anger promises justice and delivers occupation. You can think she was wrong and still be the one who speaks first. Being the first to speak costs nothing you actually own.",
       },
       {
         heading: "The practice",
-        body: "Write the account once, in full, as if for a record. Then name one thing that is yours to repair, and do only that.",
+        body: "Delete the drafts. Send seven words with no case in them: I miss you, can I call Sunday. Say the Easter thing out loud on the phone, once, then let her answer.",
       },
       {
         heading: "Sit with this",
-        body: "Forgiveness is not a favour to them. It is the moment you stop carrying the weight for both of you.",
+        body: "You have already spent four months on four seconds. That rate is yours to set.",
       },
     ],
   },
   {
-    id: "drift",
-    chip: "Feeling behind",
-    kind: "A fear I keep meeting",
-    question: "I am afraid I am wasting the years I have.",
-    philosopher: "Socrates",
-    method: "Socratic inquiry",
+    id: "instagram",
+    chip: "Everyone I know is buying houses",
+    kind: "A pattern that repeats",
+    question:
+      "I am 34, renting, and three people from school posted their new front doors this month. I make good money and I feel behind every single evening.",
+    philosopher: "Marcus Aurelius",
+    method: "Stoicism",
     sections: [
       {
         heading: "What stands out",
-        body: "You speak of being behind, which means you are holding a schedule. You did not write it, and you have never read it aloud to check whether you agree with it.",
+        body: "You are comparing your whole life to three photographs of doors. You do not know their deposit, their in-laws' loan, their commute, or how they feel on a Sunday. You are losing a contest whose rules you were never shown.",
       },
       {
         heading: "The question",
-        body: "Behind whom, and by what measure that you chose?",
+        body: "If nobody could ever see the deed, would you still want the house, or would you want what you imagine it proves?",
       },
       {
         heading: "The principle",
-        body: "An unexamined standard will govern you more firmly than one you argue with. Define the word before you let it judge you.",
+        body: "What other people think of your life sits outside your control. Your savings rate, your work, your attention, and what you do with a free Saturday sit inside it. Spend yourself there.",
       },
       {
         heading: "The practice",
-        body: "Write your definition of a life well spent in one sentence. Cross out every clause that exists to impress someone.",
+        body: "For two weeks, open the feed once a day, at lunch, not in the evening. Each night write one line: what I actually did today. Read the fourteen lines together.",
       },
       {
         heading: "Sit with this",
-        body: "A borrowed timeline can only ever make you late.",
+        body: "The envy tells you what you want. It does not tell you the schedule is real.",
       },
     ],
   },
   {
-    id: "discipline",
-    chip: "I know but do not do",
+    id: "gym",
+    chip: "The 6am alarm I keep dismissing",
     kind: "A pattern that repeats",
-    question: "I know exactly what I should be doing and I still do not do it.",
+    question:
+      "I have paid for the gym since January and been eleven times. I know exactly what to do and every morning I turn the alarm off before I am properly awake.",
     philosopher: "Epictetus",
     method: "Stoicism",
     sections: [
       {
         heading: "What stands out",
-        body: "You are treating this as a failure of knowledge. It is not. You have the knowledge. What you have been rehearsing is the gap between agreeing with a thing and doing it.",
+        body: "You are treating this as a failure of knowledge, and it is not. Eleven visits is not ignorance. What you have trained since January is the gap between agreeing at 10pm and deciding at 6am, half asleep, alone.",
       },
       {
         heading: "The question",
-        body: "What is the smallest version of this you could not talk yourself out of?",
+        body: "What is the smallest version of this that you could not talk yourself out of on your worst morning?",
       },
       {
         heading: "The principle",
-        body: "Do not tell people what you have understood. Show it in the one act available to you now. Training beats intention, every day.",
+        body: "Do not announce what you have understood; show it in the one act available now. Training beats intention, and a plan that only works when you feel strong is not a plan.",
       },
       {
         heading: "The practice",
-        body: "Shrink the task until it is almost trivial, attach it to something you already do, and keep it for ten days without judging the size of it.",
+        body: "Move it off the morning. Put clothes and shoes by the door tonight, and for ten days do fifteen minutes after work, twice a week, no matter how thin it feels. Do not add anything until day eleven.",
       },
       {
         heading: "Sit with this",
-        body: "You are not short on willpower. You are short on a task small enough to survive a bad day.",
+        body: "You are not short on willpower. You are short on a version small enough to survive a bad night's sleep.",
       },
     ],
   },
   {
-    id: "dread",
-    chip: "Dread about what comes next",
+    id: "layoffs",
+    chip: "Dread about the next round of layoffs",
     kind: "A fear I keep meeting",
-    question: "I keep bracing for something going wrong and cannot settle.",
+    question:
+      "Two rounds of layoffs have gone through my team. Nothing has happened to me and I check my calendar for unexpected meetings maybe forty times a day.",
     philosopher: "Plato",
     method: "Platonic reasoning",
     sections: [
       {
         heading: "What stands out",
-        body: "The dread has no shape yet, and that is what gives it power. Unnamed, it can be everything at once, so your mind treats every hour as the hour before the news.",
+        body: "The fear has no shape yet, so it can be everything at once, and that is why forty calendar checks feel productive. Unnamed, it makes every ordinary hour into the hour before the news.",
       },
       {
         heading: "The question",
-        body: "If you had to state the feared thing in one plain sentence, what would it say?",
+        body: "State the feared thing in one plain sentence, with a date and a number in it. What does it say?",
       },
       {
         heading: "The principle",
-        body: "Fear thrives on shadows and thins in daylight. Bring the thing into the open, examine it, and you will find its true size, usually smaller and usually survivable.",
+        body: "Fear thrives in shadow and thins in daylight. Brought into the open and examined, a thing has a true size, usually smaller than the shadow and usually survivable.",
       },
       {
         heading: "The practice",
-        body: "Write the fear as one sentence, then write what you would actually do in the first week if it happened.",
+        body: "Write on one page: how many months of costs you have, who you would message in week one, and the three people you should have coffee with this month anyway. Then move the calendar check to twice a day, morning and after lunch.",
       },
       {
         heading: "Sit with this",
-        body: "A named fear can be answered. An unnamed one only grows.",
+        body: "A named fear can be answered and planned for. An unnamed one only asks to be checked again.",
+      },
+    ],
+  },
+  {
+    id: "sunday",
+    chip: "Sunday evenings feel wasted",
+    kind: "A fear I keep meeting",
+    question:
+      "I am fine at work and fine at home and every Sunday around six I get the sense that the years are going past and I am not spending them on anything.",
+    philosopher: "Socrates",
+    method: "Socratic inquiry",
+    sections: [
+      {
+        heading: "What stands out",
+        body: "You say wasted, which means you are holding a standard for a life well spent. You have never written it down or read it aloud, yet it arrives every Sunday at six and passes judgement on your whole week.",
+      },
+      {
+        heading: "The question",
+        body: "Wasted against what, and who set that measure? Name the person whose approval the standard is waiting for.",
+      },
+      {
+        heading: "The principle",
+        body: "An unexamined standard governs you more firmly than one you argue with. Define the word before you let it sentence you.",
+      },
+      {
+        heading: "The practice",
+        body: "This Sunday, write one sentence defining a life well spent. Cross out every clause that exists to impress someone. Then put one thing from what remains into next week's calendar, with a time.",
+      },
+      {
+        heading: "Sit with this",
+        body: "A borrowed measure can only ever find you short.",
       },
     ],
   },
