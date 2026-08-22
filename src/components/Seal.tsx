@@ -27,11 +27,11 @@ export function Seal({ size = 36, className = "", tone = "ink" }: SealProps) {
       <circle cx="32" cy="3.6" r="3.4" fill={ink} />
       <text
         x="32"
-        y="34"
+        y="33.5"
         textAnchor="middle"
-        dominantBaseline="middle"
+        dominantBaseline="central"
         fill={ink}
-        style={{ fontFamily: "var(--font-seal)", fontSize: 33, letterSpacing: "0.01em" }}
+        style={{ fontFamily: "var(--font-seal)", fontSize: 34, letterSpacing: "0.01em" }}
       >
         B
       </text>
