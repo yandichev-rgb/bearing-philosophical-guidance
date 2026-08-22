@@ -20,7 +20,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
               aria-hidden="true"
               className="flex h-6 w-6 items-center justify-center rounded-full border border-oxblood text-[11px] leading-none text-oxblood"
             >
-              I
+              <span style={{ transform: "translate(1.25px, 0.6px)" }}>I</span>
             </span>
             <span>Know thyself</span>
           </p>
