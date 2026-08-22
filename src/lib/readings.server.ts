@@ -4,6 +4,8 @@ export type ReadingAnswers = {
   situation: string;
   tried: string;
   stakes: string;
+  kind?: string;
+  duration?: string;
 };
 
 export const READING_MODEL = "google/gemini-2.5-flash";
@@ -63,6 +65,9 @@ export async function generateReadingWithAI(
     `Situation: ${answers.situation}`,
     `What they have tried: ${answers.tried || "Not stated."}`,
     `What feels at stake: ${answers.stakes || "Not stated."}`,
+    `What kind of matter this is: ${answers.kind || "Not stated."}`,
+    `How long it has been present: ${answers.duration || "Not stated."}`,
+    `Use these signals to choose the emphasis. Treat a repeating pattern as a formed habit, a relationship as something between two people, a decision as a judgment to test, and a fear as something to confront. If the reader named a good outcome, use it as the measure the reading tests against.`,
   ].join("\n\n");
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
