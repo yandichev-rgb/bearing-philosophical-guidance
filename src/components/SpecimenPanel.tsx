@@ -135,7 +135,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
       </div>
 
       {/* Reading body */}
-      <div className="relative min-h-[330px] px-5 pb-6 pt-6 sm:min-h-[360px] sm:px-7">
+      <div className="relative min-h-[260px] px-5 pb-6 pt-6 sm:min-h-[300px] sm:px-7">
         {phase === "composing" ? (
           <p className="label flex items-center gap-2 text-oxblood">
             Composing the reading

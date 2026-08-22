@@ -341,7 +341,7 @@
 
 /* A second, darker sheet of paper laid over the page. */
 @utility sheet-dark {
-  background-color: color-mix(in oklab, var(--color-papyrus-dark) 55%, var(--color-papyrus));
+  background-color: color-mix(in oklab, var(--color-papyrus-dark) 42%, var(--color-papyrus));
   background-image:
     radial-gradient(90% 70% at 20% 0%, oklch(0.9246 0.0459 87.76 / 55%) 0%, transparent 62%),
     repeating-linear-gradient(
