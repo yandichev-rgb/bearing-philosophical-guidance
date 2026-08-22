@@ -3,7 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { listMyReadings } from "@/lib/readings.functions";
+import { listMyReadings, myReadingCosts } from "@/lib/readings.functions";
+import { readingHeading } from "@/lib/reading-heading";
 import { Seal, Wordmark } from "@/components/Seal";
 import { philosophers } from "@/data/philosophers";
 
@@ -31,6 +32,12 @@ function nameFor(slug: string) {
 function Readings() {
   const { session, loading } = useAuth();
   const fetchReadings = useServerFn(listMyReadings);
+  const fetchCosts = useServerFn(myReadingCosts);
+  const { data: costs } = useQuery({
+    queryKey: ["reading-costs"],
+    queryFn: () => fetchCosts(),
+    enabled: Boolean(session),
+  });
   const { data, isLoading } = useQuery({
     queryKey: ["readings"],
     queryFn: () => fetchReadings(),
@@ -75,6 +82,12 @@ function Readings() {
         ) : (
           <>
             <h1 className="display-lg mt-6 text-ink">What you have brought here.</h1>
+            {costs && costs.readings > 0 ? (
+              <p className="label mt-6 text-ink-soft">
+                {costs.readings} reading{costs.readings === 1 ? "" : "s"} generated · estimated cost
+                ${costs.totalUsd.toFixed(4)}
+              </p>
+            ) : null}
             {isLoading ? (
               <p className="label mt-10 text-ink-soft">Gathering your readings.</p>
             ) : (data?.length ?? 0) === 0 ? (
@@ -85,7 +98,7 @@ function Readings() {
               <ul className="mt-10 border-t border-ink/25">
                 {data?.map((reading) => (
                   <li key={reading.id} className="border-b border-ink/20 py-8">
-                    <p className="label text-oxblood">{nameFor(reading.philosopher_slug)}</p>
+                    <p className="label text-oxblood">{readingHeading(reading.philosopher_slug)}</p>
                     <h2 className="mt-3 text-2xl text-ink">{reading.headline}</h2>
                     <p className="mt-4 leading-relaxed text-ink-soft">{reading.exercise}</p>
                     <p className="mt-4 text-lg italic text-ink">{reading.question}</p>

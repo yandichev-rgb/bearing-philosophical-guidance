@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isProfileSlug, type ProfileSlug } from "./philosopher-profiles.server";
-import { generateReadingWithAI, type GeneratedReading } from "./readings.server";
+import { generateReadingWithAI, READING_MODEL, type GeneratedReading } from "./readings.server";
+import { assertDailyBudget, claimFreeReading, logAiUsage } from "./ai-budget.server";
 
 const answersSchema = z.object({
   situation: z.string().trim().min(1).max(4000),
@@ -25,7 +26,18 @@ const readingSchema = z.object({
 /** The free tier: one complete Aristotle reading, no account required. */
 export const generateFreeReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => answersSchema.parse(data))
-  .handler(async ({ data }) => generateReadingWithAI("aristotle", data));
+  .handler(async ({ data }) => {
+    await assertDailyBudget();
+    await claimFreeReading();
+    const { reading, usage } = await generateReadingWithAI("aristotle", data);
+    await logAiUsage({
+      philosopherSlug: "aristotle",
+      model: READING_MODEL,
+      tier: "free",
+      usage,
+    });
+    return reading;
+  });
 
 /** Membership tier: any philosopher in the Lyceum. */
 export const generateMemberReading = createServerFn({ method: "POST" })
@@ -46,7 +58,19 @@ export const generateMemberReading = createServerFn({ method: "POST" })
         throw new Error("Membership required to consult the full Lyceum.");
       }
     }
-    return generateReadingWithAI(philosopherSlug as ProfileSlug, answers);
+    await assertDailyBudget();
+    const { reading, usage } = await generateReadingWithAI(
+      philosopherSlug as ProfileSlug,
+      answers,
+    );
+    await logAiUsage({
+      userId: context.userId,
+      philosopherSlug,
+      model: READING_MODEL,
+      tier: "member",
+      usage,
+    });
+    return reading;
   });
 
 /** Saves the inquiry and its reading against the signed-in account. */
@@ -97,4 +121,19 @@ export const listMyReadings = createServerFn({ method: "GET" })
       .limit(50);
     if (error) throw new Error("Your readings could not be loaded.");
     return data ?? [];
+  });
+
+/** Estimated AI spend for the signed-in account, so cost per reading stays visible. */
+export const myReadingCosts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("ai_usage")
+      .select("philosopher_slug, cost_usd, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) return { readings: 0, totalUsd: 0 };
+    const rows = data ?? [];
+    const totalUsd = rows.reduce((sum, row) => sum + Number(row.cost_usd ?? 0), 0);
+    return { readings: rows.length, totalUsd: Math.round(totalUsd * 10000) / 10000 };
   });
