@@ -13,10 +13,16 @@ const FOCUSABLE =
 
 export function Modal({ open, onClose, labelledBy, children, className = "" }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  // Keep the latest onClose in a ref so the focus-trap effect only re-runs when
+  // `open` changes. Depending on the callback re-ran the effect on every render,
+  // and its cleanup stole focus back from the field being typed into.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
+
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
 
