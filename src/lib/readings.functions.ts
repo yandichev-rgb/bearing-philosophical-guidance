@@ -49,15 +49,34 @@ export const generateMemberReading = createServerFn({ method: "POST" })
     const { philosopherSlug, ...answers } = data;
     if (!isProfileSlug(philosopherSlug)) throw new Error("Unknown philosopher.");
     if (philosopherSlug !== "aristotle") {
-      const { data: membership } = await context.supabase
-        .from("memberships")
-        .select("status")
-        .eq("user_id", context.userId)
-        .maybeSingle();
-      if (membership?.status !== "active") {
-        throw new Error("Membership required to consult the full Lyceum.");
-      }
+      const [{ data: membership }, { data: subscription }] = await Promise.all([
+        context.supabase
+          .from("memberships")
+          .select("status, current_period_end")
+          .eq("user_id", context.userId)
+          .maybeSingle(),
+        context.supabase
+          .from("subscriptions")
+          .select("status, current_period_end")
+          .eq("user_id", context.userId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      const stillInPeriod = (end: string | null | undefined) =>
+        !end || new Date(end).getTime() > Date.now();
+      const isMember =
+        (membership?.status === "active" && stillInPeriod(membership.current_period_end)) ||
+        (subscription != null &&
+          ["active", "trialing", "past_due"].includes(subscription.status) &&
+          stillInPeriod(subscription.current_period_end));
+
+      // Returned, not thrown: the modal shows the membership invitation instead
+      // of surfacing an unhandled server error.
+      if (!isMember) return { needsMembership: true as const };
     }
+
     await assertDailyBudget();
     const { reading, usage } = await generateReadingWithAI(
       philosopherSlug as ProfileSlug,
