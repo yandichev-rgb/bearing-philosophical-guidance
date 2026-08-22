@@ -18,7 +18,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
           <p className="label flex items-center gap-3 text-ink-soft">
             <span
               aria-hidden="true"
-              className="flex h-6 w-6 items-center justify-center rounded-full border border-oxblood text-[10px] text-oxblood"
+              className="flex h-6 w-6 items-center justify-center rounded-full border border-oxblood text-[11px] leading-none text-oxblood"
             >
               I
             </span>
