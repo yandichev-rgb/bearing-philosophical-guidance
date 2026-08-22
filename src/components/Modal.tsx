@@ -35,7 +35,7 @@ export function Modal({ open, onClose, labelledBy, children, className = "" }: M
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab") return;
@@ -60,7 +60,7 @@ export function Modal({ open, onClose, labelledBy, children, className = "" }: M
       document.body.style.overflow = overflow;
       previous?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
