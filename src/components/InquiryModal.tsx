@@ -202,6 +202,8 @@ export function InquiryModal({
     try {
       await save({ data: { answers, reading } });
       setSaved(true);
+      draft.clear();
+
     } catch {
       setError("Your reading could not be saved. Try again in a moment.");
     }
