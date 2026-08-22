@@ -137,7 +137,10 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
       </div>
 
       {/* Reading body */}
-      <div className="relative min-h-[260px] px-5 pb-6 pt-6 sm:min-h-[300px] sm:px-7">
+      <div
+        ref={bodyRef}
+        className="relative h-[300px] overflow-y-auto px-5 pb-6 pt-6 sm:h-[340px] sm:px-7"
+      >
         {phase === "composing" ? (
           <p className="label flex items-center gap-2 text-oxblood">
             Composing the reading
@@ -169,6 +172,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
           ))}
         </AnimatePresence>
       </div>
+
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-ink/25 px-5 py-4 sm:px-7">
         <p className="label text-ink-soft">Specimen · fixed text</p>
