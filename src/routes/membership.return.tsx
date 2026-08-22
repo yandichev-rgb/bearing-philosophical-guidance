@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Seal, Wordmark } from "@/components/Seal";
+import { PageFrame, Sheet } from "@/components/PageFrame";
+import { Reveal } from "@/components/Reveal";
 
 const title = "Membership confirmed · Bearing";
 const description = "Your Bearing membership is being confirmed.";
@@ -26,43 +27,33 @@ function MembershipReturn() {
   const { session_id: sessionId } = Route.useSearch();
 
   return (
-    <div className="paper grain min-h-screen">
-      <header className="border-b border-ink/25">
-        <div className="shell flex h-[68px] items-center gap-3">
-          <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Bearing home">
-            <Seal size={32} className="shrink-0" />
-            <Wordmark />
-          </Link>
-        </div>
-      </header>
+    <PageFrame folio="Fol. II · Membership">
+      <div className="shell max-w-2xl py-20">
+        <Reveal>
+          <p className="label text-oxblood">Membership</p>
+          <h1 className="display-lg mt-6 text-ink">
+            {sessionId ? "The Lyceum is open to you." : "Nothing to confirm here."}
+          </h1>
+        </Reveal>
 
-      <main className="shell max-w-2xl py-20">
-        <p className="label text-oxblood">Membership</p>
-        {sessionId ? (
-          <>
-            <h1 className="display-lg mt-6 text-ink">The Lyceum is open to you.</h1>
-            <p className="mt-6 leading-relaxed text-ink-soft">
-              Your payment went through. It can take a moment for the membership to register, so
-              refresh the membership page if it still shows as inactive.
+        <Reveal delay={0.08} className="mt-10">
+          <Sheet>
+            <p className="leading-relaxed text-ink-soft">
+              {sessionId
+                ? "Your payment went through. It can take a moment for the membership to register, so refresh the membership page if it still shows as inactive."
+                : "We could not find a payment to confirm. Start again from the membership page."}
             </p>
-          </>
-        ) : (
-          <>
-            <h1 className="display-lg mt-6 text-ink">Nothing to confirm here.</h1>
-            <p className="mt-6 leading-relaxed text-ink-soft">
-              We could not find a payment to confirm. Start again from the membership page.
-            </p>
-          </>
-        )}
-        <div className="mt-10 flex flex-wrap gap-6">
-          <Link to="/" className="btn-ink">
-            Bring a question
-          </Link>
-          <Link to="/membership" className="link-underline">
-            Membership
-          </Link>
-        </div>
-      </main>
-    </div>
+            <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-ink/15 pt-7">
+              <Link to="/" className="btn-ink">
+                Bring a question
+              </Link>
+              <Link to="/membership" className="link-underline">
+                Membership
+              </Link>
+            </div>
+          </Sheet>
+        </Reveal>
+      </div>
+    </PageFrame>
   );
 }
