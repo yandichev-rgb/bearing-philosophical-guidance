@@ -6,25 +6,25 @@ const tabs = [
   {
     id: "aristotle",
     tab: "Aristotle",
-    label: "What your habits are building",
+    label: "An Aristotelian reading",
     reading:
-      "You say you want a life with room for more than work. But your schedule practices the opposite every day. Aristotle would ask which version of you your routine is training.",
+      "You say you want a life with room for more than work, but your schedule practices the opposite every day. What kind of person is your current routine training you to become?",
     practice:
       "Choose a hard stopping time for one week. Keep it even when the work could continue.",
   },
   {
     id: "socrates",
     tab: "Socrates",
-    label: "Question the belief",
+    label: "A Socratic reading",
     reading:
-      "You seem to believe that slowing down means you are less ambitious. Is that true, or is it a rule you picked up from someone else?",
+      "You seem to believe that slowing down means you are less ambitious. Is that something you have tested, or a rule you inherited from someone else?",
     practice:
       "Write down what ambition means to you. Cross out anything that depends on impressing other people.",
   },
   {
     id: "stoic",
     tab: "Stoic",
-    label: "What you control",
+    label: "A Stoic reading",
     reading:
       "You cannot control whether people see your limits as weakness. You can control the quality of your work, the boundary you set, and how calmly you keep it.",
     practice: "Name one outcome to stop managing and one action that is fully yours today.",
@@ -46,8 +46,8 @@ export function SampleReading() {
             Three ways to see it.
           </h2>
           <p className="mt-6 max-w-md leading-relaxed text-ink-soft">
-            Here is how three philosophers might respond to the same person: successful at work,
-            worn out, and afraid to slow down.
+            Here is the same person read three ways: successful at work, worn out, and afraid to
+            slow down.
           </p>
 
           <div role="tablist" aria-label="Sample readings" className="mt-9 flex flex-wrap gap-3">
@@ -106,7 +106,7 @@ export function SampleReading() {
             <p className="label text-oxblood">{current.label}</p>
             <p className="mt-6 text-xl leading-relaxed text-ink">{current.reading}</p>
             <div className="mt-9 border-t border-ink/25 pt-6">
-              <p className="label text-ink-soft">Practice</p>
+              <p className="label text-ink-soft">The practice</p>
               <p className="mt-3 leading-relaxed text-ink">{current.practice}</p>
             </div>
           </div>

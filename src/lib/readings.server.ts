@@ -1,14 +1,12 @@
-import {
-  buildSystemPrompt,
-  philosopherName,
-  type ProfileSlug,
-} from "./philosopher-profiles.server";
+import { buildSystemPrompt, type ProfileSlug } from "./philosopher-profiles.server";
 
 export type ReadingAnswers = {
   situation: string;
   tried: string;
   stakes: string;
 };
+
+export const READING_MODEL = "google/gemini-2.5-flash";
 
 export type GeneratedReading = {
   philosopherSlug: ProfileSlug;
@@ -21,6 +19,11 @@ export type GeneratedReading = {
   note: string;
 };
 
+export type ReadingResult = {
+  reading: GeneratedReading;
+  usage: { promptTokens: number; completionTokens: number };
+};
+
 const DISCLAIMER =
   "This reading interprets your situation through one philosopher's ideas. It is for reflection, not clinical, legal, medical, or financial advice.";
 
@@ -31,13 +34,20 @@ const SCHEMA = {
   properties: {
     headline: {
       type: "string",
-      description: "One short sentence naming where this philosopher would start.",
+      description: "One short statement about the reader's own situation, addressed to them.",
     },
-    noticed: { type: "string", description: "What the philosopher would notice in the situation." },
-    assumption: { type: "string", description: "The assumption they would question." },
-    principle: { type: "string", description: "Which of their principles applies, and why." },
-    exercise: { type: "string", description: "One concrete practice to try this week." },
-    question: { type: "string", description: "One question to keep considering." },
+    noticed: {
+      type: "string",
+      description: "What stands out: a direct observation about what the reader described.",
+    },
+    assumption: {
+      type: "string",
+      description:
+        "The question: one clear personal question to the reader that exposes the central tension.",
+    },
+    principle: { type: "string", description: "The principle: the relevant idea in plain language, and why it applies here." },
+    exercise: { type: "string", description: "The practice: one specific action or exercise to try." },
+    question: { type: "string", description: "Sit with this: one short question worth continuing to consider." },
   },
 } as const;
 
@@ -45,7 +55,7 @@ const SCHEMA = {
 export async function generateReadingWithAI(
   slug: ProfileSlug,
   answers: ReadingAnswers,
-): Promise<GeneratedReading> {
+): Promise<ReadingResult> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("Reading service is not configured.");
 
@@ -62,7 +72,7 @@ export async function generateReadingWithAI(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: READING_MODEL,
       messages: [
         { role: "system", content: buildSystemPrompt(slug) },
         { role: "user", content: userContent },
@@ -82,6 +92,7 @@ export async function generateReadingWithAI(
 
   const payload = (await response.json()) as {
     choices?: { message?: { content?: string } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("The reading came back empty.");
@@ -89,13 +100,19 @@ export async function generateReadingWithAI(
   const parsed = JSON.parse(content) as Omit<GeneratedReading, "philosopherSlug" | "note">;
 
   return {
-    philosopherSlug: slug,
-    headline: parsed.headline || `${philosopherName(slug)} would start with what you can practice.`,
-    noticed: parsed.noticed,
-    assumption: parsed.assumption,
-    principle: parsed.principle,
-    exercise: parsed.exercise,
-    question: parsed.question,
-    note: DISCLAIMER,
+    usage: {
+      promptTokens: payload.usage?.prompt_tokens ?? 0,
+      completionTokens: payload.usage?.completion_tokens ?? 0,
+    },
+    reading: {
+      philosopherSlug: slug,
+      headline: parsed.headline || "Your situation already points to something you can practice.",
+      noticed: parsed.noticed,
+      assumption: parsed.assumption,
+      principle: parsed.principle,
+      exercise: parsed.exercise,
+      question: parsed.question,
+      note: DISCLAIMER,
+    },
   };
 }

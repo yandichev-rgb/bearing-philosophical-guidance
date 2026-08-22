@@ -24,7 +24,7 @@ export function Membership({ onStart }: { onStart: () => void }) {
           </h2>
           <p className="mt-7 max-w-xl leading-relaxed text-papyrus/85">
             Your first reading with Aristotle is free. Membership opens the full Lyceum, so you can
-            compare how different philosophers would approach the same decision.
+            read the same decision through several different methods.
           </p>
 
           {MEMBERSHIP.priceLabel ? (
