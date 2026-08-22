@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReadingsRouteImport } from './routes/readings'
+import { Route as MembershipReturnRouteImport } from './routes/membership.return'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,6 +27,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MembershipRoute = MembershipRouteImport.update({
+  id: '/membership',
+  path: '/membership',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -34,6 +41,11 @@ const ReadingsRoute = ReadingsRouteImport.update({
   id: '/readings',
   path: '/readings',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MembershipReturnRoute = MembershipReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => MembershipRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -45,43 +57,65 @@ const ApiPublicPaymentsWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/membership': typeof MembershipRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/readings': typeof ReadingsRoute
+  '/membership/return': typeof MembershipReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/membership': typeof MembershipRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/readings': typeof ReadingsRoute
+  '/membership/return': typeof MembershipReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/membership': typeof MembershipRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/readings': typeof ReadingsRoute
+  '/membership/return': typeof MembershipReturnRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/privacy' | '/readings' | '/api/public/payments/webhook'
+    | '/'
+    | '/auth'
+    | '/membership'
+    | '/privacy'
+    | '/readings'
+    | '/membership/return'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/privacy' | '/readings' | '/api/public/payments/webhook'
+  to:
+    | '/'
+    | '/auth'
+    | '/membership'
+    | '/privacy'
+    | '/readings'
+    | '/membership/return'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
     | '/auth'
+    | '/membership'
     | '/privacy'
     | '/readings'
+    | '/membership/return'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  MembershipRoute: typeof MembershipRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   ReadingsRoute: typeof ReadingsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -103,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/membership': {
+      id: '/membership'
+      path: '/membership'
+      fullPath: '/membership'
+      preLoaderRoute: typeof MembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -117,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/membership/return': {
+      id: '/membership/return'
+      path: '/return'
+      fullPath: '/membership/return'
+      preLoaderRoute: typeof MembershipReturnRouteImport
+      parentRoute: typeof MembershipRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -127,9 +175,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MembershipRouteChildren {
+  MembershipReturnRoute: typeof MembershipReturnRoute
+}
+
+const MembershipRouteChildren: MembershipRouteChildren = {
+  MembershipReturnRoute: MembershipReturnRoute,
+}
+
+const MembershipRouteWithChildren = MembershipRoute._addFileChildren(
+  MembershipRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  MembershipRoute: MembershipRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   ReadingsRoute: ReadingsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
