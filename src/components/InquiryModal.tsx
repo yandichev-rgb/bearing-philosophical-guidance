@@ -11,7 +11,7 @@ import {
   saveReading,
 } from "@/lib/readings.functions";
 
-import { readingHeading } from "@/lib/reading-heading";
+
 
 type Reading = {
   philosopherSlug: string;
