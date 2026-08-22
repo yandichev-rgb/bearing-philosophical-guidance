@@ -15,7 +15,7 @@ function detailFor(size: number): Detail {
 
 /**
  * Bearing's mark: an engraved compass rose. The needles converge on a small
- * pivot, and at large sizes the cardinal points carry philosopher initials.
+ * pivot, with fine diagonal divisions at large sizes.
  */
 export function Seal({ size = 36, className = "", tone = "ink", detail }: SealProps) {
   const ink = tone === "ink" ? "var(--color-ink)" : "var(--color-papyrus-light)";
