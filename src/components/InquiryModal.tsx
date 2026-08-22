@@ -110,9 +110,15 @@ export function InquiryModal({
     const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
     try {
       const result = memberPath
-        ? ((await generateAs({ data: { ...answers, philosopherSlug } })) as Reading)
-        : ((await generate({ data: answers })) as Reading);
-      setReading(result);
+        ? await generateAs({ data: { ...answers, philosopherSlug } })
+        : await generate({ data: answers });
+      if (result && (result as { needsMembership?: boolean }).needsMembership) {
+        setNeedsMembership(true);
+        setPending(false);
+        return;
+      }
+      setReading(result as Reading);
+
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "";
       if (philosopherSlug !== "aristotle" && (!session || /membership/i.test(message))) {
