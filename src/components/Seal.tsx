@@ -64,10 +64,11 @@ export function Seal({ size = 36, className = "", tone = "ink", detail }: SealPr
           textAnchor="middle"
           style={{ fontFamily: "var(--font-seal)", fontSize: 6.4, letterSpacing: "0.02em" }}
         >
-          <text x="32" y="5.4" dominantBaseline="middle">A</text>
-          <text x="59.2" y="32" dominantBaseline="middle">P</text>
-          <text x="32" y="59.2" dominantBaseline="middle">S</text>
-          <text x="4.8" y="32" dominantBaseline="middle">M</text>
+          <text x="51.4" y="12.6" dominantBaseline="middle">A</text>
+          <text x="51.4" y="51.4" dominantBaseline="middle">P</text>
+          <text x="12.6" y="51.4" dominantBaseline="middle">S</text>
+          <text x="12.6" y="12.6" dominantBaseline="middle">M</text>
+
         </g>
       )}
 
