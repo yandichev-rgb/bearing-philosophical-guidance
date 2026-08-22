@@ -31,7 +31,16 @@ type ChipGroup = {
   options: string[];
 };
 
-const questions = [
+type Step = {
+  key: "situation" | "tried" | "stakes";
+  title: string;
+  help: string;
+  placeholder: string;
+  optional?: boolean;
+  chips?: ChipGroup;
+};
+
+const questions: Step[] = [
   {
     key: "situation" as const,
     title: "What's on your mind?",
