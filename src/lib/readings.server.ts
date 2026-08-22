@@ -6,6 +6,8 @@ export type ReadingAnswers = {
   stakes: string;
 };
 
+export const READING_MODEL = "google/gemini-2.5-flash";
+
 export type GeneratedReading = {
   philosopherSlug: ProfileSlug;
   headline: string;
@@ -15,6 +17,11 @@ export type GeneratedReading = {
   exercise: string;
   question: string;
   note: string;
+};
+
+export type ReadingResult = {
+  reading: GeneratedReading;
+  usage: { promptTokens: number; completionTokens: number };
 };
 
 const DISCLAIMER =
@@ -48,7 +55,7 @@ const SCHEMA = {
 export async function generateReadingWithAI(
   slug: ProfileSlug,
   answers: ReadingAnswers,
-): Promise<GeneratedReading> {
+): Promise<ReadingResult> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("Reading service is not configured.");
 
@@ -65,7 +72,7 @@ export async function generateReadingWithAI(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: READING_MODEL,
       messages: [
         { role: "system", content: buildSystemPrompt(slug) },
         { role: "user", content: userContent },
@@ -85,6 +92,7 @@ export async function generateReadingWithAI(
 
   const payload = (await response.json()) as {
     choices?: { message?: { content?: string } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("The reading came back empty.");
@@ -92,13 +100,19 @@ export async function generateReadingWithAI(
   const parsed = JSON.parse(content) as Omit<GeneratedReading, "philosopherSlug" | "note">;
 
   return {
-    philosopherSlug: slug,
-    headline: parsed.headline || "Your situation already points to something you can practice.",
-    noticed: parsed.noticed,
-    assumption: parsed.assumption,
-    principle: parsed.principle,
-    exercise: parsed.exercise,
-    question: parsed.question,
-    note: DISCLAIMER,
+    usage: {
+      promptTokens: payload.usage?.prompt_tokens ?? 0,
+      completionTokens: payload.usage?.completion_tokens ?? 0,
+    },
+    reading: {
+      philosopherSlug: slug,
+      headline: parsed.headline || "Your situation already points to something you can practice.",
+      noticed: parsed.noticed,
+      assumption: parsed.assumption,
+      principle: parsed.principle,
+      exercise: parsed.exercise,
+      question: parsed.question,
+      note: DISCLAIMER,
+    },
   };
 }
