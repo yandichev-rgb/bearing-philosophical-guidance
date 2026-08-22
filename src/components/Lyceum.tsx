@@ -1,5 +1,15 @@
 import { philosophers, romanNumerals, type Philosopher } from "@/data/philosophers";
 import { SectionLabel } from "./SectionLabel";
+import { Reveal } from "./Reveal";
+
+const prompts: Record<string, string> = {
+  aristotle: "Bring a habit you cannot break.",
+  socrates: "Bring a belief you have never argued with.",
+  "marcus-aurelius": "Bring what you cannot control.",
+  epictetus: "Bring the thing you know and do not do.",
+  plato: "Bring a fear with no shape yet.",
+  seneca: "Bring the resentment you keep warm.",
+};
 
 export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
   return (
@@ -8,58 +18,72 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
       aria-labelledby="lyceum-heading"
       className="relative overflow-hidden bg-lyceum py-20 text-papyrus lg:py-28"
     >
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-bronze/60" />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute right-2 top-2 select-none text-[15vw] leading-none text-papyrus/[0.028]"
+        className="pointer-events-none absolute right-2 top-2 select-none text-[15vw] leading-none text-papyrus/[0.032]"
         style={{ fontFamily: "var(--font-display)", letterSpacing: "0.06em" }}
       >
         LYCEVM
       </span>
 
-
       <div className="shell relative">
-        <SectionLabel numeral="III" tone="papyrus">
-          The Lyceum
-        </SectionLabel>
+        <Reveal>
+          <SectionLabel numeral="III" tone="papyrus">
+            The Lyceum
+          </SectionLabel>
+        </Reveal>
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-end">
-          <h2 id="lyceum-heading" className="display-lg text-papyrus-light">
-            Choose a mind
-            <br />
-            to think beside.
-          </h2>
-          <p className="max-w-md leading-relaxed text-gold/85">
-            Start with the philosopher who feels useful. Or choose the one most likely to disagree
-            with you.
-          </p>
+          <Reveal>
+            <h2 id="lyceum-heading" className="display-lg text-papyrus-light">
+              Choose a mind
+              <br />
+              to think beside.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="max-w-md leading-relaxed text-gold/85">
+              Six methods, each for a different kind of hard. Ask them the same question and you
+              will hear six different answers.
+            </p>
+          </Reveal>
         </div>
 
-        <ul className="mt-14 grid grid-cols-1 border border-papyrus/25 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="mt-14 grid grid-cols-1 gap-px bg-papyrus/20 sm:grid-cols-2 xl:grid-cols-3">
           {philosophers.map((p, index) => (
-            <li key={p.slug} className="border-b border-r border-papyrus/25 last:border-b-0">
+            <Reveal as="li" key={p.slug} delay={(index % 3) * 0.06} className="bg-lyceum">
               <button
                 type="button"
                 onClick={() => onSelect(p)}
-                className="group flex h-full w-full flex-col items-start p-7 text-left transition-colors duration-200 hover:bg-papyrus focus-visible:bg-papyrus"
+                className="group relative flex h-full w-full flex-col items-start p-7 text-left transition-colors duration-300 hover:bg-papyrus focus-visible:bg-papyrus"
               >
                 <div className="flex w-full items-start justify-between gap-3">
                   <span className="label text-gold/80 transition-colors group-hover:text-ink-soft">
                     {romanNumerals[index]}
                   </span>
                   {p.free ? (
-                    <span className="label border border-oxblood px-2 py-1 text-oxblood group-hover:border-oxblood">
+                    <span className="label border border-oxblood px-2 py-1 text-oxblood">
                       Begin here
                     </span>
-                  ) : null}
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex h-6 w-6 items-center justify-center rounded-full border border-bronze text-[10px] leading-none text-bronze"
+                      title="Members"
+                    >
+                      ✦
+                    </span>
+                  )}
                 </div>
 
-                <div className="mt-6 border border-ink/70 p-[3px] shadow-engraved">
+                <div className="mt-6 w-full border border-ink/70 bg-papyrus-light p-[3px] shadow-engraved transition-transform duration-300 group-hover:-translate-y-1">
                   <img
                     src={p.portrait}
                     alt={p.portraitAlt}
                     loading="lazy"
-                    width={186}
-                    height={186}
-                    className="block h-[186px] w-[186px] border border-ink/40 object-cover"
+                    width={520}
+                    height={520}
+                    className="block aspect-square w-full border border-ink/40 object-cover"
                   />
                 </div>
 
@@ -78,18 +102,19 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
                 <p className="mt-5 text-[1.0625rem] italic text-papyrus/90 transition-colors group-hover:text-ink">
                   {p.principle}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-papyrus/60 transition-colors group-hover:text-ink-soft">
-                  {p.summary}
+                <p className="mt-4 text-sm leading-relaxed text-papyrus/60 transition-colors group-hover:text-ink-soft">
+                  {prompts[p.slug] ?? p.summary}
                 </p>
 
-                <span className="label mt-8 text-gold transition-colors group-hover:text-oxblood">
+                <span className="label mt-8 inline-block border-b border-transparent text-gold transition-colors group-hover:border-oxblood group-hover:text-oxblood">
                   View teachings <span aria-hidden="true">↗</span>
                 </span>
               </button>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-bronze/60" />
     </section>
   );
 }

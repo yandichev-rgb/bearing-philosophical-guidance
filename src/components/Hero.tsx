@@ -1,21 +1,44 @@
-export function Hero({ onStart }: { onStart: () => void }) {
+import { motion, useReducedMotion } from "motion/react";
+
+import type { Specimen } from "@/data/specimens";
+import { SpecimenPanel } from "./SpecimenPanel";
+
+export function Hero({
+  onStart,
+  onStartWithKind,
+}: {
+  onStart: () => void;
+  onStartWithKind: (kind: Specimen["kind"]) => void;
+}) {
+  const still = useReducedMotion();
+
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div
+    <section id="top" className="lamplight vignette relative overflow-hidden">
+      {/* Engraved plate marks: register circles and margin ticks, drifting slowly. */}
+      <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-40 -right-24 h-[420px] w-[420px] opacity-[0.13]"
+        className="pointer-events-none absolute -bottom-52 -right-28 h-[560px] w-[560px] opacity-[0.14]"
+        animate={still ? { y: 0 } : { y: [0, -14, 0], rotate: [0, 1.2, 0] }}
+        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
       >
         <svg viewBox="0 0 400 400" fill="none" stroke="var(--color-ink)" strokeWidth="1">
           <circle cx="240" cy="240" r="80" />
           <circle cx="240" cy="240" r="130" />
           <circle cx="240" cy="240" r="180" />
+          <circle cx="240" cy="240" r="4" fill="var(--color-oxblood)" stroke="none" />
           <path d="M240 20v440M20 240h440" strokeDasharray="3 8" />
+          <path d="M240 60L240 40M240 440L240 420M60 240H40M440 240H420" />
         </svg>
-      </div>
+      </motion.div>
 
-      <div className="shell relative grid gap-12 pt-16 pb-20 md:pt-24 lg:grid-cols-[1.35fr_1fr] lg:gap-14 lg:pb-28">
+      <div className="shell relative z-[2] grid items-center gap-14 pt-14 pb-16 md:pt-20 lg:grid-cols-[1fr_1.02fr] lg:gap-16 lg:pb-24">
         <div>
-          <p className="label flex items-center gap-3 text-ink-soft">
+          <motion.p
+            className="label flex items-center gap-3 text-ink-soft"
+            initial={still ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7 }}
+          >
             <span
               aria-hidden="true"
               className="flex h-6 w-6 items-center justify-center rounded-full border border-oxblood text-[11px] leading-none text-oxblood"
@@ -23,19 +46,24 @@ export function Hero({ onStart }: { onStart: () => void }) {
               <span style={{ transform: "translate(1.25px, 0.6px)" }}>I</span>
             </span>
             <span>Know thyself</span>
-          </p>
+          </motion.p>
 
-          <h1 className="display-hero mt-7 text-ink">
+          <motion.h1
+            className="display-hero mt-6 text-ink"
+            style={{ fontSize: "clamp(3.2rem, 7.4vw, 6.4rem)" }}
+            initial={still ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, ease: [0.16, 0.68, 0.3, 1] }}
+          >
             Find your
             <br />
             <em className="italic text-oxblood">bearing.</em>
-          </h1>
-        </div>
+          </motion.h1>
 
-        <div className="flex flex-col justify-end lg:rule-v lg:pl-12">
-          <p className="max-w-md text-[1.0625rem] leading-relaxed text-ink-soft">
-            Tell us what you're facing. Bearing looks at it through the ideas of Aristotle,
-            Socrates, the Stoics, and others. Then it helps you decide what to do next.
+          <p className="mt-8 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft">
+            Bring a real decision, a habit you cannot break, or a fear you keep meeting. Bearing
+            reads it through Aristotle, Socrates, and the Stoics, then hands you one thing to
+            practise.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-6">
@@ -47,13 +75,27 @@ export function Hero({ onStart }: { onStart: () => void }) {
             </a>
           </div>
 
-          <p className="label mt-8 flex items-center gap-2 text-ink-soft">
-            <span aria-hidden="true" className="text-oxblood">
-              ◆
-            </span>
-            Your first reading, with Aristotle, is free.
-          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-2">
+            <p className="label flex items-center gap-2 text-ink-soft">
+              <span aria-hidden="true" className="text-oxblood">
+                ◆
+              </span>
+              Six philosophers
+            </p>
+            <span aria-hidden="true" className="h-px w-6 bg-bronze" />
+            <p className="label text-ink-soft">First reading free</p>
+            <span aria-hidden="true" className="h-px w-6 bg-bronze" />
+            <p className="label text-ink-soft">No account to start</p>
+          </div>
         </div>
+
+        <motion.div
+          initial={still ? false : { opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 0.68, 0.3, 1] }}
+        >
+          <SpecimenPanel onStart={onStartWithKind} />
+        </motion.div>
       </div>
     </section>
   );
