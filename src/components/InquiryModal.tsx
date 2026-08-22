@@ -331,14 +331,14 @@ export function InquiryModal({
                   className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink"
                 >
                   <span aria-hidden="true" className="mt-1 text-oxblood">
-                    ✦
+                    ◆
                   </span>
                   <span>{benefit}</span>
                 </li>
               ))}
               <li className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink">
                 <span aria-hidden="true" className="mt-1 text-oxblood">
-                  ✦
+                  ◆
                 </span>
                 <span>Readings you can return to, written in plain language you can act on.</span>
               </li>

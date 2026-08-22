@@ -37,7 +37,7 @@ export function Membership({ onStart }: { onStart: () => void }) {
                 {MEMBERSHIP.benefits.map((benefit) => (
                   <li key={benefit} className="flex gap-3 text-papyrus/90">
                     <span aria-hidden="true" className="text-gold">
-                      ✦
+                      ◆
                     </span>
                     <span className="leading-relaxed">{benefit}</span>
                   </li>

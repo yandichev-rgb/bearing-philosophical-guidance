@@ -71,7 +71,7 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
                       className="flex h-6 w-6 items-center justify-center rounded-full border border-bronze text-[10px] leading-none text-bronze"
                       title="Members"
                     >
-                      ✦
+                      ◆
                     </span>
                   )}
                 </div>
