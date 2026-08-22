@@ -23,7 +23,7 @@ export type Specimen = {
 export const specimens: Specimen[] = [
   {
     id: "job-offer",
-    chip: "A job offer I keep re-reading",
+    chip: "A decision I keep putting off",
     kind: "A decision to make",
     question:
       "I have an offer for $22k more, an hour further away, and a manager who checks in on weekends. I have re-read the email for nine days.",
@@ -54,7 +54,7 @@ export const specimens: Specimen[] = [
   },
   {
     id: "sister",
-    chip: "My sister still has not called",
+    chip: "A relationship gone quiet",
     kind: "A relationship",
     question:
       "My sister said something about my parenting at Easter. It is August. I have drafted a text about it maybe thirty times and sent none of them.",
@@ -85,7 +85,7 @@ export const specimens: Specimen[] = [
   },
   {
     id: "instagram",
-    chip: "Everyone I know is buying houses",
+    chip: "The habit of comparing myself",
     kind: "A pattern that repeats",
     question:
       "I am 34, renting, and three people from school posted their new front doors this month. I make good money and I feel behind every single evening.",
@@ -116,7 +116,7 @@ export const specimens: Specimen[] = [
   },
   {
     id: "gym",
-    chip: "The 6am alarm I keep dismissing",
+    chip: "A promise I keep breaking to myself",
     kind: "A pattern that repeats",
     question:
       "I have paid for the gym since January and been eleven times. I know exactly what to do and every morning I turn the alarm off before I am properly awake.",
@@ -147,7 +147,7 @@ export const specimens: Specimen[] = [
   },
   {
     id: "layoffs",
-    chip: "Dread about the next round of layoffs",
+    chip: "A fear I cannot quite name",
     kind: "A fear I keep meeting",
     question:
       "Two rounds of layoffs have gone through my team. Nothing has happened to me and I check my calendar for unexpected meetings maybe forty times a day.",
@@ -178,7 +178,7 @@ export const specimens: Specimen[] = [
   },
   {
     id: "sunday",
-    chip: "Sunday evenings feel wasted",
+    chip: "The feeling that time is slipping by",
     kind: "A fear I keep meeting",
     question:
       "I am fine at work and fine at home and every Sunday around six I get the sense that the years are going past and I am not spending them on anything.",
