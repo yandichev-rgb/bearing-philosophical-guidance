@@ -25,7 +25,21 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
   const [revealed, setRevealed] = useState(specimens[0]!.sections.length);
   const [phase, setPhase] = useState<Phase>("holding");
   const paused = useRef(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const current = specimens[index]!;
+
+  // Chat-like behaviour: each new section scrolls into view inside the fixed
+  // window instead of stretching the page.
+  useEffect(() => {
+    const node = bodyRef.current;
+    if (!node) return;
+    if (revealed <= 1) {
+      node.scrollTop = 0;
+      return;
+    }
+    node.scrollTo({ top: node.scrollHeight, behavior: still ? "auto" : "smooth" });
+  }, [revealed, still, index]);
+
 
   const select = (i: number) => {
     setIndex(i);
@@ -137,7 +151,10 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
       </div>
 
       {/* Reading body */}
-      <div className="relative min-h-[260px] px-5 pb-6 pt-6 sm:min-h-[300px] sm:px-7">
+      <div
+        ref={bodyRef}
+        className="relative h-[300px] overflow-y-auto px-5 pb-6 pt-6 sm:h-[340px] sm:px-7"
+      >
         {phase === "composing" ? (
           <p className="label flex items-center gap-2 text-oxblood">
             Composing the reading
@@ -169,6 +186,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
           ))}
         </AnimatePresence>
       </div>
+
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-ink/25 px-5 py-4 sm:px-7">
         <p className="label text-ink-soft">Specimen · fixed text</p>
