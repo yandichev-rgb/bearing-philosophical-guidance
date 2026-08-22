@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import { verifyWebhook, type StripeEnv } from "@/lib/stripe.server";
 
-let client: ReturnType<typeof createClient> | null = null;
+let client: any = null;
 function getSupabase() {
   if (!client) {
     client = createClient(

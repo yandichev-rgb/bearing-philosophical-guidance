@@ -6,7 +6,7 @@ const title = "Membership confirmed · Bearing";
 const description = "Your Bearing membership is being confirmed.";
 
 export const Route = createFileRoute("/membership/return")({
-  validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { session_id?: string | undefined } => ({
     session_id: typeof search["session_id"] === "string" ? search["session_id"] : undefined,
   }),
   head: () => ({
