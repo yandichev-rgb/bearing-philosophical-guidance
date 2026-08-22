@@ -5,6 +5,7 @@ import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
 import { generateFreeReading, saveReading } from "@/lib/readings.functions";
+import { readingHeading } from "@/lib/reading-heading";
 
 type Reading = {
   philosopherSlug: string;
@@ -135,31 +136,32 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
       <div className="px-5 py-10 sm:px-9 sm:py-14">
         {isResult ? (
           <div>
-            <p className="label text-oxblood">Your reading · Aristotle</p>
+            <p className="label text-oxblood">{readingHeading(reading.philosopherSlug)}</p>
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
               {reading.headline}
             </h2>
 
-            <p className="mt-7 leading-relaxed text-ink-soft">{reading.noticed}</p>
+            <p className="label mt-9 text-ink-soft">What stands out</p>
+            <p className="mt-3 leading-relaxed text-ink-soft">{reading.noticed}</p>
 
             <div className="mt-9 grid gap-px border border-ink/25 bg-ink/25 sm:grid-cols-2">
               <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-ink-soft">The assumption to question</p>
+                <p className="label text-oxblood">The question</p>
                 <p className="mt-3 leading-relaxed text-ink">{reading.assumption}</p>
               </div>
               <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-ink-soft">The principle that applies</p>
+                <p className="label text-ink-soft">The principle</p>
                 <p className="mt-3 leading-relaxed text-ink">{reading.principle}</p>
               </div>
             </div>
 
             <div className="mt-6 border border-ink/25 bg-papyrus-light/60 p-6">
-              <p className="label text-ink-soft">Practice</p>
+              <p className="label text-ink-soft">The practice</p>
               <p className="mt-3 leading-relaxed text-ink">{reading.exercise}</p>
             </div>
 
             <div className="mt-6 border border-ink/25 p-6">
-              <p className="label text-oxblood">The question to sit with</p>
+              <p className="label text-oxblood">Sit with this</p>
               <p className="mt-3 text-lg italic text-ink">{reading.question}</p>
             </div>
 

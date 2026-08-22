@@ -14,7 +14,7 @@ const steps = [
   {
     numeral: "III",
     title: "Get a reading you can use",
-    body: "See how their ideas apply to your life, what they would question, and one thing to try next.",
+    body: "A direct observation, the question underneath it, the principle at work, and one thing to practice next.",
   },
 ];
 
