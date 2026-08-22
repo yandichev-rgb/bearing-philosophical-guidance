@@ -104,13 +104,7 @@ export function InquiryModal({
   philosopherSlug?: string;
 }) {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({
-    situation: "",
-    tried: "",
-    stakes: "",
-    kind: "",
-    duration: "",
-  });
+  const [answers, setAnswers] = useState<InquiryAnswers>(emptyAnswers);
   const [reading, setReading] = useState<Reading | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +115,7 @@ export function InquiryModal({
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
+  const draft = useInquiryDraft(answers, step, { active: open && reading === null });
 
   if (!open) return null;
 
@@ -130,6 +125,23 @@ export function InquiryModal({
   const chips = current.chips;
   const requiredEmpty = !current.optional && value.trim().length === 0;
   const slug = reading?.philosopherSlug ?? philosopherSlug;
+  const untouched = [answers.situation, answers.tried, answers.stakes].every(
+    (field) => field.trim().length === 0,
+  );
+  const offerResume = draft.restored !== null && untouched && !isResult && !needsMembership;
+
+  const resumeDraft = () => {
+    if (!draft.restored) return;
+    setAnswers(draft.restored.answers);
+    setStep(Math.min(draft.restored.step, questions.length - 1));
+    draft.dismissRestored();
+  };
+
+  const startFresh = () => {
+    setAnswers(emptyAnswers);
+    setStep(0);
+    draft.clear();
+  };
 
   const close = () => {
     onClose();
@@ -139,6 +151,7 @@ export function InquiryModal({
     setError(null);
     setNeedsMembership(false);
   };
+
 
   const advance = async () => {
     if (step < questions.length - 1) {
