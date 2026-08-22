@@ -10,6 +10,16 @@ const answersSchema = z.object({
   situation: z.string().trim().min(1).max(4000),
   tried: z.string().trim().max(4000).default(""),
   stakes: z.string().trim().max(4000).default(""),
+  kind: z
+    .enum([
+      "A decision to make",
+      "A pattern that repeats",
+      "A relationship",
+      "A fear I keep meeting",
+    ])
+    .or(z.literal(""))
+    .default(""),
+  duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
 });
 
 const readingSchema = z.object({
@@ -106,7 +116,9 @@ export const saveReading = createServerFn({ method: "POST" })
         situation: data.answers.situation,
         tried: data.answers.tried,
         stakes: data.answers.stakes,
-      })
+        kind: data.answers.kind || null,
+        duration: data.answers.duration || null,
+      } as never)
       .select("id")
       .single();
     if (inquiryError || !inquiry) throw new Error("Your inquiry could not be saved.");

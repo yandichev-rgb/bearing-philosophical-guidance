@@ -1,0 +1,1 @@
+ALTER TABLE public.inquiries ADD COLUMN kind TEXT, ADD COLUMN duration TEXT;

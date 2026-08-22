@@ -74,7 +74,9 @@ export type Database = {
       inquiries: {
         Row: {
           created_at: string
+          duration: string | null
           id: string
+          kind: string | null
           situation: string
           stakes: string | null
           tried: string | null
@@ -82,7 +84,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          duration?: string | null
           id?: string
+          kind?: string | null
           situation: string
           stakes?: string | null
           tried?: string | null
@@ -90,7 +94,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          duration?: string | null
           id?: string
+          kind?: string | null
           situation?: string
           stakes?: string | null
           tried?: string | null

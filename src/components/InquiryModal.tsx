@@ -25,25 +25,58 @@ type Reading = {
   note: string;
 };
 
-const questions = [
+type ChipGroup = {
+  question: string;
+  answerKey: "kind" | "duration";
+  options: string[];
+};
+
+type Step = {
+  key: "situation" | "tried" | "stakes";
+  title: string;
+  help: string;
+  placeholder: string;
+  optional?: boolean;
+  chips?: ChipGroup;
+};
+
+const questions: Step[] = [
   {
     key: "situation" as const,
     title: "What's on your mind?",
     help: "Describe the decision, pattern, relationship, or worry you want to think through.",
     placeholder:
       "Work is going well, but I am not sure the life around it still feels like mine…",
+    chips: {
+      question:
+        "Is this a decision to make, a pattern that repeats, a relationship, or a fear you keep meeting?",
+      answerKey: "kind" as const,
+      options: [
+        "A decision to make",
+        "A pattern that repeats",
+        "A relationship",
+        "A fear I keep meeting",
+      ],
+    },
   },
   {
     key: "tried" as const,
-    title: "What have you tried so far?",
-    help: "Tell us what you did and why it did not settle the issue.",
+    title: "What have you already tried, and why did it not settle?",
+    help: "Optional. Tell us what you did and why it did not settle the issue.",
     placeholder: "I tried taking time off and setting better boundaries, but…",
+    optional: true,
   },
   {
     key: "stakes" as const,
-    title: "What feels at stake?",
-    help: "What are you afraid you could lose, disappoint, or get wrong?",
+    title: "What do you stand to lose, and what would a good outcome look like?",
+    help: "Optional. What are you afraid you could lose, and what would settling actually look like?",
     placeholder: "If I change course, I worry that…",
+    optional: true,
+    chips: {
+      question: "How long has this been with you?",
+      answerKey: "duration" as const,
+      options: ["Days", "Months", "Years"],
+    },
   },
 ];
 
@@ -71,7 +104,13 @@ export function InquiryModal({
   philosopherSlug?: string;
 }) {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({ situation: "", tried: "", stakes: "" });
+  const [answers, setAnswers] = useState({
+    situation: "",
+    tried: "",
+    stakes: "",
+    kind: "",
+    duration: "",
+  });
   const [reading, setReading] = useState<Reading | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +127,8 @@ export function InquiryModal({
   const isResult = reading !== null;
   const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
+  const chips = current.chips;
+  const requiredEmpty = !current.optional && value.trim().length === 0;
   const slug = reading?.philosopherSlug ?? philosopherSlug;
 
   const close = () => {
@@ -315,7 +356,6 @@ export function InquiryModal({
             </h2>
             <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">{current.help}</p>
 
-
             <label className="mt-8 block">
               <span className="sr-only">{current.title}</span>
               <textarea
@@ -330,15 +370,44 @@ export function InquiryModal({
               />
             </label>
 
+            {chips ? (
+              <fieldset className="mt-8">
+                <legend className="label text-ink-soft">{chips.question}</legend>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {chips.options.map((option) => {
+                    const active = answers[chips.answerKey] === option;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() =>
+                          setAnswers({
+                            ...answers,
+                            [chips.answerKey]: active ? "" : option,
+                          })
+                        }
+                        className={
+                          active
+                            ? "border border-oxblood bg-oxblood px-4 py-2 text-sm text-papyrus"
+                            : "border border-ink/40 bg-papyrus-light/70 px-4 py-2 text-sm text-ink hover:border-oxblood"
+                        }
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            ) : null}
+
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <button
                 type="button"
                 className="btn-ink"
-                disabled={value.trim().length === 0 || pending}
+                disabled={requiredEmpty || pending}
                 onClick={advance}
-                style={
-                  value.trim().length === 0 || pending ? { opacity: 0.45 } : undefined
-                }
+                style={requiredEmpty || pending ? { opacity: 0.45 } : undefined}
               >
                 {pending
                   ? "Preparing your reading"
@@ -347,6 +416,11 @@ export function InquiryModal({
                     : "Continue"}{" "}
                 <span aria-hidden="true">→</span>
               </button>
+              {current.optional ? (
+                <button type="button" onClick={advance} className="link-underline">
+                  Skip this question
+                </button>
+              ) : null}
               {step > 0 ? (
                 <button type="button" onClick={() => setStep(step - 1)} className="link-underline">
                   Back
