@@ -1,20 +1,19 @@
+const meander = encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none" stroke="%23000" stroke-opacity="0.45" stroke-width="1"><path d="M0 15h5V5h9v10h5V9h4v6h5V5h9v10h5V5h5"/><path d="M14 5h-5M33 9h4"/></svg>`,
+);
+
 /** Greek meander inspired divider drawn from thin repeating ink lines. */
 export function Meander({ className = "" }: { className?: string }) {
   return (
     <div className={`shell ${className}`} aria-hidden="true">
-      <div className="h-[18px] w-full overflow-hidden border-y border-ink/20">
-        <svg
-          className="h-[18px] w-full text-ink/45"
-          viewBox="0 0 96 18"
-          preserveAspectRatio="xMidYMid repeat"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-        >
-          <path d="M0 14h6V4h10v10h6V8h4v6h6V4h10v10h6V4h4" />
-          <path d="M24 4h-6M48 14h6V4h10v10h6V8h4v6h6V4h10v10h6" />
-        </svg>
-      </div>
+      <div
+        className="h-[18px] w-full border-y border-ink/20"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,${meander}")`,
+          backgroundRepeat: "repeat-x",
+          backgroundPosition: "center",
+        }}
+      />
     </div>
   );
 }
