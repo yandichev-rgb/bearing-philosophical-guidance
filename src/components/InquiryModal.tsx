@@ -277,7 +277,7 @@ export function InquiryModal({
               {MEMBERSHIP.plans.map((plan) => (
                 <div key={plan.priceId} className="bg-papyrus-light/60 p-6">
                   <p className="label text-ink-soft">{plan.label}</p>
-                  <p className="display-sm mt-3 text-ink">
+                  <p className="mt-3 text-2xl text-ink" style={{ fontFamily: "var(--font-display)" }}>
                     {plan.price}{" "}
                     <span className="text-base font-normal text-ink-soft">{plan.cadence}</span>
                   </p>
