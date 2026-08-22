@@ -67,7 +67,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
   if (!open) return null;
 
   const isResult = reading !== null;
-  const current = questions[step];
+  const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
 
   const close = () => {
