@@ -29,7 +29,7 @@ Without these, readings drift toward generic character advice. Both can be captu
 
 Keep three typed questions. Sharpen their wording, make the optional ones visibly optional, and add tap-only context.
 
-1. Question 1 stays required and becomes: "What are you turning over?" with a short prompt line naming decision, pattern, relationship, or worry.
+1. Question 1 stays required and reads "What's on your mind?" with the prompt line naming decision, pattern, relationship, or worry beneath it.
 2. Directly under question 1, add a single row of tap chips: "Is this a decision to make, a pattern that repeats, a relationship, or a fear you keep meeting?" One tap, no typing.
 3. Question 2 becomes "What have you already tried, and why did it not settle?" and is labeled Optional, with a Skip control.
 4. Question 3 becomes "What do you stand to lose, and what would a good outcome look like?" This merges the stakes question with the missing desired-direction signal in one box, still one field. Also optional with Skip.
