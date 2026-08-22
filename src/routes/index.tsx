@@ -1,24 +1,64 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { BearingNav } from "@/components/BearingNav";
+import { Hero } from "@/components/Hero";
+import { Meander } from "@/components/Meander";
+import { WhyPhilosophy } from "@/components/WhyPhilosophy";
+import { Lyceum } from "@/components/Lyceum";
+import { PhilosopherModal } from "@/components/PhilosopherModal";
+import { HowItWorks } from "@/components/HowItWorks";
+import { SampleReading } from "@/components/SampleReading";
+import { Membership } from "@/components/Membership";
+import { InquiryModal } from "@/components/InquiryModal";
+import { SiteFooter } from "@/components/SiteFooter";
+import type { Philosopher } from "@/data/philosophers";
+
+const title = "Bearing: Philosophy for real life";
+const description =
+  "Bring a real question. See it through the ideas of Aristotle, Socrates, the Stoics, and more.";
+const ogImage = "https://id-preview--2152f947-ebb4-420b-b320-bed4b66c773e.lovable.app/og-bearing.jpg";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: ogImage },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: ogImage },
+    ],
+  }),
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Home() {
+  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [selected, setSelected] = useState<Philosopher | null>(null);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <div className="paper grain min-h-screen">
+      <BearingNav onStart={() => setInquiryOpen(true)} />
+      <main className="relative">
+        <Hero onStart={() => setInquiryOpen(true)} />
+        <Meander />
+        <WhyPhilosophy />
+        <Lyceum onSelect={setSelected} />
+        <HowItWorks />
+        <SampleReading />
+        <Membership onStart={() => setInquiryOpen(true)} />
+      </main>
+      <SiteFooter />
+
+      <PhilosopherModal
+        philosopher={selected}
+        onClose={() => setSelected(null)}
+        onStart={() => setInquiryOpen(true)}
       />
+      <InquiryModal open={inquiryOpen} onClose={() => setInquiryOpen(false)} />
     </div>
   );
 }
