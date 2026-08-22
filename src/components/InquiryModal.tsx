@@ -4,8 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
-import { generateFreeReading, saveReading } from "@/lib/readings.functions";
 import { readingHeading } from "@/lib/reading-heading";
+import {
+  generateFreeReading,
+  generateMemberReading,
+  saveReading,
+} from "@/lib/readings.functions";
+
+
 
 type Reading = {
   philosopherSlug: string;
@@ -54,16 +60,26 @@ const PROTOTYPE: Reading = {
   note: "This reading applies Aristotle's method to what you described. It is for reflection, not clinical, legal, medical, or financial advice.",
 };
 
-export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function InquiryModal({
+  open,
+  onClose,
+  philosopherSlug = "aristotle",
+}: {
+  open: boolean;
+  onClose: () => void;
+  philosopherSlug?: string;
+}) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({ situation: "", tried: "", stakes: "" });
   const [reading, setReading] = useState<Reading | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsMembership, setNeedsMembership] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const { session } = useAuth();
   const generate = useServerFn(generateFreeReading);
+  const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
 
   if (!open) return null;
@@ -71,6 +87,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
   const isResult = reading !== null;
   const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
+  const slug = reading?.philosopherSlug ?? philosopherSlug;
 
   const close = () => {
     onClose();
@@ -78,6 +95,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
     setReading(null);
     setSaved(false);
     setError(null);
+    setNeedsMembership(false);
   };
 
   const advance = async () => {
@@ -87,16 +105,29 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
     }
     setPending(true);
     setError(null);
+    setNeedsMembership(false);
+
+    const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
     try {
-      const result = (await generate({ data: answers })) as Reading;
+      const result = memberPath
+        ? ((await generateAs({ data: { ...answers, philosopherSlug } })) as Reading)
+        : ((await generate({ data: answers })) as Reading);
       setReading(result);
-    } catch {
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "";
+      if (philosopherSlug !== "aristotle" && (!session || /membership/i.test(message))) {
+        setNeedsMembership(true);
+        setError(null);
+        setPending(false);
+        return;
+      }
       setError("The reading could not be prepared right now. Here is the sample reading instead.");
       setReading(PROTOTYPE);
     } finally {
       setPending(false);
     }
   };
+
 
   const persist = async () => {
     if (!reading) return;
@@ -203,6 +234,29 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
               {reading.note}
             </p>
           </div>
+        ) : needsMembership ? (
+          <div>
+            <p className="label text-oxblood">{readingHeading(slug)}</p>
+            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+              This mind is open to members.
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
+              Your answers are kept. Aristotle is free for everyone. Membership opens the rest of
+              the Lyceum, with unlimited readings and follow up questions.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-6">
+              <Link to="/membership" className="btn-ink">
+                See membership
+              </Link>
+              <button
+                type="button"
+                onClick={() => setNeedsMembership(false)}
+                className="link-underline"
+              >
+                Back
+              </button>
+            </div>
+          </div>
         ) : (
           <div>
             <p className="label text-ink-soft">
@@ -212,6 +266,7 @@ export function InquiryModal({ open, onClose }: { open: boolean; onClose: () => 
               {current.title}
             </h2>
             <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">{current.help}</p>
+
 
             <label className="mt-8 block">
               <span className="sr-only">{current.title}</span>

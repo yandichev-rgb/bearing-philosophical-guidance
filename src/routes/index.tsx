@@ -37,28 +37,39 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [inquirySlug, setInquirySlug] = useState("aristotle");
   const [selected, setSelected] = useState<Philosopher | null>(null);
+
+  const start = (slug = "aristotle") => {
+    setInquirySlug(slug);
+    setInquiryOpen(true);
+  };
 
   return (
     <div className="paper grain min-h-screen">
-      <BearingNav onStart={() => setInquiryOpen(true)} />
+      <BearingNav onStart={() => start()} />
       <main className="relative">
-        <Hero onStart={() => setInquiryOpen(true)} />
+        <Hero onStart={() => start()} />
         <Meander />
         <WhyPhilosophy />
         <Lyceum onSelect={setSelected} />
         <HowItWorks />
         <SampleReading />
-        <Membership onStart={() => setInquiryOpen(true)} />
+        <Membership onStart={() => start()} />
       </main>
       <SiteFooter />
 
       <PhilosopherModal
         philosopher={selected}
         onClose={() => setSelected(null)}
-        onStart={() => setInquiryOpen(true)}
+        onStart={() => start(selected?.slug ?? "aristotle")}
       />
-      <InquiryModal open={inquiryOpen} onClose={() => setInquiryOpen(false)} />
+      <InquiryModal
+        open={inquiryOpen}
+        philosopherSlug={inquirySlug}
+        onClose={() => setInquiryOpen(false)}
+      />
     </div>
   );
 }
+
