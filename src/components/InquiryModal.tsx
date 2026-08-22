@@ -5,6 +5,7 @@ import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
 import { readingHeading } from "@/lib/reading-heading";
+import { MEMBERSHIP } from "@/config/membership";
 import {
   generateFreeReading,
   generateMemberReading,
