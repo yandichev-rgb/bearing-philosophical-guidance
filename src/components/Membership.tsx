@@ -34,11 +34,15 @@ export function Membership({ onStart }: { onStart: () => void }) {
             <p className="label mt-8 text-papyrus-light">{MEMBERSHIP.priceLabel}</p>
           ) : null}
 
-          <div className="mt-10">
+          <div className="mt-10 flex flex-wrap items-center gap-6">
             <button type="button" onClick={onStart} className="btn-papyrus">
               Get my free reading
             </button>
+            <Link to="/membership" className="link-underline text-papyrus-light">
+              See membership
+            </Link>
           </div>
+
 
           <p className="label mt-7 text-papyrus/70">
             No card required. Your answers stay private.
