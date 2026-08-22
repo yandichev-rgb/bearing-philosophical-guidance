@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { BearingNav } from "@/components/BearingNav";
 import { Hero } from "@/components/Hero";
-import { Meander } from "@/components/Meander";
+import { ConcernStrip } from "@/components/ConcernStrip";
 import { WhyPhilosophy } from "@/components/WhyPhilosophy";
 import { Lyceum } from "@/components/Lyceum";
 import { PhilosopherModal } from "@/components/PhilosopherModal";
@@ -13,6 +13,7 @@ import { Membership } from "@/components/Membership";
 import { InquiryModal } from "@/components/InquiryModal";
 import { SiteFooter } from "@/components/SiteFooter";
 import type { Philosopher } from "@/data/philosophers";
+
 
 const title = "Bearing: Philosophy for real life";
 const description =
@@ -38,10 +39,12 @@ export const Route = createFileRoute("/")({
 function Home() {
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [inquirySlug, setInquirySlug] = useState("aristotle");
+  const [inquiryKind, setInquiryKind] = useState("");
   const [selected, setSelected] = useState<Philosopher | null>(null);
 
-  const start = (slug = "aristotle") => {
+  const start = (slug = "aristotle", kind = "") => {
     setInquirySlug(slug);
+    setInquiryKind(kind);
     setInquiryOpen(true);
   };
 
@@ -49,8 +52,8 @@ function Home() {
     <div className="paper grain min-h-screen">
       <BearingNav onStart={() => start()} />
       <main className="relative">
-        <Hero onStart={() => start()} />
-        <Meander />
+        <Hero onStart={() => start()} onStartWithKind={(kind) => start("aristotle", kind)} />
+        <ConcernStrip onPick={(kind) => start("aristotle", kind)} />
         <WhyPhilosophy />
         <Lyceum onSelect={setSelected} />
         <HowItWorks />
@@ -67,9 +70,11 @@ function Home() {
       <InquiryModal
         open={inquiryOpen}
         philosopherSlug={inquirySlug}
+        initialKind={inquiryKind}
         onClose={() => setInquiryOpen(false)}
       />
     </div>
   );
 }
+
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
@@ -104,10 +104,12 @@ export function InquiryModal({
   open,
   onClose,
   philosopherSlug = "aristotle",
+  initialKind,
 }: {
   open: boolean;
   onClose: () => void;
   philosopherSlug?: string;
+  initialKind?: string;
 }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<InquiryAnswers>(emptyAnswers);
@@ -123,7 +125,14 @@ export function InquiryModal({
   const save = useServerFn(saveReading);
   const draft = useInquiryDraft(answers, step, { active: open && reading === null });
 
+  // A concern chosen on the landing page arrives preselected.
+  useEffect(() => {
+    if (!open || !initialKind) return;
+    setAnswers((current) => (current.kind ? current : { ...current, kind: initialKind }));
+  }, [open, initialKind]);
+
   if (!open) return null;
+
 
   const isResult = reading !== null;
   const current = questions[step]!;
@@ -322,14 +331,14 @@ export function InquiryModal({
                   className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink"
                 >
                   <span aria-hidden="true" className="mt-1 text-oxblood">
-                    ✦
+                    ◆
                   </span>
                   <span>{benefit}</span>
                 </li>
               ))}
               <li className="flex items-start gap-4 bg-papyrus-light/70 p-5 leading-relaxed text-ink">
                 <span aria-hidden="true" className="mt-1 text-oxblood">
-                  ✦
+                  ◆
                 </span>
                 <span>Readings you can return to, written in plain language you can act on.</span>
               </li>
