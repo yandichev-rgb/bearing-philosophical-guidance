@@ -4,7 +4,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
 import { useAuth } from "@/hooks/useAuth";
-import { generateFreeReading, saveReading } from "@/lib/readings.functions";
+import { readingHeading } from "@/lib/reading-heading";
+import {
+  generateFreeReading,
+  generateMemberReading,
+  saveReading,
+} from "@/lib/readings.functions";
+
 import { readingHeading } from "@/lib/reading-heading";
 
 type Reading = {
