@@ -465,6 +465,13 @@ export function InquiryModal({
               ) : null}
             </div>
 
+            {draft.savedAt && !offerResume ? (
+              <p className="label mt-6 text-ink-soft" role="status">
+                Your answers are kept on this device. You can close this and come back.
+              </p>
+            ) : null}
+
+
             {error ? (
               <p className="mt-5 text-sm text-oxblood" role="status">
                 {error}
