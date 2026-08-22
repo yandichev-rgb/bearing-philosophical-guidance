@@ -1,8 +1,4 @@
-import {
-  buildSystemPrompt,
-  philosopherName,
-  type ProfileSlug,
-} from "./philosopher-profiles.server";
+import { buildSystemPrompt, type ProfileSlug } from "./philosopher-profiles.server";
 
 export type ReadingAnswers = {
   situation: string;
@@ -31,13 +27,20 @@ const SCHEMA = {
   properties: {
     headline: {
       type: "string",
-      description: "One short sentence naming where this philosopher would start.",
+      description: "One short statement about the reader's own situation, addressed to them.",
     },
-    noticed: { type: "string", description: "What the philosopher would notice in the situation." },
-    assumption: { type: "string", description: "The assumption they would question." },
-    principle: { type: "string", description: "Which of their principles applies, and why." },
-    exercise: { type: "string", description: "One concrete practice to try this week." },
-    question: { type: "string", description: "One question to keep considering." },
+    noticed: {
+      type: "string",
+      description: "What stands out: a direct observation about what the reader described.",
+    },
+    assumption: {
+      type: "string",
+      description:
+        "The question: one clear personal question to the reader that exposes the central tension.",
+    },
+    principle: { type: "string", description: "The principle: the relevant idea in plain language, and why it applies here." },
+    exercise: { type: "string", description: "The practice: one specific action or exercise to try." },
+    question: { type: "string", description: "Sit with this: one short question worth continuing to consider." },
   },
 } as const;
 
@@ -90,7 +93,7 @@ export async function generateReadingWithAI(
 
   return {
     philosopherSlug: slug,
-    headline: parsed.headline || `${philosopherName(slug)} would start with what you can practice.`,
+    headline: parsed.headline || "Your situation already points to something you can practice.",
     noticed: parsed.noticed,
     assumption: parsed.assumption,
     principle: parsed.principle,
