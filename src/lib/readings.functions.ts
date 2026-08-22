@@ -118,7 +118,7 @@ export const saveReading = createServerFn({ method: "POST" })
         stakes: data.answers.stakes,
         kind: data.answers.kind || null,
         duration: data.answers.duration || null,
-      })
+      } as never)
       .select("id")
       .single();
     if (inquiryError || !inquiry) throw new Error("Your inquiry could not be saved.");
