@@ -10,11 +10,12 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute -top-6 right-4 select-none text-[26vw] leading-none text-papyrus/[0.035]"
-        style={{ fontFamily: "var(--font-display)", letterSpacing: "0.04em" }}
+        className="pointer-events-none absolute right-2 top-2 select-none text-[15vw] leading-none text-papyrus/[0.028]"
+        style={{ fontFamily: "var(--font-display)", letterSpacing: "0.06em" }}
       >
         LYCEVM
       </span>
+
 
       <div className="shell relative">
         <SectionLabel numeral="III" tone="papyrus">

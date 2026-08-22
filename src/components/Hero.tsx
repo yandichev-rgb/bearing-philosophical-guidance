@@ -28,7 +28,7 @@ export function Hero({ onStart }: { onStart: () => void }) {
           <h1 className="display-hero mt-7 text-ink">
             Find your
             <br />
-            <em className="not-italic italic text-oxblood">bearing.</em>
+            <em className="italic text-oxblood">bearing.</em>
           </h1>
         </div>
 
