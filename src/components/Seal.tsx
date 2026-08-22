@@ -73,8 +73,9 @@ export function Seal({ size = 36, className = "", tone = "ink", detail }: SealPr
       )}
 
       {/* Pivot */}
-      {level !== "minimal" && <circle cx="32" cy="32" r="4.2" fill="none" stroke={hair} strokeWidth="0.8" />}
-      <circle cx="32" cy="32" r={level === "minimal" ? 3 : 2.2} fill={ink} />
+      <circle cx="32" cy="32" r={level === "minimal" ? 3 : 1.9} fill={ink} />
+      {level !== "minimal" && <circle cx="32" cy="32" r="0.75" fill={face} />}
+
 
       {/* Bead at twelve o'clock */}
       {level !== "minimal" && <circle cx="32" cy="2.6" r={level === "full" ? 2 : 2.4} fill={ink} />}
