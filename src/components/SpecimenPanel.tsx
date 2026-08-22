@@ -7,7 +7,7 @@ import { Seal } from "./Seal";
 const TYPE_SPEED = 34;
 const COMPOSE_PAUSE = 900;
 const SECTION_GAP = 620;
-const HOLD = 4200;
+
 
 type Phase = "typing" | "composing" | "reading" | "holding";
 
@@ -111,7 +111,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
           <button
             key={item.id}
             type="button"
-            onClick={() => setIndex(i)}
+            onClick={() => select(i)}
             aria-pressed={i === index}
             className={`chip ${i === index ? "chip-active" : ""}`}
           >
