@@ -234,6 +234,29 @@ export function InquiryModal({
               {reading.note}
             </p>
           </div>
+        ) : needsMembership ? (
+          <div>
+            <p className="label text-oxblood">{readingHeading(slug)}</p>
+            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+              This mind is open to members.
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
+              Your answers are kept. Aristotle is free for everyone. Membership opens the rest of
+              the Lyceum, with unlimited readings and follow up questions.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-6">
+              <Link to="/membership" className="btn-ink">
+                See membership
+              </Link>
+              <button
+                type="button"
+                onClick={() => setNeedsMembership(false)}
+                className="link-underline"
+              >
+                Back
+              </button>
+            </div>
+          </div>
         ) : (
           <div>
             <p className="label text-ink-soft">
@@ -243,6 +266,7 @@ export function InquiryModal({
               {current.title}
             </h2>
             <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">{current.help}</p>
+
 
             <label className="mt-8 block">
               <span className="sr-only">{current.title}</span>
