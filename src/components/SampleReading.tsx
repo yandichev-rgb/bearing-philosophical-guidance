@@ -32,8 +32,8 @@ const tabs = [
 ];
 
 export function SampleReading() {
-  const [active, setActive] = useState(tabs[0].id);
-  const current = tabs.find((tab) => tab.id === active) ?? tabs[0];
+  const [active, setActive] = useState(tabs[0]!.id);
+  const current = tabs.find((tab) => tab.id === active) ?? tabs[0]!;
 
   return (
     <section aria-labelledby="sample-heading" className="bg-sample py-20 lg:py-28">

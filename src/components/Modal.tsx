@@ -37,8 +37,8 @@ export function Modal({ open, onClose, labelledBy, children, className = "" }: M
         panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [],
       ).filter((node) => node.offsetParent !== null);
       if (nodes.length === 0) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
+      const first = nodes[0]!;
+      const last = nodes[nodes.length - 1]!;
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
