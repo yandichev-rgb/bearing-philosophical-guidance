@@ -21,16 +21,17 @@ export function Membership({ onStart }: { onStart: () => void }) {
           <div className="relative grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
             <div>
               <SectionLabel numeral="VI" tone="papyrus">
-                Continue with the Lyceum
+                Membership
               </SectionLabel>
               <h2 id="membership-heading" className="display-lg mt-8 text-papyrus-light">
-                One question can have
+                Keep the question.
                 <br />
-                more than one honest answer.
+                Change the lens.
               </h2>
               <p className="mt-7 max-w-xl leading-relaxed text-papyrus/85">
-                Your first reading with Aristotle is free. Membership opens the full Lyceum, so the
-                same decision can be read through several different methods.
+                Your first Aristotle reading is free. Membership lets you return to the same situation
+                through all six approaches, preserve your inquiries, and notice what a single
+                perspective could not show you.
               </p>
 
               <ul className="mt-9 grid gap-3">
@@ -49,13 +50,14 @@ export function Membership({ onStart }: { onStart: () => void }) {
                   Get my free reading
                 </button>
                 <Link to="/membership" className="link-underline text-papyrus-light">
-                  See membership
+                  Compare membership plans
                 </Link>
               </div>
 
               <p className="label mt-7 text-papyrus/70">
-                No card required to begin. Your answers stay private.
+                No card required for your first reading.
               </p>
+
             </div>
 
             {/* The ledger: prices set as entries with a bronze rule. */}
