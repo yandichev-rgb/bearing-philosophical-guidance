@@ -309,12 +309,43 @@ export function InquiryModal({
               </p>
             ) : null}
 
-            {savedReadingId ? (
-              <ReadingFollowUps readingId={savedReadingId} isMember={isMember} />
+            {isMember ? (
+              savedReadingId ? (
+                <ReadingFollowUps readingId={savedReadingId} isMember />
+              ) : (
+                <p className="label mt-8 text-ink-soft">
+                  Save this reading to ask further questions about it.
+                </p>
+              )
             ) : (
-              <p className="label mt-8 text-ink-soft">
-                Save this reading to ask further questions about it.
-              </p>
+              <section className="mt-10 border border-ink/25 bg-papyrus-light/70 p-6">
+                <p className="label text-oxblood">Further questions</p>
+                <h3
+                  className="mt-4 text-xl leading-snug text-ink"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Something here you want pressed further?
+                </h3>
+                <p className="mt-4 leading-relaxed text-ink-soft">
+                  Members may ask up to {MEMBERSHIP.followUpsPerReading} further questions on any
+                  reading, answered through the same method, and may consult every thinker in the
+                  Lyceum rather than Aristotle alone.
+                </p>
+                <div className="mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                  {MEMBERSHIP.plans.map((plan) => (
+                    <p key={plan.priceId} className="text-ink">
+                      <span style={{ fontFamily: "var(--font-display)" }}>{plan.price}</span>{" "}
+                      <span className="text-sm text-ink-soft">{plan.cadence}</span>
+                    </p>
+                  ))}
+                </div>
+                <div className="mt-6 flex flex-wrap items-center gap-6">
+                  <Link to="/membership" className="btn-ink">
+                    Join the Lyceum <span aria-hidden="true">→</span>
+                  </Link>
+                  <span className="label text-ink-soft">Cancel whenever you like.</span>
+                </div>
+              </section>
             )}
 
             <p className="mt-10 border-t border-ink/20 pt-5 text-sm leading-relaxed text-ink-soft">
