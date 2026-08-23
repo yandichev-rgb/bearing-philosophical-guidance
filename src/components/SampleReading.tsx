@@ -48,32 +48,76 @@ const tabs = [
   },
 ];
 
+const situation =
+  "Work is going well, but it is taking over the rest of my life. I am afraid that slowing down will cost me everything I have built.";
+
+const comparisons = [
+  { lens: "Aristotle", line: "What is your current schedule training you to become?" },
+  {
+    lens: "Socratic inquiry",
+    line: "Why have you treated rest and lack of ambition as the same thing?",
+  },
+  { lens: "Stoicism", line: "Which other people's reactions are you trying to manage?" },
+];
+
 export function SampleReading() {
   const [active, setActive] = useState(tabs[0]!.id);
   const current = tabs.find((tab) => tab.id === active) ?? tabs[0]!;
 
   return (
-    <section aria-labelledby="sample-heading" className="bg-sample vignette relative py-20 lg:py-28">
+    <section
+      id="sample"
+      aria-labelledby="sample-heading"
+      className="bg-sample vignette relative py-20 lg:py-28"
+    >
       <div className="shell relative grid gap-14 lg:grid-cols-[1fr_1.12fr] lg:items-start lg:gap-16">
         <div>
           <Reveal>
-            <SectionLabel numeral="V">A sample reading</SectionLabel>
+            <SectionLabel numeral="V">Sample reading</SectionLabel>
           </Reveal>
           <Reveal>
             <h2 id="sample-heading" className="display-lg mt-8 text-ink">
-              One problem.
+              The problem stays the same.
               <br />
-              Three ways to see it.
+              The question changes.
             </h2>
           </Reveal>
           <Reveal delay={0.08}>
             <p className="mt-6 max-w-md leading-relaxed text-ink-soft">
-              The same person read three ways: doing well at work, worn thin, and afraid that
-              slowing down would cost them everything they built.
+              Here is the same situation examined through three different philosophical approaches.
             </p>
           </Reveal>
 
-          <div role="tablist" aria-label="Sample readings" className="mt-9 flex flex-wrap gap-3">
+          <Reveal delay={0.1}>
+            <div className="mt-8 border-l-2 border-oxblood/60 bg-papyrus-light/60 p-5">
+              <p className="label text-oxblood">The situation</p>
+              <p className="mt-3 leading-relaxed text-ink">{situation}</p>
+            </div>
+          </Reveal>
+
+          <ul className="mt-8 border-t border-ink/20">
+            {comparisons.map((item, index) => (
+              <Reveal as="li" key={item.lens} delay={index * 0.06} className="border-b border-ink/15 py-5">
+                <p className="label text-ink-soft">{item.lens}</p>
+                <p
+                  className="mt-2 text-[1.1rem] leading-snug text-ink"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {item.line}
+                </p>
+              </Reveal>
+            ))}
+          </ul>
+
+          <Reveal delay={0.08}>
+            <p className="mt-7 max-w-md leading-relaxed text-ink-soft">
+              Bearing does not produce three generic opinions. Each method directs your attention to a
+              different part of the problem.
+            </p>
+          </Reveal>
+
+          <p className="label mt-9 text-ink-soft">Read the full sample</p>
+          <div role="tablist" aria-label="Sample readings" className="mt-3 flex flex-wrap gap-3">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -94,10 +138,12 @@ export function SampleReading() {
             ))}
           </div>
 
-          <p className="label mt-10 max-w-xs leading-relaxed text-ink-soft">
-            Every reading is written to you directly, never in the voice of the philosopher.
+          <p className="mt-9 max-w-md text-sm leading-relaxed text-ink-soft">
+            Every reading is written directly to you. It applies the philosopher's method without
+            pretending to speak in the philosopher's voice.
           </p>
         </div>
+
 
         <Reveal delay={0.06}>
           <div
