@@ -94,6 +94,20 @@ export function Hero({
         </motion.div>
 
       </div>
+
+      <div className="shell relative z-[2] flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-ink/20 py-5">
+        <p className="label flex items-center gap-2 text-ink-soft">
+          <span aria-hidden="true" className="text-oxblood">
+            ◆
+          </span>
+          Six philosophical lenses
+        </p>
+        <span aria-hidden="true" className="h-px w-6 bg-bronze" />
+        <p className="label text-ink-soft">First Aristotle reading free</p>
+        <span aria-hidden="true" className="h-px w-6 bg-bronze" />
+        <p className="label text-ink-soft">No account or card to begin</p>
+      </div>
+
     </section>
   );
 }
