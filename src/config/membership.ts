@@ -24,9 +24,10 @@ export const MEMBERSHIP = {
     },
   ],
   benefits: [
-    "Unlimited readings, with no daily limit.",
-    "Every mind in the Lyceum, not only Aristotle.",
-    "Your full reading history, kept with the inquiry that produced it.",
+    "Examine one situation through all six philosophical approaches.",
+    "Return to earlier inquiries and see how your thinking changes.",
+    "Create as many readings as you need, with no daily limit.",
   ],
+
 };
 
