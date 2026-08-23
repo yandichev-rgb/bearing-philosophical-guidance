@@ -471,11 +471,15 @@ export function InquiryModal({
               ) : null}
             </div>
 
-            {draft.savedAt && !offerResume ? (
-              <p className="label mt-6 text-ink-soft" role="status">
-                Your answers are kept on this device. You can close this and come back.
-              </p>
-            ) : null}
+            <p className="mt-6 text-sm leading-relaxed text-ink-soft">
+              Draft answers are kept on this device. When you request a reading, your answers are
+              processed on Bearing's servers to generate it. Learn more in{" "}
+              <a href="/privacy" className="link-underline">
+                Privacy
+              </a>
+              .
+            </p>
+
 
 
             {error ? (
