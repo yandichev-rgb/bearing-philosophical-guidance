@@ -11,14 +11,10 @@ const answersSchema = z.object({
   tried: z.string().trim().max(4000).default(""),
   stakes: z.string().trim().max(4000).default(""),
   kind: z
-    .enum([
-      "A decision to make",
-      "A pattern that repeats",
-      "A relationship",
-      "A fear I keep meeting",
-    ])
+    .enum(["A decision", "A recurring pattern", "A relationship", "A persistent fear"])
     .or(z.literal(""))
     .default(""),
+
   duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
 });
 
