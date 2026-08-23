@@ -93,17 +93,7 @@ function MembershipPage() {
               ))}
             </ul>
 
-            {!paymentsConfigured() ? (
-              <p className="mt-8 text-ink-soft">
-                Membership checkout is not available in this build yet.
-              </p>
-            ) : !session ? (
-              <p className="mt-8">
-                <Link to="/auth" className="btn-ink">
-                  Sign in to become a member
-                </Link>
-              </p>
-            ) : isMember ? (
+            {isMember && session ? (
               <div className="mt-8">
                 <p className="label text-oxblood">
                   {pastDue ? "Your last payment did not go through." : "Your membership is active."}
@@ -121,29 +111,64 @@ function MembershipPage() {
             ) : (
               <>
                 <div className="mt-8 grid gap-px border border-ink/30 bg-ink/25 sm:grid-cols-2">
-                  {MEMBERSHIP.plans.map((plan) => (
-                    <button
-                      key={plan.priceId}
-                      type="button"
-                      onClick={() => setPriceId(plan.priceId)}
-                      className={`p-6 text-left transition-colors duration-200 ${
-                        priceId === plan.priceId
-                          ? "bg-ink text-papyrus-light"
-                          : "bg-papyrus/50 text-ink hover:bg-papyrus-light"
-                      }`}
-                    >
-                      <p className="label">{plan.label}</p>
-                      <p className="mt-3 text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-                        {plan.price}
-                      </p>
-                      <p className="mt-1 text-sm opacity-80">{plan.cadence}</p>
-                      <p className="mt-4 text-sm opacity-80">{plan.note}</p>
-                    </button>
-                  ))}
+                  {MEMBERSHIP.plans.map((plan) => {
+                    const chosen = priceId === plan.priceId;
+                    return (
+                      <div
+                        key={plan.priceId}
+                        className={`p-6 ${chosen ? "bg-ink text-papyrus-light" : "bg-papyrus/50 text-ink"}`}
+                      >
+                        <p className="label">{plan.label}</p>
+                        <p className="mt-3 text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+                          {plan.price}
+                        </p>
+                        <p className="mt-1 text-sm opacity-80">{plan.cadence}</p>
+                        <p className="mt-4 text-sm opacity-80">{plan.note}</p>
+                        <button
+                          type="button"
+                          onClick={() => setPriceId(plan.priceId)}
+                          className={`label mt-6 border px-4 py-2 transition-colors duration-200 ${
+                            chosen
+                              ? "border-papyrus/60 text-papyrus-light"
+                              : "border-ink text-ink hover:bg-ink/10"
+                          }`}
+                        >
+                          Choose {plan.label.toLowerCase()}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
-                {priceId ? <MembershipCheckout priceId={priceId} /> : null}
+
+                <p className="mt-6 text-sm leading-relaxed text-ink-soft">
+                  Cancel whenever you like. Your answers stay private, and you can read how they are
+                  handled in{" "}
+                  <Link to="/privacy" className="link-underline">
+                    Privacy
+                  </Link>
+                  .
+                </p>
+
+                {!paymentsConfigured() ? (
+                  <p className="mt-8 text-ink-soft">
+                    Membership checkout is not available in this build yet.
+                  </p>
+                ) : priceId && !session ? (
+                  <div className="mt-8 border border-ink/25 bg-papyrus-light/70 p-5">
+                    <p className="label text-oxblood">One step first</p>
+                    <p className="mt-3 leading-relaxed text-ink-soft">
+                      Sign in so your membership and your readings stay attached to your account.
+                    </p>
+                    <Link to="/auth" className="btn-ink mt-5 inline-block">
+                      Sign in to continue
+                    </Link>
+                  </div>
+                ) : priceId ? (
+                  <MembershipCheckout priceId={priceId} />
+                ) : null}
               </>
             )}
+
 
             {error ? (
               <p className="mt-6 text-sm text-oxblood" role="status">
