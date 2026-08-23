@@ -121,3 +121,90 @@ export async function generateReadingWithAI(
     },
   };
 }
+
+export type FollowUpResult = {
+  answer: string;
+  usage: { promptTokens: number; completionTokens: number };
+};
+
+const FOLLOW_UP_RULES = `
+The reader has already received a full reading and is now asking one further question about it.
+
+Rules for this reply:
+- Answer only what they asked. Do not restate the reading and do not repeat its five sections.
+- Two or three short paragraphs at most. Plain prose, no headings, no lists, no markdown.
+- Speak directly to the reader as "you". Never write in the philosopher's first person and never write "Aristotle would say" or similar framing.
+- Stay inside the same philosophical method. If the question falls outside what that method can address, say so plainly and give what the method can offer.
+- Where it helps, adjust or replace the practice with one concrete revised step.
+- Do not use em dashes. No flattery, no motivational language, no promises about outcomes.
+- No medical, legal, financial, or clinical advice.
+`;
+
+/** Answers one follow up question about an existing reading. Server only. */
+export async function generateFollowUpWithAI(input: {
+  slug: ProfileSlug;
+  answers: ReadingAnswers;
+  reading: {
+    headline: string;
+    noticed: string;
+    assumption: string;
+    principle: string;
+    exercise: string;
+    question: string;
+  };
+  history: { question: string; answer: string }[];
+  question: string;
+}): Promise<FollowUpResult> {
+  const apiKey = process.env["LOVABLE_API_KEY"];
+  if (!apiKey) throw new Error("Reading service is not configured.");
+
+  const context = [
+    `The situation they brought: ${input.answers.situation}`,
+    `What they had tried: ${input.answers.tried || "Not stated."}`,
+    `What felt at stake: ${input.answers.stakes || "Not stated."}`,
+    `The reading they received:`,
+    `Headline: ${input.reading.headline}`,
+    `What stands out: ${input.reading.noticed}`,
+    `The question: ${input.reading.assumption}`,
+    `The principle: ${input.reading.principle}`,
+    `The practice: ${input.reading.exercise}`,
+    `Sit with this: ${input.reading.question}`,
+  ].join("\n");
+
+  const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
+    { role: "system", content: `${buildSystemPrompt(input.slug)}\n${FOLLOW_UP_RULES}` },
+    { role: "user", content: context },
+  ];
+  for (const turn of input.history) {
+    messages.push({ role: "user", content: turn.question });
+    messages.push({ role: "assistant", content: turn.answer });
+  }
+  messages.push({ role: "user", content: input.question });
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: READING_MODEL, messages }),
+  });
+
+  if (response.status === 429) throw new Error("The Lyceum is busy. Try again in a moment.");
+  if (!response.ok) {
+    console.error("AI gateway error", response.status, await response.text());
+    throw new Error("Your question could not be answered right now.");
+  }
+
+  const payload = (await response.json()) as {
+    choices?: { message?: { content?: string } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
+  };
+  const answer = payload.choices?.[0]?.message?.content?.trim();
+  if (!answer) throw new Error("The reply came back empty.");
+
+  return {
+    answer,
+    usage: {
+      promptTokens: payload.usage?.prompt_tokens ?? 0,
+      completionTokens: payload.usage?.completion_tokens ?? 0,
+    },
+  };
+}
