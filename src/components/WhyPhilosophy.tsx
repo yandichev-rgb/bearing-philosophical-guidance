@@ -30,20 +30,25 @@ export function WhyPhilosophy() {
         <div className="mt-8 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
           <Reveal>
             <h2 id="why-heading" className="display-lg text-ink">
-              Most problems look different once you ask a better question.
+              Advice gives you an answer.
+              <br />
+              Philosophy changes what you can see.
             </h2>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className="italic text-oxblood">That is the work philosophy has always done.</p>
-            <p className="drop-initial mt-5 leading-relaxed text-ink-soft">
-              Bearing does not hand every problem the same advice. Aristotle looks at habit and
-              character. Socrates tests the assumption you did not notice you were holding. The
-              Stoics separate what is yours from what never was. You get a clearer view of the
-              situation, and one thing worth trying.
+            <p className="drop-initial leading-relaxed text-ink-soft">
+              Generic advice begins with what you should do. Bearing begins by finding the assumption,
+              habit, or fear shaping the problem. Aristotle examines character and repetition.
+              Socratic inquiry tests the belief underneath. Stoicism separates what is yours to act on
+              from what is not.
+            </p>
+            <p className="mt-5 italic text-oxblood">
+              You leave with a clearer view of the situation and one thing worth trying next.
             </p>
           </Reveal>
         </div>
+
 
         <ul className="mt-14 grid gap-px border border-ink/20 bg-ink/20 sm:grid-cols-3">
           {methods.map((method, index) => (
