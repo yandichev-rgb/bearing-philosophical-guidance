@@ -197,7 +197,7 @@ export function SampleReading() {
             </div>
 
             <div className="flex items-center justify-between gap-4 border-t border-ink/25 px-6 py-4 sm:px-9">
-              <span className="folio">Bearing · Specimen V</span>
+              <span className="folio">Bearing · Sample reading</span>
               <span aria-hidden="true" className="h-px w-12 bg-bronze" />
             </div>
           </div>

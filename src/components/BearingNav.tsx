@@ -25,7 +25,7 @@ export function BearingNav({ onStart }: { onStart: () => void }) {
             </a>
           ))}
           <button type="button" onClick={onStart} className="btn-outline-ink">
-            Start free
+            Get my free reading
           </button>
         </nav>
 
@@ -63,7 +63,7 @@ export function BearingNav({ onStart }: { onStart: () => void }) {
                 onStart();
               }}
             >
-              Start free
+              Get my free reading
             </button>
           </nav>
         </div>

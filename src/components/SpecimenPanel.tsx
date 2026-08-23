@@ -189,7 +189,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
 
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-ink/25 px-5 py-4 sm:px-7">
-        <p className="label text-ink-soft">Specimen · fixed text</p>
+        <p className="label text-ink-soft">Sample reading</p>
         <button type="button" onClick={() => onStart(current.kind)} className="btn-outline-ink">
           Bring my own question <span aria-hidden="true">→</span>
         </button>
