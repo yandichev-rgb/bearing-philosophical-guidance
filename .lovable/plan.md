@@ -1,53 +1,30 @@
-# Replace cryptic "Fol." register marks with plain page labels
+# Follow-up questions on a reading (members only)
 
-## Goal
+Short answer: yes, this is worth building, but as a tightly bounded feature rather than an open chat. A reading that cannot be questioned feels like a verdict. One or two follow-ups turn it into counsel, which is exactly the difference between Bearing and generic advice. The risk is that an unlimited thread turns the product into a chatbot, which the brand explicitly rejects, and it makes cost per member unpredictable.
 
-The "Fol." register marks (Fol. I · Entry, Fol. II · Membership, etc.) rely on an
-obscure manuscript reference that most visitors won't parse. Keep the archival
-Roman-study styling — the letter-spaced small-caps look reads as deliberate and
-elegant — but replace the cryptic abbreviation with plain, recognizable labels
-so the header communicates instantly without the reader needing to decode it.
+## The shape I recommend
 
-## What changes
+- Members only. Free Aristotle readings stay single-shot, with the follow-up affordance visible but locked as another reason to join.
+- Up to 3 follow-ups per reading. After that, the panel invites a fresh inquiry instead.
+- Each follow-up returns a short, focused response in the same voice as the reading: no new five-part structure, just two or three tight paragraphs answering the question and, where useful, one revised practice.
+- Presented as marginalia, not chat: stacked entries in the reading page under a heading like "Further questions", each with the question in italic display type and the answer in body serif. No bubbles, no avatars, no typing dots.
+- The philosopher stays the same as the original reading, so the method stays consistent.
 
-The `folio` utility class stays (it is purely presentational). Only the label
-text changes. The uppercase letter-spaced styling, Oxblood/Dark Lyceum palette,
-and decorative hairline are untouched, so the pages keep their private-study
-character.
+## User flow
 
-### 1. Page header register marks (`src/components/PageFrame.tsx` callers)
+1. Member opens a saved reading (or finishes a new one).
+2. Below the reading: a single line prompt, "Ask a further question", with a text field and a submit control.
+3. Answer appears beneath the reading. Counter shows how many follow-ups remain.
+4. Non-members see the prompt with a lock note pointing to membership.
 
-Replace the `folio="Fol. I · Entry"` style values with plain labels in the five
-routes that pass a `folio` prop:
+## Technical notes
 
-- `src/routes/auth.tsx` — `Fol. I · Entry`  →  `Entry`
-- `src/routes/membership.tsx` — `Fol. II · Membership`  →  `Membership`
-- `src/routes/membership.return.tsx` — `Fol. II · Membership`  →  `Membership`
-- `src/routes/readings.tsx` — `Fol. III · Your readings`  →  `Your readings`
-- `src/routes/privacy.tsx` — `Fol. IV · Privacy`  →  `Privacy`
+- New table `reading_followups`: id, reading_id (FK to readings), user_id, question, answer, created_at. Owner-only RLS policies plus explicit GRANTs for authenticated and service_role, matching the existing tables.
+- New server function `askFollowUp` in `src/lib/readings.functions.ts` with `requireSupabaseAuth`: verifies membership using the existing membership/subscription check, loads the reading and prior follow-ups, enforces the 3-per-reading cap server side, calls a new `generateFollowUpWithAI` in `src/lib/readings.server.ts`, logs into `ai_usage`, and respects the existing daily spend ceiling.
+- Prompting reuses the philosopher profile plus shared voice rules, with the original inquiry, the reading, and prior follow-ups as context, and a rule to stay brief and never restate the five sections.
+- UI additions: a `ReadingFollowUps.tsx` component used on the readings route and in the post-reading view inside `InquiryModal.tsx`.
+- Membership copy gains one benefit line about asking further questions.
 
-The `folio` utility class is retained on each `span`, so the typography is
-unchanged; only the wording drops the unexplained "Fol." abbreviation. The
-`PageFrame.tsx` prop and doc comment stay as-is (the prop remains a small
-register label).
+## Out of scope for now
 
-### 2. Specimen panel progress mark (`src/components/SpecimenPanel.tsx`)
-
-`Fol. {index + 1} / {specimens.length}` is a "which reading of how many"
-indicator. Replace with an equally clear count that needs no glossary:
-
-- `Fol. 1 / 3`  →  `1 of 3`
-
-Keeps the same `folio` span styling.
-
-### 3. Sample reading (`src/components/SampleReading.tsx`)
-
-- Footer `Bearing · Sample reading` is already self-explanatory — no change.
-- The header `{current.margin}` values are already plain theme labels
-  ("Habit", "Belief", "Control") — no change.
-
-## Out of scope
-
-- No change to the `folio` utility in `src/styles.css` (visual treatment is fine).
-- No changes to the compass logo, palette, or other archive motifs (those read
-  as design, not unexplained abbreviations).
+Open-ended chat, switching philosophers mid-thread, follow-ups on the free reading, and voice or streaming output.
