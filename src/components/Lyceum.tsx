@@ -108,7 +108,7 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
                 </p>
 
                 <span className="label mt-8 inline-block border-b border-transparent text-gold transition-colors group-hover:border-oxblood group-hover:text-oxblood">
-                  View teachings <span aria-hidden="true">↗</span>
+                  Explore this approach <span aria-hidden="true">↗</span>
                 </span>
               </button>
             </Reveal>
