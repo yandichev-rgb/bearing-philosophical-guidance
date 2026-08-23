@@ -42,6 +42,9 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
 
 
   const select = (i: number) => {
+    // A tap means the pointer is inside the plate; hover-pause must not stall
+    // the very reading the reader just asked for.
+    paused.current = false;
     setIndex(i);
     setRun((value) => value + 1);
   };
@@ -85,7 +88,7 @@ export function SpecimenPanel({ onStart }: { onStart: (kind: Specimen["kind"]) =
         at(COMPOSE_PAUSE + current.sections.length * SECTION_GAP, () => setPhase("holding"));
       });
     };
-    timers.push(setTimeout(tick, 300));
+    timers.push(setTimeout(tick, 80));
 
     return () => {
       cancelled = true;
