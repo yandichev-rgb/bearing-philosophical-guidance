@@ -455,7 +455,7 @@ export function InquiryModal({
                 {pending
                   ? "Preparing your reading"
                   : step === questions.length - 1
-                    ? "See my reading"
+                    ? "Create my reading"
                     : "Continue"}{" "}
                 <span aria-hidden="true">→</span>
               </button>

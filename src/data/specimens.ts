@@ -12,7 +12,7 @@ export type Specimen = {
   /** Chip label shown in the panel and the concern strip. */
   chip: string;
   /** The kind value handed to the inquiry when a visitor starts from here. */
-  kind: "A decision to make" | "A pattern that repeats" | "A relationship" | "A fear I keep meeting";
+  kind: "A decision" | "A recurring pattern" | "A relationship" | "A persistent fear";
   /** The typed question. */
   question: string;
   philosopher: string;
@@ -24,7 +24,7 @@ export const specimens: Specimen[] = [
   {
     id: "job-offer",
     chip: "A decision I keep putting off",
-    kind: "A decision to make",
+    kind: "A decision",
     question:
       "I have an offer for $22k more, an hour further away, and a manager who checks in on weekends. I have re-read the email for nine days.",
     philosopher: "Aristotle",
@@ -86,7 +86,7 @@ export const specimens: Specimen[] = [
   {
     id: "instagram",
     chip: "The habit of comparing myself",
-    kind: "A pattern that repeats",
+    kind: "A recurring pattern",
     question:
       "I am 34, renting, and three people from school posted their new front doors this month. I make good money and I feel behind every single evening.",
     philosopher: "Marcus Aurelius",
@@ -117,7 +117,7 @@ export const specimens: Specimen[] = [
   {
     id: "gym",
     chip: "A promise I keep breaking to myself",
-    kind: "A pattern that repeats",
+    kind: "A recurring pattern",
     question:
       "I have paid for the gym since January and been eleven times. I know exactly what to do and every morning I turn the alarm off before I am properly awake.",
     philosopher: "Epictetus",
@@ -148,7 +148,7 @@ export const specimens: Specimen[] = [
   {
     id: "layoffs",
     chip: "A fear I cannot quite name",
-    kind: "A fear I keep meeting",
+    kind: "A persistent fear",
     question:
       "Two rounds of layoffs have gone through my team. Nothing has happened to me and I check my calendar for unexpected meetings maybe forty times a day.",
     philosopher: "Plato",
@@ -179,7 +179,7 @@ export const specimens: Specimen[] = [
   {
     id: "sunday",
     chip: "The feeling that time is slipping by",
-    kind: "A fear I keep meeting",
+    kind: "A persistent fear",
     question:
       "I am fine at work and fine at home and every Sunday around six I get the sense that the years are going past and I am not spending them on anything.",
     philosopher: "Socrates",
