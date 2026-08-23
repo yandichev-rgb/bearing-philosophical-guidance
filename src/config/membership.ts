@@ -12,17 +12,18 @@ export const MEMBERSHIP = {
       priceId: "membership_monthly",
       label: "Monthly",
       price: "$8.99",
-      cadence: "a month",
+      cadence: "per month",
       note: "Cancel whenever you like.",
     },
     {
       priceId: "membership_yearly",
       label: "Yearly",
       price: "$89.90",
-      cadence: "a year",
-      note: "Two months included at no extra cost.",
+      cadence: "per year",
+      note: "Two months included.",
     },
   ],
+
   benefits: [
     "Examine one situation through all six philosophical approaches.",
     "Return to earlier inquiries and see how your thinking changes.",
