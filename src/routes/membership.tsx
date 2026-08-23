@@ -65,15 +65,16 @@ function MembershipPage() {
         <Reveal>
           <p className="label text-oxblood">Membership</p>
           <h1 className="display-lg mt-6 text-ink">
-            One question can have
+            See the same question
             <br />
-            more than one honest answer.
+            from every side.
           </h1>
           <p className="mt-7 max-w-xl leading-relaxed text-ink-soft">
-            The same situation read through Stoicism, virtue ethics, and Socratic inquiry does not
-            give you three opinions. It gives you the parts of it you could not see alone.
+            Membership opens all six philosophical approaches, unlimited readings, and a history of
+            the questions you have brought to Bearing.
           </p>
         </Reveal>
+
 
         <Reveal delay={0.08} className="mt-12">
           <Sheet>
