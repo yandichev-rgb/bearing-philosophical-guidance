@@ -79,7 +79,7 @@ export function PhilosopherModal({
               }}
               className="btn-ink"
             >
-              {p.free ? "Start my free reading" : `Ask ${p.name}`}
+              {p.free ? "Get my free reading" : `Ask ${p.name}`}
             </button>
           </div>
         </div>
