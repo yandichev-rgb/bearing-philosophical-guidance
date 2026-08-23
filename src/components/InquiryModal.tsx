@@ -49,33 +49,27 @@ type Step = {
 const questions: Step[] = [
   {
     key: "situation" as const,
-    title: "What's on your mind?",
-    help: "Describe the decision, pattern, relationship, or worry you want to think through.",
+    title: "What's been circling in your mind?",
+    help: "Describe what happened and what still feels unresolved. One natural paragraph is enough.",
     placeholder:
       "Work is going well, but I am not sure the life around it still feels like mine…",
     chips: {
-      question:
-        "Is this a decision to make, a pattern that repeats, a relationship, or a fear you keep meeting?",
+      question: "Which kind of question is this?",
       answerKey: "kind" as const,
-      options: [
-        "A decision to make",
-        "A pattern that repeats",
-        "A relationship",
-        "A fear I keep meeting",
-      ],
+      options: ["A decision", "A recurring pattern", "A relationship", "A persistent fear"],
     },
   },
   {
     key: "tried" as const,
-    title: "What have you already tried, and why did it not settle?",
-    help: "Optional. Tell us what you did and why it did not settle the issue.",
+    title: "What have you already tried?",
+    help: "Optional. What did you do, and why did it not settle the issue?",
     placeholder: "I tried taking time off and setting better boundaries, but…",
     optional: true,
   },
   {
     key: "stakes" as const,
-    title: "What do you stand to lose, and what would a good outcome look like?",
-    help: "Optional. What are you afraid you could lose, and what would settling actually look like?",
+    title: "What feels most at stake?",
+    help: "Optional. What are you afraid you could lose? What would a good outcome make possible?",
     placeholder: "If I change course, I worry that…",
     optional: true,
     chips: {
@@ -85,6 +79,7 @@ const questions: Step[] = [
     },
   },
 ];
+
 
 const PROTOTYPE: Reading = {
   philosopherSlug: "aristotle",
