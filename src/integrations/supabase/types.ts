@@ -158,6 +158,41 @@ export type Database = {
         }
         Relationships: []
       }
+      reading_followups: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+          reading_id: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+          reading_id: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          reading_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_followups_reading_id_fkey"
+            columns: ["reading_id"]
+            isOneToOne: false
+            referencedRelation: "readings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       readings: {
         Row: {
           assumption: string
