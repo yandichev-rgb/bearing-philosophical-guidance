@@ -4,18 +4,18 @@ import { Reveal } from "./Reveal";
 const steps = [
   {
     numeral: "I",
-    title: "Tell us what is going on",
-    body: "Three short questions about the situation, what you have tried, and what is at stake. Two of them can be skipped.",
+    title: "Describe what is happening",
+    body: "Answer one required question about the situation. Add two optional answers if more context would help.",
   },
   {
     numeral: "II",
-    title: "Choose a philosopher",
-    body: "Start free with Aristotle. Members can put the same question to every mind in the Lyceum.",
+    title: "Choose a way of seeing it",
+    body: "Start free with Aristotle. Membership opens all six philosophical approaches.",
   },
   {
     numeral: "III",
-    title: "Get a reading you can use",
-    body: "What stands out, the question underneath it, the principle at work, and one thing to practise next.",
+    title: "Receive a structured reading",
+    body: "See what stands out, uncover the question underneath, understand the principle at work, and leave with one thing to practise.",
   },
 ];
 
@@ -24,15 +24,18 @@ export function HowItWorks() {
     <section id="how-it-works" aria-labelledby="how-heading" className="sheet-dark border-y border-ink/20 py-20 lg:py-28">
       <div className="shell">
         <Reveal>
-          <SectionLabel numeral="IV">How it works</SectionLabel>
+          <SectionLabel numeral="IV">The Bearing method</SectionLabel>
         </Reveal>
         <Reveal>
           <h2 id="how-heading" className="display-lg mt-8 max-w-2xl text-ink">
-            Bring one real question.
+            One real question.
             <br />
-            Leave with a clearer next step.
+            One philosophical lens.
+            <br />
+            One clearer next step.
           </h2>
         </Reveal>
+
 
         <ol className="mt-14 grid gap-10 border-t border-ink/25 pt-10 md:grid-cols-3 md:gap-0">
           {steps.map((step, index) => (
