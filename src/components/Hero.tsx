@@ -45,48 +45,39 @@ export function Hero({
             >
               <span style={{ transform: "translate(1.25px, 0.6px)" }}>I</span>
             </span>
-            <span>Know thyself</span>
+            <span>Philosophy for real life</span>
           </motion.p>
 
           <motion.h1
             className="display-hero mt-6 text-ink"
-            style={{ fontSize: "clamp(3.2rem, 7.4vw, 6.4rem)" }}
+            style={{ fontSize: "clamp(2.6rem, 5.4vw, 4.6rem)" }}
             initial={still ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, ease: [0.16, 0.68, 0.3, 1] }}
           >
-            Find your
+            You don't need more advice.
             <br />
-            <em className="italic text-oxblood">bearing.</em>
+            You need <em className="italic text-oxblood">a better question.</em>
           </motion.h1>
 
           <p className="mt-8 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft">
-            Bring a real decision, a habit you cannot break, or a fear you keep meeting. Bearing
-            reads it through Aristotle, Socrates, and the Stoics, then hands you one thing to
-            practise.
+            Bring a decision, recurring pattern, relationship, or fear. Bearing examines it through a
+            philosophical lens, reveals the question underneath, and gives you one practical thing to
+            try next.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-6">
             <button type="button" onClick={onStart} className="btn-ink">
-              Begin with Aristotle <span aria-hidden="true">→</span>
+              Get my free reading <span aria-hidden="true">→</span>
             </button>
-            <a href="#lyceum" className="link-underline">
-              Enter the Lyceum
+            <a href="#sample" className="link-underline">
+              See a sample reading
             </a>
           </div>
 
-          <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <p className="label flex items-center gap-2 text-ink-soft">
-              <span aria-hidden="true" className="text-oxblood">
-                ◆
-              </span>
-              Six philosophers
-            </p>
-            <span aria-hidden="true" className="h-px w-6 bg-bronze" />
-            <p className="label text-ink-soft">First reading free</p>
-            <span aria-hidden="true" className="h-px w-6 bg-bronze" />
-            <p className="label text-ink-soft">No account to start</p>
-          </div>
+          <p className="label mt-9 text-ink-soft">
+            First Aristotle reading free <span aria-hidden="true">·</span> No account or card to begin
+          </p>
         </div>
 
         <motion.div
@@ -94,8 +85,14 @@ export function Hero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 0.68, 0.3, 1] }}
         >
+          <p className="label text-ink-soft">See what a reading does</p>
+          <p className="mb-5 mt-3 max-w-md leading-relaxed text-ink-soft">
+            One situation becomes a sharper question, a relevant philosophical principle, and one
+            action you can take in real life.
+          </p>
           <SpecimenPanel onStart={onStartWithKind} />
         </motion.div>
+
       </div>
     </section>
   );
