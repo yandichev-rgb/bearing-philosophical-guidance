@@ -7,6 +7,8 @@ import { listMyReadings, myReadingCosts } from "@/lib/readings.functions";
 import { readingHeading } from "@/lib/reading-heading";
 import { PageFrame, Sheet } from "@/components/PageFrame";
 import { Reveal } from "@/components/Reveal";
+import { ReadingFollowUps } from "@/components/ReadingFollowUps";
+import { useMembership } from "@/hooks/useMembership";
 
 const title = "Your readings · Bearing";
 const description = "The inquiries you have brought to Bearing and the readings you saved.";
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/readings")({
 
 function Readings() {
   const { session, loading } = useAuth();
+  const { isMember } = useMembership();
   const fetchReadings = useServerFn(listMyReadings);
   const fetchCosts = useServerFn(myReadingCosts);
   const { data: costs } = useQuery({
@@ -124,6 +127,7 @@ function Readings() {
                       {reading.exercise}
                     </p>
                     <p className="mt-5 text-lg italic leading-snug text-ink">{reading.question}</p>
+                    <ReadingFollowUps readingId={reading.id} isMember={isMember} />
                   </Sheet>
                 </Reveal>
               ))}

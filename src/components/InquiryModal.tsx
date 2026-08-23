@@ -11,6 +11,8 @@ import {
 } from "@/hooks/useInquiryDraft";
 
 import { readingHeading } from "@/lib/reading-heading";
+import { ReadingFollowUps } from "./ReadingFollowUps";
+import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
   generateFreeReading,
@@ -113,8 +115,10 @@ export function InquiryModal({
   const [error, setError] = useState<string | null>(null);
   const [needsMembership, setNeedsMembership] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedReadingId, setSavedReadingId] = useState<string | null>(null);
 
   const { session } = useAuth();
+  const { isMember } = useMembership();
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
@@ -158,6 +162,7 @@ export function InquiryModal({
     setStep(0);
     setReading(null);
     setSaved(false);
+    setSavedReadingId(null);
     setError(null);
     setNeedsMembership(false);
   };
@@ -204,8 +209,9 @@ export function InquiryModal({
     if (!reading) return;
     setError(null);
     try {
-      await save({ data: { answers, reading } });
+      const result = await save({ data: { answers, reading } });
       setSaved(true);
+      setSavedReadingId(result.readingId);
       draft.clear();
 
     } catch {
@@ -302,6 +308,14 @@ export function InquiryModal({
                 {error}
               </p>
             ) : null}
+
+            {savedReadingId ? (
+              <ReadingFollowUps readingId={savedReadingId} isMember={isMember} />
+            ) : (
+              <p className="label mt-8 text-ink-soft">
+                Save this reading to ask further questions about it.
+              </p>
+            )}
 
             <p className="mt-10 border-t border-ink/20 pt-5 text-sm leading-relaxed text-ink-soft">
               {reading.note}

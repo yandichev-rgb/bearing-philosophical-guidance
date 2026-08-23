@@ -6,6 +6,7 @@ export const MEMBERSHIP = {
   interval: "month" as "month" | "year",
   freeReadingsPerDay: 3,
   freePhilosopherSlug: "aristotle",
+  followUpsPerReading: 3,
   priceLabel: "8.99 a month, or 89.90 a year",
   plans: [
     {
@@ -28,7 +29,11 @@ export const MEMBERSHIP = {
     "Examine one situation through all six philosophical approaches.",
     "Return to earlier inquiries and see how your thinking changes.",
     "Create as many readings as you need, with no daily limit.",
+    "Ask up to three further questions on any reading you save.",
   ],
 
 };
 
+
+/** Further questions a member may ask about one saved reading. */
+export const FOLLOWUPS_PER_READING = MEMBERSHIP.followUpsPerReading;

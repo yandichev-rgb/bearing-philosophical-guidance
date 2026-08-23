@@ -3,7 +3,14 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isProfileSlug, type ProfileSlug } from "./philosopher-profiles.server";
-import { generateReadingWithAI, READING_MODEL, type GeneratedReading } from "./readings.server";
+import {
+  generateFollowUpWithAI,
+  generateReadingWithAI,
+  READING_MODEL,
+  type GeneratedReading,
+} from "./readings.server";
+import { hasActiveMembership } from "./membership.server";
+import { FOLLOWUPS_PER_READING } from "@/config/membership";
 import { assertDailyBudget, claimFreeReading, logAiUsage } from "./ai-budget.server";
 
 const answersSchema = z.object({
@@ -55,29 +62,7 @@ export const generateMemberReading = createServerFn({ method: "POST" })
     const { philosopherSlug, ...answers } = data;
     if (!isProfileSlug(philosopherSlug)) throw new Error("Unknown philosopher.");
     if (philosopherSlug !== "aristotle") {
-      const [{ data: membership }, { data: subscription }] = await Promise.all([
-        context.supabase
-          .from("memberships")
-          .select("status, current_period_end")
-          .eq("user_id", context.userId)
-          .maybeSingle(),
-        context.supabase
-          .from("subscriptions")
-          .select("status, current_period_end")
-          .eq("user_id", context.userId)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-      ]);
-
-      const stillInPeriod = (end: string | null | undefined) =>
-        !end || new Date(end).getTime() > Date.now();
-      const isMember =
-        (membership?.status === "active" && stillInPeriod(membership.current_period_end)) ||
-        (subscription != null &&
-          ["active", "trialing", "past_due"].includes(subscription.status) &&
-          stillInPeriod(subscription.current_period_end));
-
+      const isMember = await hasActiveMembership(context.supabase, context.userId);
       // Returned, not thrown: the modal shows the membership invitation instead
       // of surfacing an unhandled server error.
       if (!isMember) return { needsMembership: true as const };
@@ -120,7 +105,9 @@ export const saveReading = createServerFn({ method: "POST" })
     if (inquiryError || !inquiry) throw new Error("Your inquiry could not be saved.");
 
     const reading = data.reading as GeneratedReading;
-    const { error: readingError } = await context.supabase.from("readings").insert({
+    const { data: saved, error: readingError } = await context.supabase
+      .from("readings")
+      .insert({
       user_id: context.userId,
       inquiry_id: inquiry.id,
       philosopher_slug: reading.philosopherSlug,
@@ -131,10 +118,12 @@ export const saveReading = createServerFn({ method: "POST" })
       exercise: reading.exercise,
       question: reading.question,
       note: reading.note,
-    });
-    if (readingError) throw new Error("Your reading could not be saved.");
+      })
+      .select("id")
+      .single();
+    if (readingError || !saved) throw new Error("Your reading could not be saved.");
 
-    return { inquiryId: inquiry.id };
+    return { inquiryId: inquiry.id, readingId: saved.id };
   });
 
 /** Reading history for the signed-in account. */
@@ -163,4 +152,109 @@ export const myReadingCosts = createServerFn({ method: "GET" })
     const rows = data ?? [];
     const totalUsd = rows.reduce((sum, row) => sum + Number(row.cost_usd ?? 0), 0);
     return { readings: rows.length, totalUsd: Math.round(totalUsd * 10000) / 10000 };
+  });
+
+/** Follow up questions on one saved reading, oldest first. */
+export const listFollowUps = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ readingId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await context.supabase
+      .from("reading_followups")
+      .select("id, question, answer, created_at")
+      .eq("reading_id", data.readingId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error("Your follow up questions could not be loaded.");
+    return { followUps: rows ?? [], limit: FOLLOWUPS_PER_READING };
+  });
+
+/** Members may ask a limited number of further questions about a saved reading. */
+export const askFollowUp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        readingId: z.string().uuid(),
+        question: z.string().trim().min(3).max(1000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const isMember = await hasActiveMembership(context.supabase, context.userId);
+    if (!isMember) return { needsMembership: true as const };
+
+    const { data: reading, error: readingError } = await context.supabase
+      .from("readings")
+      .select(
+        "id, philosopher_slug, headline, noticed, assumption, principle, exercise, question, inquiry_id",
+      )
+      .eq("id", data.readingId)
+      .maybeSingle();
+    if (readingError || !reading) throw new Error("That reading could not be found.");
+    if (!isProfileSlug(reading.philosopher_slug)) throw new Error("Unknown philosopher.");
+
+    const [{ data: inquiry }, { data: history }] = await Promise.all([
+      context.supabase
+        .from("inquiries")
+        .select("situation, tried, stakes, kind, duration")
+        .eq("id", reading.inquiry_id)
+        .maybeSingle(),
+      context.supabase
+        .from("reading_followups")
+        .select("question, answer")
+        .eq("reading_id", data.readingId)
+        .order("created_at", { ascending: true }),
+    ]);
+
+    const prior = history ?? [];
+    if (prior.length >= FOLLOWUPS_PER_READING) {
+      return { limitReached: true as const };
+    }
+
+    await assertDailyBudget();
+    const { answer, usage } = await generateFollowUpWithAI({
+      slug: reading.philosopher_slug,
+      answers: {
+        situation: inquiry?.situation ?? "",
+        tried: inquiry?.tried ?? "",
+        stakes: inquiry?.stakes ?? "",
+        kind: inquiry?.kind ?? "",
+        duration: inquiry?.duration ?? "",
+      },
+      reading: {
+        headline: reading.headline,
+        noticed: reading.noticed,
+        assumption: reading.assumption,
+        principle: reading.principle,
+        exercise: reading.exercise,
+        question: reading.question,
+      },
+      history: prior.map((row) => ({ question: row.question, answer: row.answer })),
+      question: data.question,
+    });
+
+    const { data: inserted, error: insertError } = await context.supabase
+      .from("reading_followups")
+      .insert({
+        reading_id: data.readingId,
+        user_id: context.userId,
+        question: data.question,
+        answer,
+      } as never)
+      .select("id, question, answer, created_at")
+      .single();
+    if (insertError || !inserted) throw new Error("Your question could not be saved.");
+
+    await logAiUsage({
+      userId: context.userId,
+      philosopherSlug: reading.philosopher_slug,
+      model: READING_MODEL,
+      tier: "member",
+      usage,
+    });
+
+    return {
+      followUp: inserted,
+      remaining: FOLLOWUPS_PER_READING - (prior.length + 1),
+    };
   });
