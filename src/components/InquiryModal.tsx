@@ -115,8 +115,10 @@ export function InquiryModal({
   const [error, setError] = useState<string | null>(null);
   const [needsMembership, setNeedsMembership] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedReadingId, setSavedReadingId] = useState<string | null>(null);
 
   const { session } = useAuth();
+  const { isMember } = useMembership();
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
