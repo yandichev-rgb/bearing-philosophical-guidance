@@ -36,18 +36,19 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-end">
           <Reveal>
             <h2 id="lyceum-heading" className="display-lg text-papyrus-light">
-              Choose a mind
+              Six ways to see what
               <br />
-              to think beside.
+              one perspective might miss.
             </h2>
           </Reveal>
           <Reveal delay={0.08}>
             <p className="max-w-md leading-relaxed text-gold/85">
-              Six methods, each for a different kind of hard. Ask them the same question and you
-              will hear six different answers.
+              The Lyceum brings together six distinct philosophical approaches. Ask the same question
+              through more than one lens and different parts of the situation come into view.
             </p>
           </Reveal>
         </div>
+
 
         <ul className="mt-14 grid grid-cols-1 gap-px bg-papyrus/20 sm:grid-cols-2 xl:grid-cols-3">
           {philosophers.map((p, index) => (
