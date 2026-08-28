@@ -10,10 +10,19 @@ import {
   readingModels,
   runReadingPipeline,
 } from "./readings.server";
-import { READING_ERROR_MESSAGE, type ReadingResult } from "./reading-types";
+import {
+  READING_ERROR_MESSAGE,
+  READING_QUOTA_MESSAGE,
+  type ReadingResult,
+} from "./reading-types";
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
-import { assertDailyBudget, claimFreeReading, logAiUsage } from "./ai-budget.server";
+import {
+  assertDailyBudget,
+  claimFreeReading,
+  logAiUsage,
+  peekFreeReadingsRemaining,
+} from "./ai-budget.server";
 
 const answersSchema = z.object({
   situation: z.string().trim().min(1).max(4000),
@@ -101,12 +110,8 @@ async function produce(input: {
   if (input.tier === "free") {
     try {
       await claimFreeReading();
-    } catch (error) {
-      return {
-        kind: "error",
-        message: error instanceof Error ? error.message : READING_ERROR_MESSAGE,
-        retryable: false,
-      };
+    } catch {
+      return { kind: "quota", message: READING_QUOTA_MESSAGE };
     }
   }
 
