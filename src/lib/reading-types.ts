@@ -44,15 +44,19 @@ export type GeneratedReading = {
   note: string;
 };
 
-/** The four explicit outcomes of a reading request. Never inferred from missing fields. */
+/** The explicit outcomes of a reading request. Never inferred from missing fields. */
 export type ReadingResult =
   | { kind: "clarification"; questions: string[] }
   | { kind: "reading"; reading: GeneratedReading }
   | { kind: "safety"; message: string }
+  | { kind: "quota"; message: string }
   | { kind: "error"; message: string; retryable: boolean };
 
 export const READING_ERROR_MESSAGE =
   "We couldn't prepare your reading. Your answers have been preserved. Please try again.";
+
+export const READING_QUOTA_MESSAGE =
+  "You have used today's free readings. Your answers have been preserved. Membership opens the full Lyceum, or you may return tomorrow.";
 
 export const READING_SAFETY_MESSAGE =
   "What you have described asks for more than a philosophical reading can responsibly give. Bearing is for reflection, not for crisis support, medical, legal, or financial advice. If you are in danger or in crisis, please contact your local emergency services or a crisis line. You are welcome to bring a different question here.";

@@ -17,7 +17,12 @@ import {
   validateReading,
   type ReadingPlan,
 } from "./readings.server";
-import type { ReadingAnswers } from "./reading-types";
+import {
+  READING_ERROR_MESSAGE,
+  READING_QUOTA_MESSAGE,
+  type ReadingAnswers,
+  type ReadingResult,
+} from "./reading-types";
 
 const answers: ReadingAnswers = {
   situation:
@@ -315,5 +320,23 @@ describe("practice steps", () => {
       "Keep the session",
       "Count them",
     ]);
+  });
+});
+
+describe("the quota outcome", () => {
+  it("is its own result kind, distinct from a generation error", () => {
+    const quota: ReadingResult = { kind: "quota", message: READING_QUOTA_MESSAGE };
+    const failure: ReadingResult = {
+      kind: "error",
+      message: READING_ERROR_MESSAGE,
+      retryable: true,
+    };
+    expect(quota.kind).not.toBe(failure.kind);
+    expect(READING_QUOTA_MESSAGE).not.toContain("couldn't prepare");
+    expect(READING_QUOTA_MESSAGE).toContain("free readings");
+  });
+
+  it("keeps the explicit failure message available for display", () => {
+    expect(READING_ERROR_MESSAGE).toContain("Your answers have been preserved");
   });
 });

@@ -10,10 +10,15 @@ import {
   readingModels,
   runReadingPipeline,
 } from "./readings.server";
-import { READING_ERROR_MESSAGE, type ReadingResult } from "./reading-types";
+import { READING_QUOTA_MESSAGE, type ReadingResult } from "./reading-types";
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
-import { assertDailyBudget, claimFreeReading, logAiUsage } from "./ai-budget.server";
+import {
+  assertDailyBudget,
+  claimFreeReading,
+  logAiUsage,
+  peekFreeReadingsRemaining,
+} from "./ai-budget.server";
 
 const answersSchema = z.object({
   situation: z.string().trim().min(1).max(4000),
@@ -71,6 +76,16 @@ async function produce(input: {
   userId?: string;
 }): Promise<ReadingResult> {
   await assertDailyBudget();
+
+  // The free allowance is checked before any model call, so an exhausted
+  // allowance answers immediately instead of after a full generation.
+  if (input.tier === "free") {
+    const remaining = await peekFreeReadingsRemaining();
+    if (remaining !== null && remaining <= 0) {
+      return { kind: "quota", message: READING_QUOTA_MESSAGE };
+    }
+  }
+
   const models = readingModels();
   const { result, usage, telemetry } = await runReadingPipeline(input.slug, input.answers);
 
@@ -91,12 +106,8 @@ async function produce(input: {
   if (input.tier === "free") {
     try {
       await claimFreeReading();
-    } catch (error) {
-      return {
-        kind: "error",
-        message: error instanceof Error ? error.message : READING_ERROR_MESSAGE,
-        retryable: false,
-      };
+    } catch {
+      return { kind: "quota", message: READING_QUOTA_MESSAGE };
     }
   }
 
