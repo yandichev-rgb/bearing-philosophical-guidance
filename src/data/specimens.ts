@@ -63,7 +63,7 @@ export const specimens: Specimen[] = [
     sections: [
       {
         heading: "The bearing",
-        body: "The remark took four seconds. You have carried it for four months, and the thirty drafts were not attempts to reach her. They were rehearsals of being right, and each one made the silence a little heavier to break.",
+        body: "The remark took four seconds. You have carried it for four months, and the thirty drafts were not attempts to reach her. They were rehearsals of a version of you that cannot be seen as anything other than a good parent.",
       },
       {
         heading: "The better question",
@@ -71,7 +71,7 @@ export const specimens: Specimen[] = [
       },
       {
         heading: "The philosophical lens",
-        body: "Anger promises justice and delivers occupation. You can think she was wrong and still be the one who speaks first. Being the first to speak costs nothing you actually own.",
+        body: "One possibility is that the remark landed on a doubt you already held and had decided not to look at. If so, the drafts are defending an identity rather than answering your sister. Test it: does the sentence you cannot send argue with her, or with yourself?",
       },
       {
         heading: "The experiment",
