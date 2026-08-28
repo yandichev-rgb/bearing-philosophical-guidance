@@ -50,7 +50,7 @@ export type PhilosopherProfile = {
  * them still renders and still answers follow ups. No profile is generated for
  * them and they can never be selected.
  */
-export const RETIRED_SLUGS: string[] = ["seneca", "epictetus"];
+export const RETIRED_SLUGS: string[] = ["seneca"];
 
 const PROFILES: Record<ProfileSlug, PhilosopherProfile> = {
   aristotle: {

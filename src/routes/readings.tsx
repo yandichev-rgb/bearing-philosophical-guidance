@@ -147,6 +147,8 @@ function Readings() {
                           practiceDuration: reading.practice_duration,
                           practiceSteps: reading.practice_steps,
                           whatToObserve: reading.what_to_observe,
+                          alternativeReading: reading.alternative_reading,
+                          sources: (reading.sources as { work: string; location: string }[] | null),
 
                         }}
                       />
