@@ -10,7 +10,7 @@ const methods = [
   {
     numeral: "ii",
     school: "Socratic",
-    line: "Which belief here have you never tested?",
+    line: "Which definition here have you never tested?",
   },
   {
     numeral: "iii",
