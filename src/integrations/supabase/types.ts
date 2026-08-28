@@ -195,6 +195,7 @@ export type Database = {
       }
       readings: {
         Row: {
+          alternative_reading: string | null
           assumption: string
           challenge: string | null
           concepts_used: string[] | null
@@ -216,11 +217,13 @@ export type Database = {
           principle: string
           question: string
           return_prompt: string | null
+          sources: Json | null
           tension: string | null
           user_id: string
           what_to_observe: string | null
         }
         Insert: {
+          alternative_reading?: string | null
           assumption: string
           challenge?: string | null
           concepts_used?: string[] | null
@@ -242,11 +245,13 @@ export type Database = {
           principle: string
           question: string
           return_prompt?: string | null
+          sources?: Json | null
           tension?: string | null
           user_id: string
           what_to_observe?: string | null
         }
         Update: {
+          alternative_reading?: string | null
           assumption?: string
           challenge?: string | null
           concepts_used?: string[] | null
@@ -268,6 +273,7 @@ export type Database = {
           principle?: string
           question?: string
           return_prompt?: string | null
+          sources?: Json | null
           tension?: string | null
           user_id?: string
           what_to_observe?: string | null
