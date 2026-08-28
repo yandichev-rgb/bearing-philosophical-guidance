@@ -186,11 +186,12 @@ const FOLLOW_UP_RULES = `
 The reader has already received a full reading and is now asking one further question about it.
 
 Rules for this reply:
-- Answer only what they asked. Do not restate the reading and do not repeat its five sections.
+- Answer only what they asked. Do not restate the reading and do not repeat its sections.
 - Two or three short paragraphs at most. Plain prose, no headings, no lists, no markdown.
 - Speak directly to the reader as "you". Never write in the philosopher's first person and never write "Aristotle would say" or similar framing.
 - Stay inside the same philosophical method. If the question falls outside what that method can address, say so plainly and give what the method can offer.
-- Where it helps, adjust or replace the practice with one concrete revised step.
+- Where it helps, adjust or replace the experiment with one concrete revised step.
+- Cite a work and section only when you are sure of it, and mark paraphrase as paraphrase. Never invent a quotation.
 - Do not use em dashes. No flattery, no motivational language, no promises about outcomes.
 - No medical, legal, financial, or clinical advice.
 `;
@@ -206,6 +207,10 @@ export async function generateFollowUpWithAI(input: {
     principle: string;
     exercise: string;
     question: string;
+    tension?: string | null;
+    method?: string | null;
+    challenge?: string | null;
+    limits?: string | null;
   };
   history: { question: string; answer: string }[];
   question: string;
@@ -220,9 +225,12 @@ export async function generateFollowUpWithAI(input: {
     `The reading they received:`,
     `Headline: ${input.reading.headline}`,
     `What stands out: ${input.reading.noticed}`,
-    `The question: ${input.reading.assumption}`,
-    `The principle: ${input.reading.principle}`,
-    `The practice: ${input.reading.exercise}`,
+    `The tension underneath: ${input.reading.tension || input.reading.assumption}`,
+    `The method applied: ${input.reading.method || input.reading.principle}`,
+    `The challenge put to them: ${input.reading.challenge || "Not recorded."}`,
+    `What the lens may miss: ${input.reading.limits || "Not recorded."}`,
+    `The experiment: ${input.reading.exercise}`,
+
     `Sit with this: ${input.reading.question}`,
   ].join("\n");
 
