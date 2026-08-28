@@ -11,12 +11,13 @@ import {
 } from "@/hooks/useInquiryDraft";
 
 import { readingHeading } from "@/lib/reading-heading";
+import { toReadingView } from "@/lib/reading-view";
+import type { GeneratedReading } from "@/lib/reading-types";
 import { ReadingFollowUps } from "./ReadingFollowUps";
-import { ReadingBody, ReadingLayout, type ReadingLike } from "./ReadingBody";
+import { ReadingBody, ReadingLayout } from "./ReadingBody";
 import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
-  checkInquiryFocus,
   generateFreeReading,
   generateMemberReading,
   saveReading,
@@ -24,10 +25,7 @@ import {
 
 
 
-type Reading = ReadingLike & {
-  philosopherSlug: string;
-  note: string;
-};
+type Reading = GeneratedReading;
 
 type ChipGroup = {
   question: string;
@@ -180,13 +178,29 @@ export function InquiryModal({
       const result = memberPath
         ? await generateAs({ data: { ...payload, philosopherSlug } })
         : await generate({ data: payload });
-      if (result && (result as { needsMembership?: boolean }).needsMembership) {
+
+      if (result.kind === "membership") {
         setNeedsMembership(true);
-        setPending(false);
         return;
       }
-      setReading(result as Reading);
-      setClarify(null);
+      // The outcome is explicit. Nothing is inferred from missing fields, and a
+      // failure is never filled in with example content.
+      if (result.kind === "reading") {
+        setReading(result.reading);
+        setClarify(null);
+        return;
+      }
+      if (result.kind === "clarification") {
+        setClarify(result.questions.map((question) => ({ question, answer: "" })));
+        return;
+      }
+      if (result.kind === "safety") {
+        setFailed(true);
+        setError(result.message);
+        return;
+      }
+      setFailed(true);
+      setError(result.message || GENERATION_ERROR);
 
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "";
@@ -211,19 +225,8 @@ export function InquiryModal({
       setStep(step + 1);
       return;
     }
-    setPending(true);
-    setError(null);
-    try {
-      const focus = await checkFocus({ data: { ...answers, clarifications: [] } });
-      if (focus.needsClarification && focus.questions.length >= 2) {
-        setClarify(focus.questions.map((question) => ({ question, answer: "" })));
-        setPending(false);
-        return;
-      }
-    } catch {
-      // A failed focus check should never block the reading.
-    }
-    setPending(false);
+    // Sufficiency is decided by the reading pipeline itself, which returns
+    // clarifying questions instead of a reading when the intake is too thin.
     await runReading([]);
   };
 
@@ -272,7 +275,7 @@ export function InquiryModal({
         {isResult ? (
           <div>
             <h2 id="inquiry-title" className="sr-only">
-              {reading.headline}
+              {reading.title}
             </h2>
             <ReadingLayout
               slug={reading.philosopherSlug}
@@ -306,7 +309,7 @@ export function InquiryModal({
                 </>
               }
             >
-              <ReadingBody reading={reading} slug={reading.philosopherSlug} />
+              <ReadingBody reading={toReadingView(reading)} slug={reading.philosopherSlug} />
 
               <div className="mt-10 border-t border-ink/15 pt-8">
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
