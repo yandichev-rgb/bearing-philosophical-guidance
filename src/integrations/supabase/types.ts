@@ -196,44 +196,62 @@ export type Database = {
       readings: {
         Row: {
           assumption: string
+          challenge: string | null
           created_at: string
           exercise: string
+          grounding: string | null
           headline: string
           id: string
           inquiry_id: string
+          limits: string | null
+          method: string | null
           note: string
           noticed: string
           philosopher_slug: string
           principle: string
           question: string
+          return_prompt: string | null
+          tension: string | null
           user_id: string
         }
         Insert: {
           assumption: string
+          challenge?: string | null
           created_at?: string
           exercise: string
+          grounding?: string | null
           headline: string
           id?: string
           inquiry_id: string
+          limits?: string | null
+          method?: string | null
           note: string
           noticed: string
           philosopher_slug: string
           principle: string
           question: string
+          return_prompt?: string | null
+          tension?: string | null
           user_id: string
         }
         Update: {
           assumption?: string
+          challenge?: string | null
           created_at?: string
           exercise?: string
+          grounding?: string | null
           headline?: string
           id?: string
           inquiry_id?: string
+          limits?: string | null
+          method?: string | null
           note?: string
           noticed?: string
           philosopher_slug?: string
           principle?: string
           question?: string
+          return_prompt?: string | null
+          tension?: string | null
           user_id?: string
         }
         Relationships: [
