@@ -25,9 +25,12 @@ export type ReadingLike = {
   whatToObserve?: string | null;
   sources?: { work: string; location: string }[] | null;
   note?: string | null;
-  /** Legacy fields on readings saved before the structured pipeline. */
+  /** Legacy fields on readings saved before the structured pipeline. Not rendered. */
   exercise?: string | null;
   principle?: string | null;
+  tension?: string | null;
+  challenge?: string | null;
+  assumption?: string | null;
 };
 
 const PROSE = "max-w-[68ch] text-[1.0625rem] leading-[1.7] text-ink sm:text-[1.1875rem]";
@@ -78,8 +81,8 @@ export function SourceDrawer({
   citation,
   sources,
 }: {
-  citation?: string | null;
-  sources?: { work: string; location: string }[] | null;
+  citation?: string | null | undefined;
+  sources?: { work: string; location: string }[] | null | undefined;
 }) {
   const list = (sources ?? []).filter((source) => source?.work && source?.location);
   return (
