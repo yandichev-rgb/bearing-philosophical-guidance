@@ -23,6 +23,15 @@ const answersSchema = z.object({
     .default(""),
 
   duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
+  clarifications: z
+    .array(
+      z.object({
+        question: z.string().trim().max(400),
+        answer: z.string().trim().max(2000),
+      }),
+    )
+    .max(3)
+    .default([]),
 });
 
 const readingSchema = z.object({
@@ -32,7 +41,7 @@ const readingSchema = z.object({
   tension: z.string(),
   method: z.string(),
   grounding: z.string(),
-  challenge: z.string(),
+  challenge: z.string().default(""),
   limits: z.string(),
   question: z.string(),
   exercise: z.string(),
@@ -41,6 +50,7 @@ const readingSchema = z.object({
   principle: z.string(),
   note: z.string(),
 });
+
 
 /** The free tier: one complete Aristotle reading, no account required. */
 export const generateFreeReading = createServerFn({ method: "POST" })
