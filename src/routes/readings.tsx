@@ -123,10 +123,25 @@ function Readings() {
                     >
                       {reading.headline}
                     </h2>
-                    <p className="mt-5 border-t border-ink/15 pt-5 leading-relaxed text-ink-soft">
-                      {reading.exercise}
-                    </p>
-                    <p className="mt-5 text-lg italic leading-snug text-ink">{reading.question}</p>
+                    <div className="mt-5 border-t border-ink/15 pt-5">
+                      <ReadingBody
+                        reading={{
+                          headline: reading.headline,
+                          noticed: reading.noticed,
+                          assumption: reading.assumption,
+                          principle: reading.principle,
+                          exercise: reading.exercise,
+                          question: reading.question,
+                          tension: reading.tension,
+                          method: reading.method,
+                          grounding: reading.grounding,
+                          challenge: reading.challenge,
+                          limits: reading.limits,
+                          returnPrompt: reading.return_prompt,
+                        }}
+                      />
+                    </div>
+
                     <ReadingFollowUps readingId={reading.id} isMember={isMember} />
                   </Sheet>
                 </Reveal>
