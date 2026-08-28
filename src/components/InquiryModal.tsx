@@ -251,29 +251,10 @@ export function InquiryModal({
               {reading.headline}
             </h2>
 
-            <p className="label mt-9 text-ink-soft">What stands out</p>
-            <p className="mt-3 leading-relaxed text-ink-soft">{reading.noticed}</p>
-
-            <div className="mt-9 grid gap-px border border-ink/25 bg-ink/25 sm:grid-cols-2">
-              <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-oxblood">The question</p>
-                <p className="mt-3 leading-relaxed text-ink">{reading.assumption}</p>
-              </div>
-              <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-ink-soft">The principle</p>
-                <p className="mt-3 leading-relaxed text-ink">{reading.principle}</p>
-              </div>
+            <div className="mt-9">
+              <ReadingBody reading={reading} />
             </div>
 
-            <div className="mt-6 border border-ink/25 bg-papyrus-light/60 p-6">
-              <p className="label text-ink-soft">The practice</p>
-              <p className="mt-3 leading-relaxed text-ink">{reading.exercise}</p>
-            </div>
-
-            <div className="mt-6 border border-ink/25 p-6">
-              <p className="label text-oxblood">Sit with this</p>
-              <p className="mt-3 text-lg italic text-ink">{reading.question}</p>
-            </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-6">
               {session ? (
