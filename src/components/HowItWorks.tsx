@@ -4,20 +4,31 @@ import { Reveal } from "./Reveal";
 const steps = [
   {
     numeral: "I",
-    title: "Describe what is happening",
-    body: "Answer one required question about the situation. Add two optional answers if more context would help.",
+    title: "Orient",
+    body: "Describe the situation in your own words. Two optional answers add context when it would help.",
   },
   {
     numeral: "II",
-    title: "Choose a way of seeing it",
-    body: "Start free with Aristotle. Membership opens all six philosophical approaches.",
+    title: "Examine",
+    body: "One philosophical method is applied to what you wrote, grounded in the works its ideas come from.",
   },
   {
     numeral: "III",
-    title: "Receive a structured reading",
-    body: "See what stands out, uncover the question underneath, understand the principle at work, and leave with one thing to practise.",
+    title: "Challenge",
+    body: "The reading tests how you have framed the situation, and states plainly what that lens may miss.",
+  },
+  {
+    numeral: "IV",
+    title: "Practise",
+    body: "You leave with one better question and one specific experiment to run in real life.",
+  },
+  {
+    numeral: "V",
+    title: "Return",
+    body: "A return prompt tells you when to come back and what to report. Members may press further with follow up questions.",
   },
 ];
+
 
 export function HowItWorks() {
   return (
