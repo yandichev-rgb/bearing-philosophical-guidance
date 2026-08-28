@@ -62,7 +62,7 @@ export function Hero({
 
           <p className="mt-8 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft">
             Bring a decision, recurring pattern, relationship, or fear. Bearing examines it through a
-            philosophical lens, reveals the question underneath, and gives you one practical thing to
+            method, reveals the question underneath, and gives you one practical thing to
             try next.
           </p>
 
@@ -87,7 +87,7 @@ export function Hero({
         >
           <p className="label text-ink-soft">See what a reading does</p>
           <p className="mb-5 mt-3 max-w-md leading-relaxed text-ink-soft">
-            One situation becomes a sharper question, a relevant philosophical principle, and one
+            One situation becomes a sharper question, a relevant principle, and one
             action you can take in real life.
           </p>
           <SpecimenPanel onStart={onStartWithKind} />

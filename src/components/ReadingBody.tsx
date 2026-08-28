@@ -82,7 +82,7 @@ export function SourceDrawer({ grounding }: { grounding?: string | null }) {
         <p className="max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft">{grounding}</p>
       ) : null}
       <p className={`max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft${grounding ? " mt-4" : ""}`}>
-        Bearing applies philosophical methods without pretending to speak as historical thinkers.
+        Bearing applies each thinker's method without pretending to speak as them.
         Ideas are presented as interpretation unless a quotation is given verbatim.
       </p>
     </Disclosure>

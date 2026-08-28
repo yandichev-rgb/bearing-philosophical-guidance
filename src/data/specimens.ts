@@ -39,7 +39,7 @@ export const specimens: Specimen[] = [
         body: "Picture a Tuesday in March next year, 7pm, in each job. Where are you sitting, and who is waiting for you?",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "A life is made of its ordinary days, not its offer letters. The right choice is the one whose Tuesdays you can practise for years without becoming someone you would rather not be.",
       },
       {
@@ -70,7 +70,7 @@ export const specimens: Specimen[] = [
         body: "Do you want the apology, or do you want your sister back? Answer honestly, because they need different sentences.",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "One possibility is that the remark landed on a doubt you already held and had decided not to look at. If so, the drafts are defending an identity rather than answering your sister. Test it: does the sentence you cannot send argue with her, or with yourself?",
       },
       {
@@ -101,7 +101,7 @@ export const specimens: Specimen[] = [
         body: "If nobody could ever see the deed, would you still want the house, or would you want what you imagine it proves?",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "What other people think of your life sits outside your control. Your savings rate, your work, your attention, and what you do with a free Saturday sit inside it. Spend yourself there.",
       },
       {
@@ -132,7 +132,7 @@ export const specimens: Specimen[] = [
         body: "What is the smallest version of this that you could not talk yourself out of on your worst morning?",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "Do not announce what you have understood; show it in the one act available now. Training beats intention, and a plan that only works when you feel strong is not a plan.",
       },
       {
@@ -163,7 +163,7 @@ export const specimens: Specimen[] = [
         body: "State the feared thing in one plain sentence, with a date and a number in it. What does it say?",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "Fear thrives in shadow and thins in daylight. Brought into the open and examined, a thing has a true size, usually smaller than the shadow and usually survivable.",
       },
       {
@@ -194,7 +194,7 @@ export const specimens: Specimen[] = [
         body: "Wasted against what, and who set that measure? Name the person whose approval the standard is waiting for.",
       },
       {
-        heading: "The philosophical lens",
+        heading: "The lens",
         body: "An unexamined standard governs you more firmly than one you argue with. Define the word before you let it sentence you.",
       },
       {

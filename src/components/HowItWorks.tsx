@@ -10,7 +10,7 @@ const steps = [
   {
     numeral: "II",
     title: "Examine",
-    body: "One philosophical method is applied to what you wrote, grounded in the works its ideas come from.",
+    body: "One method is applied to what you wrote, grounded in the works its ideas come from.",
   },
   {
     numeral: "III",
@@ -41,7 +41,7 @@ export function HowItWorks() {
           <h2 id="how-heading" className="display-lg mt-8 max-w-2xl text-ink">
             One real question.
             <br />
-            One philosophical lens.
+            One method.
             <br />
             One clearer next step.
           </h2>
