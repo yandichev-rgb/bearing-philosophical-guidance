@@ -12,7 +12,7 @@ import {
 
 import { readingHeading } from "@/lib/reading-heading";
 import { ReadingFollowUps } from "./ReadingFollowUps";
-import { ReadingBody, type ReadingLike } from "./ReadingBody";
+import { ReadingBody, ReadingLayout, type ReadingLike } from "./ReadingBody";
 import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
@@ -145,6 +145,11 @@ export function InquiryModal({
 
 
   const isResult = reading !== null;
+  const readingDate = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
   const chips = current.chips;
