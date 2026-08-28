@@ -254,7 +254,9 @@ export function InquiryModal({
       open={open}
       onClose={close}
       labelledBy="inquiry-title"
-      className="min-h-screen max-w-3xl sm:min-h-0"
+      className={
+        isResult ? "min-h-screen max-w-[1120px] sm:min-h-0" : "min-h-screen max-w-3xl sm:min-h-0"
+      }
     >
       <div className="flex items-center justify-between gap-4 border-b border-ink/25 px-5 py-4 sm:px-9">
         <div className="flex min-w-0 items-center gap-3">
