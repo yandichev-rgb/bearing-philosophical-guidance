@@ -26,7 +26,7 @@ export const MEMBERSHIP = {
   ],
 
   benefits: [
-    "Examine one situation through all six philosophical approaches.",
+    "Examine one situation through all six approaches.",
     "Return to earlier inquiries and see how your thinking changes.",
     "Create as many readings as you need, with no daily limit.",
     "Ask up to three further questions on any reading you save.",

@@ -141,6 +141,13 @@ function Readings() {
                           challenge: reading.challenge,
                           limits: reading.limits,
                           returnPrompt: reading.return_prompt,
+                          lensName: reading.lens_name,
+                          conceptsUsed: reading.concepts_used,
+                          practiceTitle: reading.practice_title,
+                          practiceDuration: reading.practice_duration,
+                          practiceSteps: reading.practice_steps,
+                          whatToObserve: reading.what_to_observe,
+
                         }}
                       />
                     </div>

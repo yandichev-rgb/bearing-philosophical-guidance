@@ -92,7 +92,7 @@ export function ReadingFollowUps({
       {!isMember ? (
         <p className="mt-5 leading-relaxed text-ink-soft">
           Members may ask up to {FOLLOWUPS_PER_READING} further questions on a reading, answered
-          through the same philosophical method.{" "}
+          through the same method.{" "}
           <Link to="/membership" className="link-underline">
             Join the Lyceum
           </Link>

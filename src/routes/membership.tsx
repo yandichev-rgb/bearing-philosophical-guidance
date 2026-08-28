@@ -70,7 +70,7 @@ function MembershipPage() {
             from every side.
           </h1>
           <p className="mt-7 max-w-xl leading-relaxed text-ink-soft">
-            Membership opens all six philosophical approaches, unlimited readings, and a history of
+            Membership opens all six approaches, unlimited readings, and a history of
             the questions you have brought to Bearing.
           </p>
         </Reveal>

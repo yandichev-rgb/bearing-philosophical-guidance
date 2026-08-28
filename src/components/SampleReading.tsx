@@ -115,36 +115,6 @@ const samples: Sample[] = [
     },
   },
   {
-    id: "epictetus",
-    tab: "Epictetus",
-    label: "Through Epictetus",
-    margin: "Agency",
-    lens: "Epictetus, Stoic agency",
-    compare: "Which part of this is genuinely up to you?",
-    reading: {
-      headline: "You are spending yourself on the part that was never yours.",
-      noticed:
-        "Most of your fear concerns how others will read your limits. That was never in your hands. The quality of your work and the hours you agree to are.",
-      tension:
-        "You want to keep others' good opinion, and you want the freedom to set a limit. One of them has to yield.",
-      assumption: "Keeping others' good opinion against the freedom to set a limit.",
-      method:
-        "This method draws a hard line between what is up to you and what is not, then tests the first impression before you act on it. It treats the difficulty as training in a specific capacity rather than as a problem to be arranged away.",
-      principle: "Divide what is up to you from what is not, and act only on the first.",
-      grounding:
-        "The division of things in our power and things not, and the discipline of examining impressions, opens the Enchiridion and recurs through the Discourses, Book I. Paraphrased, not quoted.",
-      challenge:
-        "Notice that calling the boundary impossible is more comfortable than setting it and discovering who objects.",
-      limits:
-        "The line between what is and is not up to you is harder to draw when income, visas, or care for others depend on the arrangement.",
-      question: "What would you do this week if no one's opinion of it were yours to manage?",
-      exercise:
-        "Name one outcome you will stop managing and one limit you will state plainly to a single person this week. Say it once, without explanation.",
-      returnPrompt:
-        "Report back with what you said, who you said it to, and what actually followed.",
-    },
-  },
-  {
     id: "plato",
     tab: "Plato",
     label: "A Platonic reading",
@@ -201,6 +171,36 @@ const samples: Sample[] = [
         "List the three achievements you name first when you describe yourself. Beside each, write who taught you it counted. Keep one, and act this week as though the other two were optional.",
       returnPrompt:
         "Come back in ten days and report which of the two you could not let go of, and what happened when you tried.",
+    },
+  },
+  {
+    id: "carl-jung",
+    tab: "Jung",
+    label: "Through Jung",
+    margin: "Persona",
+    lens: "Jung, analytical psychology",
+    compare: "What does the identity you present have to leave out?",
+    reading: {
+      headline: "The role has become so complete that there is nowhere left to be unfinished.",
+      noticed:
+        "You describe yourself almost entirely through what you deliver. The parts of you that are unproductive, uncertain, or simply idle appear only as failures of discipline.",
+      tension:
+        "You want the recognition the role reliably brings, and you want a life in which not everything has to be earned.",
+      assumption: "The competent identity against the parts of you it has to exclude.",
+      method:
+        "This lens treats the identity you present to the world as useful but partial, and asks what it has had to exclude. One possibility is that the excluded part is returning indirectly, through resentment, exhaustion, or a reaction that felt larger than the situation deserved. It is offered as a hypothesis to test, not a verdict.",
+      principle: "What a person excludes from their identity can continue to influence them indirectly.",
+      grounding:
+        "Persona and the excluded part of the personality are discussed in Two Essays on Analytical Psychology, Collected Works Volume 7. Paraphrased, not quoted.",
+      challenge:
+        "Consider that the irritation you feel toward people who seem to coast may be less about them than about a permission you have not given yourself.",
+      limits:
+        "This is interpretation, not diagnosis, and it can invent depth where a situation is simply overloaded. It says nothing about the money and obligations that keep the role in place.",
+      question: "What part of you must stay unacceptable for this identity to hold together?",
+      exercise:
+        "For one week, note each time a reaction felt disproportionate to the event, and write the trait in the other person that set it off. Say nothing to them. Read the list on the seventh day.",
+      returnPrompt:
+        "Come back after seven days with the list, and say which trait appeared more than once.",
     },
   },
 ];

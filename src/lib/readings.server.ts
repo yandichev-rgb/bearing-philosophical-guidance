@@ -16,17 +16,30 @@ export const DIAGNOSTIC_MODEL = "google/gemini-2.5-flash-lite";
 
 export type GeneratedReading = {
   philosopherSlug: ProfileSlug;
+  /** The reading's title: the case specific interpretation. */
   headline: string;
+  /** The bearing. */
   noticed: string;
+  lensName: string;
+  conceptsUsed: string[];
+  /** The lens explanation. */
   method: string;
+  /** One source line, generated from the concepts actually used. */
   grounding: string;
+  /** The assumption this reading could have wrong. */
   limits: string;
+  /** The better question. */
   question: string;
-  exercise: string;
+  practiceTitle: string;
+  practiceDuration: string;
+  practiceSteps: string[];
+  whatToObserve: string;
   returnPrompt: string;
+  /** Legacy prose form of the practice, kept so follow ups and old views work. */
+  exercise: string;
   /** The single sentence the whole reading argues for. Stored in the legacy tension column. */
   tension: string;
-  /** Legacy columns kept in step so saved history still renders and follow ups keep context. */
+  /** Legacy columns kept in step so saved history still renders. */
   challenge: string;
   assumption: string;
   principle: string;
@@ -38,73 +51,107 @@ export type ReadingResult = {
   usage: { promptTokens: number; completionTokens: number };
 };
 
+/** Thrown when no complete, personalised reading could be produced. */
+export class ReadingGenerationError extends Error {
+  constructor(public readonly reason: string) {
+    super("READING_GENERATION_FAILED");
+    this.name = "ReadingGenerationError";
+  }
+}
+
 const DISCLAIMER =
   "This reading applies one philosopher's method to what you described. It is one lens, not a complete answer, and it is for reflection rather than clinical, legal, medical, or financial advice.";
 
-const FIELDS = [
+/**
+ * Sentences that only ever belonged to the illustrative example reading. If any
+ * of them reach a generated reading, the reading is rejected rather than shown.
+ */
+const SAMPLE_SENTENCES = [
+  "your habits are already choosing a direction",
+  "you describe a gap between what you say matters and what your week repeatedly rewards",
+  "which habit is this choice quietly building",
+  "for one week, write down each moment your actions and your stated priorities split",
+];
+
+const STRING_FIELDS = [
   "thesis",
-  "headline",
-  "noticed",
-  "method",
-  "grounding",
-  "limits",
-  "question",
-  "exercise",
+  "title",
+  "bearing",
+  "lensName",
+  "lensExplanation",
+  "sources",
+  "betterQuestion",
+  "practiceTitle",
+  "practiceDuration",
+  "whatToObserve",
   "returnPrompt",
+  "limitation",
 ] as const;
 
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: FIELDS,
+  required: [...STRING_FIELDS, "conceptsUsed", "practiceSteps", "intakeEvidenceUsed"],
   properties: {
     thesis: {
       type: "string",
+      description: "The reading's entire interpretation in one sentence. Internal check only.",
+    },
+    intakeEvidenceUsed: {
+      type: "array",
       description:
-        "The reading's entire interpretation in one sentence. Internal check, not shown as a section.",
+        "Two to four concrete particulars taken from what the reader wrote, which this interpretation rests on. Internal only.",
+      items: { type: "string" },
     },
-    headline: {
-      type: "string",
-      description: "One short statement of that interpretation, addressed to the reader.",
-    },
-    noticed: {
-      type: "string",
-      description:
-        "The bearing: one clearly marked interpretive hypothesis about what is actually going on, beyond the reader's own framing.",
-    },
-    method: {
+    title: { type: "string", description: "The case specific interpretation, addressed to the reader." },
+    bearing: {
       type: "string",
       description:
-        "The philosophical lens: one or two named concepts explained in plain language, with the primary work and section, shown producing the interpretation.",
+        "The interpretive hypothesis, working at least two of the reader's own particulars into it.",
     },
-    grounding: {
+    lensName: { type: "string", description: "The tradition or method applied. Three words at most." },
+    conceptsUsed: {
+      type: "array",
+      description: "The one or two concepts that carry this interpretation.",
+      items: { type: "string" },
+    },
+    lensExplanation: {
       type: "string",
-      description: "Sources: work and section in citation form, marking paraphrase as paraphrase.",
+      description: "Those concepts in plain language, shown producing the interpretation.",
     },
-    limits: {
-      type: "string",
-      description:
-        "The specific assumption this reading could have wrong, and what would show it to be wrong.",
-    },
-    question: {
-      type: "string",
-      description:
-        "The better question, arising from this interpretation and specific to this situation.",
-    },
-    exercise: {
+    sources: {
       type: "string",
       description:
-        "The experiment: one small concrete action that tests the interpretation and could come out either way.",
+        "One sentence citing only the work and sections behind the concepts used, in the form: Grounded in Aristotle's Nicomachean Ethics, II.1-6 and VI.5.",
     },
+    betterQuestion: {
+      type: "string",
+      description: "The better question, following from this interpretation only.",
+    },
+    practiceTitle: { type: "string", description: "Short concrete name for the experiment." },
+    practiceDuration: { type: "string", description: "How long the experiment takes." },
+    practiceSteps: {
+      type: "array",
+      description: "Two or three plain instructions with no numbering or leading digits.",
+      items: { type: "string" },
+    },
+    whatToObserve: { type: "string", description: "The observable result that counts as evidence." },
     returnPrompt: {
       type: "string",
-      description:
-        "When you return: the evidence to watch for and bring back, and what would confirm or unsettle the interpretation.",
+      description: "What to bring back and when, and what would confirm or unsettle the reading.",
+    },
+    limitation: {
+      type: "string",
+      description: "The specific assumption this reading could have wrong.",
     },
   },
 } as const;
 
-type ParsedReading = Record<(typeof FIELDS)[number], string>;
+type ParsedReading = Record<(typeof STRING_FIELDS)[number], string> & {
+  conceptsUsed: string[];
+  practiceSteps: string[];
+  intakeEvidenceUsed: string[];
+};
 
 function buildUserContent(answers: ReadingAnswers): string {
   const parts = [
@@ -154,8 +201,8 @@ async function requestReading(
 
   if (response.status === 429) throw new Error("The Lyceum is busy. Try again in a moment.");
   if (!response.ok) {
-    console.error("AI gateway error", response.status, await response.text());
-    throw new Error("The reading could not be prepared right now.");
+    console.error("reading.gateway_error", { slug, status: response.status });
+    throw new ReadingGenerationError(`gateway_${response.status}`);
   }
 
   const payload = (await response.json()) as {
@@ -163,10 +210,17 @@ async function requestReading(
     usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
   const content = payload.choices?.[0]?.message?.content;
-  if (!content) throw new Error("The reading came back empty.");
+  if (!content) throw new ReadingGenerationError("empty_response");
+
+  let parsed: ParsedReading;
+  try {
+    parsed = JSON.parse(content) as ParsedReading;
+  } catch {
+    throw new ReadingGenerationError("unparsable_response");
+  }
 
   return {
-    parsed: JSON.parse(content) as ParsedReading,
+    parsed,
     promptTokens: payload.usage?.prompt_tokens ?? 0,
     completionTokens: payload.usage?.completion_tokens ?? 0,
   };
@@ -180,13 +234,160 @@ function thesisHolds(thesis: string): boolean {
   return sentences.length <= 1 && trimmed.split(/\s+/).length <= 45;
 }
 
-/** Generates a structured reading through the Lovable AI Gateway. Server only. */
+const STOP_WORDS = new Set([
+  "the", "and", "that", "this", "with", "have", "been", "from", "they", "them", "their", "what",
+  "when", "would", "could", "about", "there", "which", "because", "into", "then", "than", "some",
+  "just", "like", "very", "much", "more", "most", "even", "still", "keep", "feel", "feels", "know",
+  "want", "make", "made", "does", "doing", "your", "yours", "mine", "myself", "really", "always",
+  "never", "every", "thing", "things", "something", "anything", "nothing", "time", "times",
+]);
+
+function significantWords(text: string): string[] {
+  return (text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 3 && !STOP_WORDS.has(word));
+}
+
+function containsSampleSentence(values: string[]): boolean {
+  const haystack = values.join(" \n ").toLowerCase().replace(/[’‘]/g, "'");
+  return SAMPLE_SENTENCES.some((sentence) => haystack.includes(sentence));
+}
+
+/** Duplicated work titles in one source line are the citation bug we reject. */
+function sourcesAreClean(sources: string): boolean {
+  const text = sources.trim();
+  if (text.length < 10) return false;
+  const titles = text.match(/[A-Z][A-Za-z]+(?:\s+(?:of\s+)?[A-Z][A-Za-z]+)*/g) ?? [];
+  const seen = new Map<string, number>();
+  for (const title of titles) {
+    if (title.split(/\s+/).length < 2) continue;
+    seen.set(title, (seen.get(title) ?? 0) + 1);
+  }
+  return ![...seen.values()].some((count) => count > 1);
+}
+
+/**
+ * The personalisation quality gate. Returns the list of problems found, which is
+ * empty when the reading may be shown. No reader text is included in the result.
+ */
+function validateReading(parsed: ParsedReading, answers: ReadingAnswers): string[] {
+  const problems: string[] = [];
+
+  for (const field of STRING_FIELDS) {
+    if (typeof parsed[field] !== "string" || parsed[field].trim().length < 3) {
+      problems.push(`missing_${field}`);
+    }
+  }
+  if (!Array.isArray(parsed.conceptsUsed) || parsed.conceptsUsed.filter(Boolean).length === 0) {
+    problems.push("missing_conceptsUsed");
+  }
+  const steps = Array.isArray(parsed.practiceSteps)
+    ? parsed.practiceSteps.map((step) => (step ?? "").trim()).filter(Boolean)
+    : [];
+  if (steps.length < 2) problems.push("missing_practiceSteps");
+
+  const submission = [
+    answers.situation,
+    answers.tried,
+    answers.stakes,
+    ...(answers.clarifications ?? []).map((item) => item.answer),
+  ].join(" ");
+  const submissionWords = new Set(significantWords(submission));
+
+  const evidence = Array.isArray(parsed.intakeEvidenceUsed)
+    ? parsed.intakeEvidenceUsed.map((item) => (item ?? "").trim()).filter(Boolean)
+    : [];
+  const groundedEvidence = evidence.filter((item) => {
+    const words = significantWords(item);
+    return words.length > 0 && words.filter((word) => submissionWords.has(word)).length >= 1;
+  });
+  if (groundedEvidence.length < 2) problems.push("intake_evidence_not_grounded");
+
+  const bearingWords = new Set(significantWords(parsed.bearing ?? ""));
+  const evidenceInBearing = groundedEvidence.filter((item) =>
+    significantWords(item).some((word) => bearingWords.has(word)),
+  ).length;
+  if (groundedEvidence.length >= 2 && evidenceInBearing < 2) {
+    problems.push("bearing_does_not_use_evidence");
+  }
+
+  const titleWords = significantWords(parsed.title ?? "");
+  if (titleWords.length < 3) problems.push("title_not_specific");
+
+  if (!(parsed.betterQuestion ?? "").includes("?")) problems.push("better_question_malformed");
+
+  if (!sourcesAreClean(parsed.sources ?? "")) problems.push("sources_malformed");
+
+  if (
+    containsSampleSentence([
+      parsed.title ?? "",
+      parsed.bearing ?? "",
+      parsed.betterQuestion ?? "",
+      ...steps,
+      parsed.lensExplanation ?? "",
+      parsed.returnPrompt ?? "",
+    ])
+  ) {
+    problems.push("sample_content_present");
+  }
+
+  if (!thesisHolds(parsed.thesis ?? "")) problems.push("thesis_not_single");
+
+  return problems;
+}
+
+/** Strips any numbering the model added, so the list renders 1, 2, 3 once. */
+function cleanSteps(steps: string[]): string[] {
+  return steps
+    .map((step) => (step ?? "").trim().replace(/^(?:\(?\d{1,2}[).:]?|[-•–])\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
+function assemble(slug: ProfileSlug, parsed: ParsedReading): GeneratedReading {
+  const steps = cleanSteps(parsed.practiceSteps);
+  const concepts = parsed.conceptsUsed.map((item) => item.trim()).filter(Boolean).slice(0, 3);
+  return {
+    philosopherSlug: slug,
+    headline: parsed.title.trim(),
+    noticed: parsed.bearing.trim(),
+    lensName: parsed.lensName.trim(),
+    conceptsUsed: concepts,
+    method: parsed.lensExplanation.trim(),
+    grounding: parsed.sources.trim(),
+    limits: parsed.limitation.trim(),
+    question: parsed.betterQuestion.trim(),
+    practiceTitle: parsed.practiceTitle.trim(),
+    practiceDuration: parsed.practiceDuration.trim(),
+    practiceSteps: steps,
+    whatToObserve: parsed.whatToObserve.trim(),
+    returnPrompt: parsed.returnPrompt.trim(),
+    exercise: [...steps, parsed.whatToObserve.trim()].join(" "),
+    tension: parsed.thesis.trim(),
+    // Legacy columns, written so older views and follow up context keep working.
+    challenge: "",
+    assumption: parsed.thesis.trim(),
+    principle: parsed.lensName.trim(),
+    note: DISCLAIMER,
+  };
+}
+
+/**
+ * Generates a structured reading through the Lovable AI Gateway. Server only.
+ * A reading is either complete and personalised or it fails. No field is ever
+ * filled from a default or from example content.
+ */
 export async function generateReadingWithAI(
   slug: ProfileSlug,
   answers: ReadingAnswers,
 ): Promise<ReadingResult> {
   const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Reading service is not configured.");
+  if (!apiKey) {
+    console.error("reading.not_configured", { slug });
+    throw new ReadingGenerationError("not_configured");
+  }
 
   const userContent = buildUserContent(answers);
   const first = await requestReading(apiKey, slug, [{ role: "user", content: userContent }]);
@@ -195,43 +396,42 @@ export async function generateReadingWithAI(
   let promptTokens = first.promptTokens;
   let completionTokens = first.completionTokens;
 
-  // One rebuild when the reading cannot be summarised in a single sentence.
-  if (!thesisHolds(parsed.thesis)) {
+  let problems = validateReading(parsed, answers);
+  console.info("reading.attempt", { slug, attempt: 1, ok: problems.length === 0, problems });
+
+  // Exactly one schema repair attempt. Nothing is merged from the first reply.
+  if (problems.length > 0) {
     const retry = await requestReading(apiKey, slug, [
       { role: "user", content: userContent },
       { role: "assistant", content: JSON.stringify(parsed) },
       {
         role: "user",
-        content:
-          "That reading does not hold one thesis. Choose the single most defensible interpretation, write it as one sentence in thesis, and rewrite every other field so it argues only for that. Do not widen the reading to cover several possibilities.",
+        content: [
+          "That reading was rejected. Rewrite it completely and return every required field.",
+          `Problems found: ${problems.join(", ")}.`,
+          "Requirements for the rewrite:",
+          "- Fill every field. Never leave one empty and never write filler that would fit another reader.",
+          "- intakeEvidenceUsed must quote two to four particulars the reader actually wrote, and the bearing must use at least two of them.",
+          "- The title must state a case specific interpretation, not a category or a restatement.",
+          "- The better question must follow from that interpretation, and the practice must test it.",
+          "- sources must be one sentence citing only the sections behind the concepts you used, with no work named twice.",
+          "- practiceSteps must be two or three plain sentences with no numbering.",
+          "- thesis must be one sentence that the whole reading argues for.",
+        ].join("\n"),
       },
     ]);
     parsed = retry.parsed;
     promptTokens += retry.promptTokens;
     completionTokens += retry.completionTokens;
+    problems = validateReading(parsed, answers);
+    console.info("reading.attempt", { slug, attempt: 2, ok: problems.length === 0, problems });
+
+    if (problems.length > 0) throw new ReadingGenerationError(problems.join(","));
   }
 
-  return {
-    usage: { promptTokens, completionTokens },
-    reading: {
-      philosopherSlug: slug,
-      headline: parsed.headline || "Your situation already points to something you can test.",
-      noticed: parsed.noticed,
-      method: parsed.method,
-      grounding: parsed.grounding,
-      limits: parsed.limits,
-      question: parsed.question,
-      exercise: parsed.exercise,
-      returnPrompt: parsed.returnPrompt,
-      tension: parsed.thesis,
-      // Legacy columns, written so older views and follow up context keep working.
-      challenge: "",
-      assumption: parsed.thesis,
-      principle: parsed.method,
-      note: DISCLAIMER,
-    },
-  };
+  return { usage: { promptTokens, completionTokens }, reading: assemble(slug, parsed) };
 }
+
 
 const DIAGNOSTIC_SCHEMA = {
   type: "object",

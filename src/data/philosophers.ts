@@ -1,7 +1,7 @@
 import aristotleImg from "@/assets/aristotle.jpg";
 import socratesImg from "@/assets/socrates.jpg";
 import marcusImg from "@/assets/marcus.jpg";
-import epictetusImg from "@/assets/epictetus.jpg";
+import jungImg from "@/assets/carl-jung.jpg";
 import platoImg from "@/assets/plato.jpg";
 import nietzscheImg from "@/assets/nietzsche.jpg";
 
@@ -198,59 +198,6 @@ export const philosophers: Philosopher[] = [
     free: false,
   },
   {
-    slug: "epictetus",
-    name: "Epictetus",
-    dates: "approximately 50–135 AD",
-    school: "Stoic Agency",
-    principle: "Some things are up to you. Most are not.",
-    prompt: "Bring the thing you know and do not do.",
-    summary: "Identify what is actually yours to choose, then act there.",
-    overview:
-      "Born into slavery and later a teacher, Epictetus built his philosophy on one hard division: your judgments, choices, and efforts are yours, while other people, reputation, and outcomes are not. His teaching is practical and demanding. It asks you to test the first impression before you agree to it, and to meet the obligations of the roles you have accepted.",
-    method:
-      "A reading sorts the situation into what is up to you and what is not, examines the first impression you have already assented to, and names the chosen response available now. It also takes seriously the roles and commitments you have taken on.",
-    concepts: [
-      "What is up to us and what is not",
-      "Assent to impressions",
-      "Prohairesis, or chosen response",
-      "Roles and accepted obligations",
-      "Discipline as training",
-    ],
-    works: [
-      "Discourses, Book I chapters 1 and 2",
-      "Enchiridion, sections 1, 5, and 8",
-      "Discourses, Book II on assent to impressions",
-    ],
-    notices:
-      "Energy spent on outcomes you do not hold, impressions accepted without testing, and the gap between knowing and doing.",
-    misses:
-      "Drawn too hard, the line can excuse withdrawal from things worth fighting for, and it can sound indifferent to real harm and real dependence on other people.",
-    principles: [
-      {
-        title: "Separate what you control",
-        body: "Your choices and judgments are yours. Other people, outcomes, and reputation are not.",
-      },
-      {
-        title: "Do not trust the first thought",
-        body: "A frightening first impression is not a final verdict. Stop and test it before you react.",
-      },
-      {
-        title: "Keep your choices your own",
-        body: "Someone else can limit your options. They do not get to decide what kind of person you will be.",
-      },
-      {
-        title: "Use difficulty as practice",
-        body: "Every obstacle gives you a chance to practise patience, courage, restraint, or clear thinking.",
-      },
-    ],
-    bestFor: "Anxiety, rejection, difficult people, discipline, and outcomes you cannot control.",
-    question: "Which part of this is actually up to you?",
-    portrait: epictetusImg,
-    portraitAlt:
-      "Black ink screen print profile portrait of Epictetus with short hair and beard wearing a simple robe",
-    free: false,
-  },
-  {
     slug: "plato",
     name: "Plato",
     dates: "428–348 BC",
@@ -360,14 +307,75 @@ export const philosophers: Philosopher[] = [
       "Black ink screen print portrait of Friedrich Nietzsche with a heavy moustache, dark swept back hair, and a high collared jacket",
     free: false,
   },
+  {
+    slug: "carl-jung",
+    name: "Carl Jung",
+    dates: "1875–1961",
+    school: "Analytical Psychology",
+    principle: "What you exclude from your identity can continue influencing you indirectly.",
+    prompt: "Bring a reaction or recurring pattern that feels larger than the situation.",
+    summary:
+      "Examine the persona you present, the qualities you disown, and the patterns seeking greater integration.",
+    overview:
+      "Carl Jung developed analytical psychology as a way of understanding the relationship between conscious identity and the less conscious forces that shape behaviour. His approach is useful when a reaction feels disproportionate, the same relationship pattern keeps returning, or a carefully maintained identity leaves important parts of life unexpressed. A Jungian reading does not diagnose you or decode you from a distance. It offers hypotheses about persona, projection, shadow, complexes, and individuation that you can examine against lived evidence.",
+    method:
+      "A reading proposes one possibility about the identity you present, what that identity has to leave out, and how the excluded part may be returning through a strong reaction or a repeating pattern. It is offered as a hypothesis to test against your own evidence, never as a verdict about your unconscious.",
+    concepts: [
+      "Persona and social identity",
+      "Shadow",
+      "Projection",
+      "Complexes",
+      "Compensation",
+      "Individuation",
+    ],
+    works: [
+      "Two Essays on Analytical Psychology, Collected Works Volume 7",
+      "The Structure and Dynamics of the Psyche, Collected Works Volume 8",
+      "The Archetypes and the Collective Unconscious, Collected Works Volume 9, Part 1",
+      "Aion, Collected Works Volume 9, Part 2",
+      "Psychological Types, Collected Works Volume 6",
+    ],
+    notices:
+      "Reactions out of proportion to the event, relationship patterns that keep returning, and the distance between the role you perform and what you privately want.",
+    misses:
+      "It is interpretive rather than conclusive, and it can invite you to read meaning into an ordinary situation. It is not therapy, not diagnosis, and it says little about practical constraints such as money, time, or obligation.",
+    principles: [
+      {
+        title: "Notice the role you have learned to perform",
+        body: "The persona is the identity presented to the social world. It can be necessary and useful, but problems arise when a person becomes unable to distinguish the role from the whole of the self.",
+      },
+      {
+        title: "Examine what the identity excludes",
+        body: "Traits that conflict with a person's preferred self-image may be pushed out of conscious identity. They do not simply disappear and may return through strong reactions, fantasies, resentment, or recurring behaviour.",
+      },
+      {
+        title: "Question what you place entirely in others",
+        body: "An unusually intense attraction or aversion can sometimes involve qualities the person has difficulty recognising in themselves. This is a possibility to investigate, not a conclusion Bearing should announce.",
+      },
+      {
+        title: "Hold the tension instead of choosing a false half",
+        body: "Individuation involves becoming more conscious of the different forces shaping one's life and developing a more integrated relationship among them. It is not simple individuality, perfection, or unrestricted self-expression.",
+      },
+    ],
+    bestFor:
+      "Identity transitions, recurring relationship patterns, disproportionate reactions, projection, self-sabotage, conflict between public identity and private desire, and periods when an established role no longer feels sufficient.",
+    question:
+      "What part of yourself must remain unacceptable for your current identity to stay intact?",
+    portrait: jungImg,
+    portraitAlt:
+      "Black ink screen-print portrait of Carl Jung with swept-back white hair, a white moustache, round glasses, and a dark suit at a slight three-quarter angle.",
+    free: false,
+  },
 ];
 
 export const romanNumerals = ["I", "II", "III", "IV", "V", "VI"];
 
-/** Philosophers no longer offered for new readings, kept so saved history still renders. */
+/** Approaches no longer offered for new readings, kept so saved history still renders. */
 export const retiredPhilosopherNames: Record<string, string> = {
   seneca: "Seneca",
+  epictetus: "Epictetus",
 };
+
 
 export function philosopherBySlug(slug: string): Philosopher | undefined {
   return philosophers.find((p) => p.slug === slug);

@@ -78,33 +78,9 @@ const questions: Step[] = [
   },
 ];
 
+const GENERATION_ERROR =
+  "We couldn't prepare your reading. Your answers have been preserved. Please try again.";
 
-const PROTOTYPE: Reading = {
-  philosopherSlug: "aristotle",
-  headline: "Your habits are already choosing a direction.",
-  noticed:
-    "You describe a gap between what you say matters and what your week repeatedly rewards. The problem may not be a lack of clarity. Your routine is already reinforcing one answer through repetition.",
-  tension:
-    "You want the work to keep rewarding you, and you want a life whose shape you actually chose. At present the first is quietly deciding the second.",
-  assumption:
-    "You want the work to keep rewarding you, and you want a life whose shape you actually chose.",
-  method:
-    "Virtue ethics reads character as the residue of repeated action, so it treats your week, not your intention, as the evidence. The real problem is not indecision but a habit already forming without your consent.",
-  principle:
-    "Virtue ethics reads character as the residue of repeated action, so it treats your week as the evidence.",
-  grounding:
-    "The account of habituation and the mean sits in the Nicomachean Ethics, Books II and VI, where excellence is described as formed by practice and judged by practical wisdom rather than a fixed rule. The ideas here are paraphrased, not quoted.",
-  challenge:
-    "Consider whether calling this a question of clarity protects you from acting, since you already know which parts of the week you would cut first.",
-  limits:
-    "This lens is slow. It says little about material constraints, obligations to other people, or a situation that needs a decision this week rather than a formed habit.",
-  question: "Which habit is this choice quietly building?",
-  exercise:
-    "For one week, write down each moment your actions and your stated priorities split. Note what you chose and why. Look for the pattern before you try to fix it.",
-  returnPrompt:
-    "Come back after seven days and report the three splits that recurred most, and what you did in each.",
-  note: "This reading applies Aristotle's method to what you described. It is for reflection, not clinical, legal, medical, or financial advice.",
-};
 
 export function InquiryModal({
   open,
@@ -126,6 +102,10 @@ export function InquiryModal({
   const [saved, setSaved] = useState(false);
   const [savedReadingId, setSavedReadingId] = useState<string | null>(null);
   const [clarify, setClarify] = useState<{ question: string; answer: string }[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [lastClarifications, setLastClarifications] = useState<
+    { question: string; answer: string }[]
+  >([]);
 
   const { session } = useAuth();
   const { isMember } = useMembership();
@@ -158,7 +138,8 @@ export function InquiryModal({
   const untouched = [answers.situation, answers.tried, answers.stakes].every(
     (field) => field.trim().length === 0,
   );
-  const offerResume = draft.restored !== null && untouched && !isResult && !needsMembership;
+  const offerResume =
+    draft.restored !== null && untouched && !isResult && !needsMembership && !failed;
 
   const resumeDraft = () => {
     if (!draft.restored) return;
@@ -182,6 +163,7 @@ export function InquiryModal({
     setError(null);
     setNeedsMembership(false);
     setClarify(null);
+    setFailed(false);
   };
 
 
@@ -189,6 +171,8 @@ export function InquiryModal({
     setPending(true);
     setError(null);
     setNeedsMembership(false);
+    setFailed(false);
+    setLastClarifications(clarifications);
 
     const payload = { ...answers, clarifications };
     const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
@@ -202,6 +186,7 @@ export function InquiryModal({
         return;
       }
       setReading(result as Reading);
+      setClarify(null);
 
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "";
@@ -211,12 +196,15 @@ export function InquiryModal({
         setPending(false);
         return;
       }
-      setError("The reading could not be prepared right now. Here is the sample reading instead.");
-      setReading(PROTOTYPE);
+      // A failed generation is never replaced with example content. The answers
+      // stay exactly as written so the reader can retry or edit them.
+      setFailed(true);
+      setError(GENERATION_ERROR);
     } finally {
       setPending(false);
     }
   };
+
 
   const advance = async () => {
     if (step < questions.length - 1) {
@@ -390,7 +378,50 @@ export function InquiryModal({
               </div>
             </ReadingLayout>
           </div>
+        ) : failed ? (
+          <div>
+            <p className="label text-oxblood">{readingHeading(slug)}</p>
+            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+              We couldn't prepare your reading.
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft" role="status">
+              {GENERATION_ERROR}
+            </p>
+            <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">
+              Nothing has been written in your place. Bearing will not show you an example reading
+              as though it were yours.
+            </p>
+
+            <div className="mt-9 flex flex-wrap items-center gap-6">
+              <button
+                type="button"
+                className="btn-ink"
+                disabled={pending}
+                style={pending ? { opacity: 0.45 } : undefined}
+                onClick={() => runReading(lastClarifications)}
+              >
+                {pending ? "Preparing your reading" : "Try again"}{" "}
+                <span aria-hidden="true">→</span>
+              </button>
+              <button
+                type="button"
+                className="link-underline"
+                onClick={() => {
+                  setFailed(false);
+                  setError(null);
+                  setClarify(null);
+                  setStep(0);
+                }}
+              >
+                Edit my answers
+              </button>
+              <button type="button" className="link-underline" onClick={close}>
+                Return to the Lyceum
+              </button>
+            </div>
+          </div>
         ) : clarify ? (
+
 
           <div>
             <p className="label text-oxblood">Before the reading</p>
