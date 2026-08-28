@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -196,44 +196,62 @@ export type Database = {
       readings: {
         Row: {
           assumption: string
+          challenge: string | null
           created_at: string
           exercise: string
+          grounding: string | null
           headline: string
           id: string
           inquiry_id: string
+          limits: string | null
+          method: string | null
           note: string
           noticed: string
           philosopher_slug: string
           principle: string
           question: string
+          return_prompt: string | null
+          tension: string | null
           user_id: string
         }
         Insert: {
           assumption: string
+          challenge?: string | null
           created_at?: string
           exercise: string
+          grounding?: string | null
           headline: string
           id?: string
           inquiry_id: string
+          limits?: string | null
+          method?: string | null
           note: string
           noticed: string
           philosopher_slug: string
           principle: string
           question: string
+          return_prompt?: string | null
+          tension?: string | null
           user_id: string
         }
         Update: {
           assumption?: string
+          challenge?: string | null
           created_at?: string
           exercise?: string
+          grounding?: string | null
           headline?: string
           id?: string
           inquiry_id?: string
+          limits?: string | null
+          method?: string | null
           note?: string
           noticed?: string
           philosopher_slug?: string
           principle?: string
           question?: string
+          return_prompt?: string | null
+          tension?: string | null
           user_id?: string
         }
         Relationships: [

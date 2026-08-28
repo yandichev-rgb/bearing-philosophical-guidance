@@ -12,6 +12,7 @@ import {
 
 import { readingHeading } from "@/lib/reading-heading";
 import { ReadingFollowUps } from "./ReadingFollowUps";
+import { ReadingBody, type ReadingLike } from "./ReadingBody";
 import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
@@ -22,14 +23,8 @@ import {
 
 
 
-type Reading = {
+type Reading = ReadingLike & {
   philosopherSlug: string;
-  headline: string;
-  noticed: string;
-  assumption: string;
-  principle: string;
-  exercise: string;
-  question: string;
   note: string;
 };
 
@@ -88,12 +83,25 @@ const PROTOTYPE: Reading = {
   headline: "Your habits are already choosing a direction.",
   noticed:
     "You describe a gap between what you say matters and what your week repeatedly rewards. The problem may not be a lack of clarity. Your routine is already reinforcing one answer through repetition.",
-  assumption: "What kind of person is your current schedule training you to become?",
+  tension:
+    "You want the work to keep rewarding you, and you want a life whose shape you actually chose. At present the first is quietly deciding the second.",
+  assumption:
+    "You want the work to keep rewarding you, and you want a life whose shape you actually chose.",
+  method:
+    "Virtue ethics reads character as the residue of repeated action, so it treats your week, not your intention, as the evidence. The real problem is not indecision but a habit already forming without your consent.",
   principle:
-    "Character is built by repeated action rather than by single decisions, and the right amount of any effort is measured against this situation, not a fixed rule. In Aristotle's account, you become what you practice.",
+    "Virtue ethics reads character as the residue of repeated action, so it treats your week as the evidence.",
+  grounding:
+    "The account of habituation and the mean sits in the Nicomachean Ethics, Books II and VI, where excellence is described as formed by practice and judged by practical wisdom rather than a fixed rule. The ideas here are paraphrased, not quoted.",
+  challenge:
+    "Consider whether calling this a question of clarity protects you from acting, since you already know which parts of the week you would cut first.",
+  limits:
+    "This lens is slow. It says little about material constraints, obligations to other people, or a situation that needs a decision this week rather than a formed habit.",
+  question: "Which habit is this choice quietly building?",
   exercise:
     "For one week, write down each moment your actions and your stated priorities split. Note what you chose and why. Look for the pattern before you try to fix it.",
-  question: "Which habit is this choice quietly building?",
+  returnPrompt:
+    "Come back after seven days and report the three splits that recurred most, and what you did in each.",
   note: "This reading applies Aristotle's method to what you described. It is for reflection, not clinical, legal, medical, or financial advice.",
 };
 
@@ -251,29 +259,10 @@ export function InquiryModal({
               {reading.headline}
             </h2>
 
-            <p className="label mt-9 text-ink-soft">What stands out</p>
-            <p className="mt-3 leading-relaxed text-ink-soft">{reading.noticed}</p>
-
-            <div className="mt-9 grid gap-px border border-ink/25 bg-ink/25 sm:grid-cols-2">
-              <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-oxblood">The question</p>
-                <p className="mt-3 leading-relaxed text-ink">{reading.assumption}</p>
-              </div>
-              <div className="bg-papyrus-light/70 p-6">
-                <p className="label text-ink-soft">The principle</p>
-                <p className="mt-3 leading-relaxed text-ink">{reading.principle}</p>
-              </div>
+            <div className="mt-9">
+              <ReadingBody reading={reading} />
             </div>
 
-            <div className="mt-6 border border-ink/25 bg-papyrus-light/60 p-6">
-              <p className="label text-ink-soft">The practice</p>
-              <p className="mt-3 leading-relaxed text-ink">{reading.exercise}</p>
-            </div>
-
-            <div className="mt-6 border border-ink/25 p-6">
-              <p className="label text-oxblood">Sit with this</p>
-              <p className="mt-3 text-lg italic text-ink">{reading.question}</p>
-            </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-6">
               {session ? (

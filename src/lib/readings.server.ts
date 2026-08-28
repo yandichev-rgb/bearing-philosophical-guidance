@@ -14,10 +14,17 @@ export type GeneratedReading = {
   philosopherSlug: ProfileSlug;
   headline: string;
   noticed: string;
+  tension: string;
+  method: string;
+  grounding: string;
+  challenge: string;
+  limits: string;
+  question: string;
+  exercise: string;
+  returnPrompt: string;
+  /** Legacy columns kept in step with the new fields so saved history still renders. */
   assumption: string;
   principle: string;
-  exercise: string;
-  question: string;
   note: string;
 };
 
@@ -27,12 +34,25 @@ export type ReadingResult = {
 };
 
 const DISCLAIMER =
-  "This reading interprets your situation through one philosopher's ideas. It is for reflection, not clinical, legal, medical, or financial advice.";
+  "This reading applies one philosopher's method to what you described. It is one lens, not a complete answer, and it is for reflection rather than clinical, legal, medical, or financial advice.";
+
+const FIELDS = [
+  "headline",
+  "noticed",
+  "tension",
+  "method",
+  "grounding",
+  "challenge",
+  "limits",
+  "question",
+  "exercise",
+  "returnPrompt",
+] as const;
 
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["headline", "noticed", "assumption", "principle", "exercise", "question"],
+  required: FIELDS,
   properties: {
     headline: {
       type: "string",
@@ -42,16 +62,43 @@ const SCHEMA = {
       type: "string",
       description: "What stands out: a direct observation about what the reader described.",
     },
-    assumption: {
+    tension: {
+      type: "string",
+      description: "The tension underneath: the conflict between two things they want or rely on.",
+    },
+    method: {
       type: "string",
       description:
-        "The question: one clear personal question to the reader that exposes the central tension.",
+        "The philosopher's method: how this method proceeds here and what it treats as the real problem.",
     },
-    principle: { type: "string", description: "The principle: the relevant idea in plain language, and why it applies here." },
-    exercise: { type: "string", description: "The practice: one specific action or exercise to try." },
-    question: { type: "string", description: "Sit with this: one short question worth continuing to consider." },
+    grounding: {
+      type: "string",
+      description:
+        "Textual grounding: the work and section the ideas come from, marking paraphrase as paraphrase.",
+    },
+    challenge: {
+      type: "string",
+      description: "The challenge: a test of the reader's own framing of the situation.",
+    },
+    limits: {
+      type: "string",
+      description: "What this lens may miss: honest limits of this approach on this situation.",
+    },
+    question: {
+      type: "string",
+      description: "One better question than the one they arrived with.",
+    },
+    exercise: {
+      type: "string",
+      description: "One real-world experiment: a specific observable action with a timeframe.",
+    },
+    returnPrompt: {
+      type: "string",
+      description: "Return prompt: when to come back and exactly what to report.",
+    },
   },
 } as const;
+
 
 /** Generates a structured reading through the Lovable AI Gateway. Server only. */
 export async function generateReadingWithAI(
@@ -102,7 +149,7 @@ export async function generateReadingWithAI(
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("The reading came back empty.");
 
-  const parsed = JSON.parse(content) as Omit<GeneratedReading, "philosopherSlug" | "note">;
+  const parsed = JSON.parse(content) as Record<(typeof FIELDS)[number], string>;
 
   return {
     usage: {
@@ -111,16 +158,24 @@ export async function generateReadingWithAI(
     },
     reading: {
       philosopherSlug: slug,
-      headline: parsed.headline || "Your situation already points to something you can practice.",
+      headline: parsed.headline || "Your situation already points to something you can test.",
       noticed: parsed.noticed,
-      assumption: parsed.assumption,
-      principle: parsed.principle,
-      exercise: parsed.exercise,
+      tension: parsed.tension,
+      method: parsed.method,
+      grounding: parsed.grounding,
+      challenge: parsed.challenge,
+      limits: parsed.limits,
       question: parsed.question,
+      exercise: parsed.exercise,
+      returnPrompt: parsed.returnPrompt,
+      // Legacy columns, written so older views and follow up context keep working.
+      assumption: parsed.tension,
+      principle: parsed.method,
       note: DISCLAIMER,
     },
   };
 }
+
 
 export type FollowUpResult = {
   answer: string;
@@ -131,11 +186,12 @@ const FOLLOW_UP_RULES = `
 The reader has already received a full reading and is now asking one further question about it.
 
 Rules for this reply:
-- Answer only what they asked. Do not restate the reading and do not repeat its five sections.
+- Answer only what they asked. Do not restate the reading and do not repeat its sections.
 - Two or three short paragraphs at most. Plain prose, no headings, no lists, no markdown.
 - Speak directly to the reader as "you". Never write in the philosopher's first person and never write "Aristotle would say" or similar framing.
 - Stay inside the same philosophical method. If the question falls outside what that method can address, say so plainly and give what the method can offer.
-- Where it helps, adjust or replace the practice with one concrete revised step.
+- Where it helps, adjust or replace the experiment with one concrete revised step.
+- Cite a work and section only when you are sure of it, and mark paraphrase as paraphrase. Never invent a quotation.
 - Do not use em dashes. No flattery, no motivational language, no promises about outcomes.
 - No medical, legal, financial, or clinical advice.
 `;
@@ -151,6 +207,10 @@ export async function generateFollowUpWithAI(input: {
     principle: string;
     exercise: string;
     question: string;
+    tension?: string | null;
+    method?: string | null;
+    challenge?: string | null;
+    limits?: string | null;
   };
   history: { question: string; answer: string }[];
   question: string;
@@ -165,10 +225,13 @@ export async function generateFollowUpWithAI(input: {
     `The reading they received:`,
     `Headline: ${input.reading.headline}`,
     `What stands out: ${input.reading.noticed}`,
-    `The question: ${input.reading.assumption}`,
-    `The principle: ${input.reading.principle}`,
-    `The practice: ${input.reading.exercise}`,
-    `Sit with this: ${input.reading.question}`,
+    `The tension underneath: ${input.reading.tension || input.reading.assumption}`,
+    `The method applied: ${input.reading.method || input.reading.principle}`,
+    `The challenge put to them: ${input.reading.challenge || "Not recorded."}`,
+    `What the lens may miss: ${input.reading.limits || "Not recorded."}`,
+    `The experiment: ${input.reading.exercise}`,
+    `The better question they were left with: ${input.reading.question}`,
+
   ].join("\n");
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [

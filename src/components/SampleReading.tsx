@@ -2,67 +2,212 @@ import { useState } from "react";
 import { Seal } from "./Seal";
 import { SectionLabel } from "./SectionLabel";
 import { Reveal } from "./Reveal";
+import { ReadingBody, type ReadingLike } from "./ReadingBody";
 
-const tabs = [
+/**
+ * One situation, six methods. Hand written demonstration copy, not generated,
+ * so the comparison shows that the methods genuinely disagree about what the
+ * problem is rather than producing six versions of the same advice.
+ */
+const situation =
+  "Work is going well, but it is taking over the rest of my life. I am afraid that slowing down will cost me everything I have built.";
+
+type Sample = {
+  id: string;
+  tab: string;
+  label: string;
+  margin: string;
+  /** The one line this method adds to the comparison list. */
+  lens: string;
+  compare: string;
+  reading: ReadingLike;
+};
+
+const samples: Sample[] = [
   {
     id: "aristotle",
     tab: "Aristotle",
     label: "An Aristotelian reading",
     margin: "Habit",
-    stands:
-      "You say you want a life with room for more than work, but your week practises the opposite every day. The gap is not confusion. It is repetition.",
-    question: "What kind of person is your current schedule training you to become?",
-    principle:
-      "Character is the sum of what you repeat. The right amount of effort is measured against this life, not against a rule you inherited.",
-    practice:
-      "Choose a hard stopping time for one week. Keep it even on the evenings when the work could continue.",
-    sit: "You are not deciding once. You are deciding every Tuesday.",
+    lens: "Aristotle, virtue ethics",
+    compare: "What is your current schedule training you to become?",
+    reading: {
+      headline: "Your week is already practising an answer.",
+      noticed:
+        "You say you want a life with room for more than work, but your week repeats the opposite every day. The gap is not confusion. It is repetition.",
+      tension:
+        "You want the standing your work has earned, and you want a life whose shape you chose. At present the first is quietly setting the second.",
+      assumption: "You want the standing your work has earned, and a life whose shape you chose.",
+      method:
+        "Virtue ethics treats character as the residue of repeated action, so the evidence here is your calendar rather than your intention. The real problem is not an undecided question but a habit forming without your consent.",
+      principle: "Virtue ethics treats character as the residue of repeated action.",
+      grounding:
+        "The account of habituation and of the mean as relative to the person sits in the Nicomachean Ethics, Books II and VI, alongside practical wisdom as the capacity that judges the particular case. Paraphrased, not quoted.",
+      challenge:
+        "Consider whether describing this as fear of losing what you built keeps you from admitting which parts of the week you would cut first if nobody were watching.",
+      limits:
+        "This lens works slowly. It says little about money, dependents, or a decision that has to be made this month rather than practised over a year.",
+      question: "Which version of you is this schedule rehearsing every Tuesday?",
+      exercise:
+        "Set a hard stopping time for one week and keep it on the evenings when the work could continue. Write one line each night about what you did with the hour instead.",
+      returnPrompt:
+        "Come back after seven days and report which evenings you broke the stop, and what reason you gave yourself each time.",
+    },
   },
   {
     id: "socrates",
     tab: "Socrates",
     label: "A Socratic reading",
     margin: "Belief",
-    stands:
-      "You treat slowing down and being unambitious as the same thing. That equation is doing a great deal of work here, and you have never made it defend itself.",
-    question: "Where did you learn that rest is a cost rather than part of the work?",
-    principle:
-      "An untested belief governs more firmly than one you have argued with. Define the word before you let it judge you.",
-    practice:
-      "Write what ambition means to you in one sentence. Cross out anything that depends on impressing someone.",
-    sit: "You may be obeying a rule nobody ever gave you.",
+    lens: "Socrates, Socratic inquiry",
+    compare: "Why have you treated rest and lack of ambition as the same thing?",
+    reading: {
+      headline: "One word here is doing work you have never examined.",
+      noticed:
+        "You use slowing down and being unambitious as though they name the same thing. That equation carries most of the fear in your account, and you have never made it defend itself.",
+      tension:
+        "You believe ambition is proved by continuous output, and you also believe a good life is more than output. Both cannot govern the same week.",
+      assumption: "Ambition proved by output against a good life that is more than output.",
+      method:
+        "The Socratic method does not supply a conclusion. It isolates the definition you are relying on, tests it against a case, and treats the contradiction it exposes as the real problem rather than the schedule itself.",
+      principle: "The Socratic method tests definitions rather than supplying conclusions.",
+      grounding:
+        "The pattern of examining a definition until it collapses, and treating admitted ignorance as progress, runs through the Apology and the early dialogues such as Euthyphro and Laches. Paraphrased, not quoted.",
+      challenge:
+        "If a colleague you respect worked fewer hours and produced the same result, would you call them unambitious, and if not, what is your definition actually measuring?",
+      limits:
+        "Examination can clarify a belief without changing a workload. It offers little where the pressure is structural rather than a matter of what you think.",
+      question: "What would ambition mean if it could not be measured in hours?",
+      exercise:
+        "Write your definition of ambition in one sentence, then cross out every clause that depends on someone else noticing. Read what remains before your next planning meeting.",
+      returnPrompt:
+        "Return in a week with the sentence that survived, and one occasion where you acted against it.",
+    },
   },
   {
-    id: "stoic",
-    tab: "Stoic",
-    label: "A Stoic reading",
-    margin: "Control",
-    stands:
-      "Much of your worry sits with how others will read your limits. That was never yours to arrange. The quality of your work, and the calm you keep, are.",
-    question: "Which outcome here have you been trying to manage on someone else's behalf?",
-    principle:
-      "Separate what is yours from what is not, then spend yourself entirely on the first. The rest is weather.",
-    practice:
-      "Name one outcome to stop managing, and one action today that is fully within your hands.",
-    sit: "A boundary held quietly says more than one explained at length.",
+    id: "marcus-aurelius",
+    tab: "Marcus Aurelius",
+    label: "Through Marcus Aurelius",
+    margin: "Perspective",
+    lens: "Marcus Aurelius, Stoic perspective",
+    compare: "How much of this weight is the event, and how much the judgment you added?",
+    reading: {
+      headline: "The event is a workload. The weight is a verdict you added.",
+      noticed:
+        "You describe the work as taking your life, which is a judgment rather than a report. What happened is that hours were requested and you agreed to them.",
+      tension:
+        "You want to be seen as someone who carries the load, and you want the day to belong to you. The wish to be seen is deciding.",
+      assumption: "Being seen to carry the load against owning your own day.",
+      method:
+        "This method separates the event from the opinion added to it, then asks what usefulness today actually requires. It treats reputation and the fear of loss as material to be put back in proportion, not as facts to be managed.",
+      principle: "Separate the event from the judgment, then ask what today requires.",
+      grounding:
+        "These moves are recurrent in the Meditations, especially Books IV, V, and VIII, where impressions are examined and reputation set against a wider view of time. Paraphrased from private notes, not quoted.",
+      challenge:
+        "Ask whether everything you have built would be diminished by one quieter month, or only your standing in a room you will not remember in ten years.",
+      limits:
+        "Perspective can console where change is needed. It risks making an unreasonable arrangement bearable instead of ending it.",
+      question: "What does today actually ask of you, apart from being seen to do it?",
+      exercise:
+        "Each morning this week write the day's single most useful task, and do it before answering anything. Note at the end whether the rest changed anything real.",
+      returnPrompt:
+        "Come back after five days and report what remained undone, and what it cost.",
+    },
   },
-];
-
-const situation =
-  "Work is going well, but it is taking over the rest of my life. I am afraid that slowing down will cost me everything I have built.";
-
-const comparisons = [
-  { lens: "Aristotle", line: "What is your current schedule training you to become?" },
   {
-    lens: "Socratic inquiry",
-    line: "Why have you treated rest and lack of ambition as the same thing?",
+    id: "epictetus",
+    tab: "Epictetus",
+    label: "Through Epictetus",
+    margin: "Agency",
+    lens: "Epictetus, Stoic agency",
+    compare: "Which part of this is genuinely up to you?",
+    reading: {
+      headline: "You are spending yourself on the part that was never yours.",
+      noticed:
+        "Most of your fear concerns how others will read your limits. That was never in your hands. The quality of your work and the hours you agree to are.",
+      tension:
+        "You want to keep others' good opinion, and you want the freedom to set a limit. One of them has to yield.",
+      assumption: "Keeping others' good opinion against the freedom to set a limit.",
+      method:
+        "This method draws a hard line between what is up to you and what is not, then tests the first impression before you act on it. It treats the difficulty as training in a specific capacity rather than as a problem to be arranged away.",
+      principle: "Divide what is up to you from what is not, and act only on the first.",
+      grounding:
+        "The division of things in our power and things not, and the discipline of examining impressions, opens the Enchiridion and recurs through the Discourses, Book I. Paraphrased, not quoted.",
+      challenge:
+        "Notice that calling the boundary impossible is more comfortable than setting it and discovering who objects.",
+      limits:
+        "The line between what is and is not up to you is harder to draw when income, visas, or care for others depend on the arrangement.",
+      question: "What would you do this week if no one's opinion of it were yours to manage?",
+      exercise:
+        "Name one outcome you will stop managing and one limit you will state plainly to a single person this week. Say it once, without explanation.",
+      returnPrompt:
+        "Report back with what you said, who you said it to, and what actually followed.",
+    },
   },
-  { lens: "Stoicism", line: "Which other people's reactions are you trying to manage?" },
+  {
+    id: "plato",
+    tab: "Plato",
+    label: "A Platonic reading",
+    margin: "Order",
+    lens: "Plato, the ordered soul",
+    compare: "Which part of you is currently governing the rest?",
+    reading: {
+      headline: "Something other than your judgment is currently in charge.",
+      noticed:
+        "You know what a good week would look like and you do not live one. That is not ignorance. It is a question of which part of you is giving the orders.",
+      tension:
+        "Your reasoned view of a good life and your appetite for standing and reward both want the same hours.",
+      assumption: "A reasoned view of a good life against an appetite for standing.",
+      method:
+        "This method distinguishes how the situation appears from what is actually the case, names the standard it should be measured against, and asks whether reason, ambition, or appetite is governing. The problem is disorder in the soul, not a shortage of time.",
+      principle: "Ask which part of the soul is governing, and what order would serve you better.",
+      grounding:
+        "The tripartite soul and the account of a just ordering appear in the Republic, Books IV and IX, with the contrast of appearance and reality in Book VII. Paraphrased, not quoted.",
+      challenge:
+        "If your reasoned judgment truly governed here, your calendar would already differ, so consider what is being served by leaving it as it is.",
+      limits:
+        "The ideal ordering is easier to name than to install, and this lens can make a practical constraint sound like a failure of character.",
+      question: "What would your week look like if judgment, not appetite, set the order?",
+      exercise:
+        "Write the ordered week you would defend as good, in hours. Put one block of it into next week and protect it as though it were a meeting with someone else.",
+      returnPrompt: "Return in a week and report which block survived, and what displaced the rest.",
+    },
+  },
+  {
+    id: "nietzsche",
+    tab: "Nietzsche",
+    label: "Through Nietzsche",
+    margin: "Genealogy",
+    lens: "Nietzsche, genealogy and self overcoming",
+    compare: "Whose values are you obeying, and what did obeying them cost?",
+    reading: {
+      headline: "The standard you are afraid of failing is not yours.",
+      noticed:
+        "You call the work everything you have built, but you have not asked who taught you to count it that way, or what that accounting leaves out.",
+      tension:
+        "You want to be the author of your own standard, and you want the approval that comes from meeting an inherited one.",
+      assumption: "Authoring your own standard against meeting an inherited one.",
+      method:
+        "Genealogy asks where a value came from and whose interest it served, then asks whether it still increases your strength or only your obedience. The real problem is not overwork but a value you adopted without ever choosing it.",
+      principle: "Trace the value to its origin, then ask whether it still serves your life.",
+      grounding:
+        "The genealogical method and the question of the value of values are set out in On the Genealogy of Morality, and self overcoming in Thus Spoke Zarathustra. Paraphrased, not quoted.",
+      challenge:
+        "Consider that fear of losing what you built may be less about the work than about who you would be without an external scoreboard confirming you.",
+      limits:
+        "This lens is corrosive by design. It can dissolve a commitment worth keeping and offers little guidance on obligations to the people around you.",
+      question: "Which of your standards would you still choose if no one else measured by it?",
+      exercise:
+        "List the three achievements you name first when you describe yourself. Beside each, write who taught you it counted. Keep one, and act this week as though the other two were optional.",
+      returnPrompt:
+        "Come back in ten days and report which of the two you could not let go of, and what happened when you tried.",
+    },
+  },
 ];
 
 export function SampleReading() {
-  const [active, setActive] = useState(tabs[0]!.id);
-  const current = tabs.find((tab) => tab.id === active) ?? tabs[0]!;
+  const [active, setActive] = useState(samples[0]!.id);
+  const current = samples.find((sample) => sample.id === active) ?? samples[0]!;
 
   return (
     <section
@@ -73,7 +218,7 @@ export function SampleReading() {
       <div className="shell relative grid gap-14 lg:grid-cols-[1fr_1.12fr] lg:items-start lg:gap-16">
         <div>
           <Reveal>
-            <SectionLabel numeral="V">Sample reading</SectionLabel>
+            <SectionLabel numeral="V">One situation, six methods</SectionLabel>
           </Reveal>
           <Reveal>
             <h2 id="sample-heading" className="display-lg mt-8 text-ink">
@@ -84,7 +229,8 @@ export function SampleReading() {
           </Reveal>
           <Reveal delay={0.08}>
             <p className="mt-6 max-w-md leading-relaxed text-ink-soft">
-              Here is the same situation examined through three different philosophical approaches.
+              These methods do not agree. Each one decides that a different part of the situation is
+              the real problem.
             </p>
           </Reveal>
 
@@ -96,54 +242,51 @@ export function SampleReading() {
           </Reveal>
 
           <ul className="mt-8 border-t border-ink/20">
-            {comparisons.map((item, index) => (
-              <Reveal as="li" key={item.lens} delay={index * 0.06} className="border-b border-ink/15 py-5">
-                <p className="label text-ink-soft">{item.lens}</p>
+            {samples.map((sample, index) => (
+              <Reveal
+                as="li"
+                key={sample.id}
+                delay={index * 0.05}
+                className="border-b border-ink/15 py-5"
+              >
+                <p className="label text-ink-soft">{sample.lens}</p>
                 <p
                   className="mt-2 text-[1.1rem] leading-snug text-ink"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  {item.line}
+                  {sample.compare}
                 </p>
               </Reveal>
             ))}
           </ul>
 
-          <Reveal delay={0.08}>
-            <p className="mt-7 max-w-md leading-relaxed text-ink-soft">
-              Bearing does not produce three generic opinions. Each method directs your attention to a
-              different part of the problem.
-            </p>
-          </Reveal>
-
-          <p className="label mt-9 text-ink-soft">Read the full sample</p>
+          <p className="label mt-9 text-ink-soft">Read the full reading</p>
           <div role="tablist" aria-label="Sample readings" className="mt-3 flex flex-wrap gap-3">
-            {tabs.map((tab) => (
+            {samples.map((sample) => (
               <button
-                key={tab.id}
+                key={sample.id}
                 type="button"
                 role="tab"
-                id={`tab-${tab.id}`}
-                aria-selected={active === tab.id}
-                aria-controls={`panel-${tab.id}`}
-                onClick={() => setActive(tab.id)}
+                id={`tab-${sample.id}`}
+                aria-selected={active === sample.id}
+                aria-controls={`panel-${sample.id}`}
+                onClick={() => setActive(sample.id)}
                 className={`label border border-ink px-5 py-3 transition-colors duration-200 ${
-                  active === tab.id
+                  active === sample.id
                     ? "bg-ink text-papyrus-light"
                     : "bg-transparent text-ink hover:bg-ink/10"
                 }`}
               >
-                {tab.tab}
+                {sample.tab}
               </button>
             ))}
           </div>
 
           <p className="mt-9 max-w-md text-sm leading-relaxed text-ink-soft">
-            Every reading is written directly to you. It applies the philosopher's method without
-            pretending to speak in the philosopher's voice.
+            Every reading names the work its ideas come from and states what the method may miss. It
+            applies a philosopher's method without pretending to speak in their voice.
           </p>
         </div>
-
 
         <Reveal delay={0.06}>
           <div
@@ -158,42 +301,14 @@ export function SampleReading() {
                 <Seal size={28} className="shrink-0" />
                 <div className="min-w-0">
                   <p className="label text-ink-soft">{current.label}</p>
-                  <p className="truncate text-lg text-ink">Your Bearing</p>
+                  <p className="truncate text-lg text-ink">{current.reading.headline}</p>
                 </div>
               </div>
               <span className="folio hidden shrink-0 sm:block">{current.margin}</span>
             </div>
 
             <div className="relative px-6 py-9 sm:px-10 sm:py-11">
-              <p className="label text-oxblood">What stands out</p>
-              <p className="drop-initial mt-3 text-[1.0625rem] leading-relaxed text-ink">
-                {current.stands}
-              </p>
-
-              <div className="mt-7 border-t border-ink/20 pt-6">
-                <p className="label text-oxblood">The question</p>
-                <p
-                  className="mt-3 text-[1.2rem] leading-snug text-ink"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {current.question}
-                </p>
-              </div>
-
-              <div className="mt-7 border-t border-ink/20 pt-6">
-                <p className="label text-oxblood">The principle</p>
-                <p className="mt-3 leading-relaxed text-ink-soft">{current.principle}</p>
-              </div>
-
-              <div className="mt-7 border-t border-ink/20 pt-6">
-                <p className="label text-oxblood">The practice</p>
-                <p className="mt-3 leading-relaxed text-ink">{current.practice}</p>
-              </div>
-
-              <div className="mt-7 border-t border-ink/20 pt-6">
-                <p className="label text-oxblood">Sit with this</p>
-                <p className="mt-3 italic leading-relaxed text-ink-soft">{current.sit}</p>
-              </div>
+              <ReadingBody reading={current.reading} />
             </div>
 
             <div className="flex items-center justify-between gap-4 border-t border-ink/25 px-6 py-4 sm:px-9">

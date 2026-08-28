@@ -49,6 +49,38 @@ export function PhilosopherModal({
           <p className="mt-4 text-xl italic text-oxblood">{p.principle}</p>
           <p className="mt-6 leading-relaxed text-ink-soft">{p.overview}</p>
 
+          <h3 className="label mt-12 text-ink">The method</h3>
+          <p className="mt-4 leading-relaxed text-ink-soft">{p.method}</p>
+
+          <h3 className="label mt-10 text-ink">Concepts used in readings</h3>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {p.concepts.map((concept) => (
+              <li key={concept} className="label border border-ink/30 px-3 py-2 text-ink-soft">
+                {concept}
+              </li>
+            ))}
+          </ul>
+
+          <h3 className="label mt-10 text-ink">Primary works</h3>
+          <ul className="mt-4 border-t border-ink/20">
+            {p.works.map((work) => (
+              <li key={work} className="border-b border-ink/15 py-3 text-sm italic text-ink-soft">
+                {work}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+            <div className="border border-ink/25 p-6">
+              <p className="label text-oxblood">What this approach notices</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft">{p.notices}</p>
+            </div>
+            <div className="border border-ink/25 p-6">
+              <p className="label text-ink-soft">What this approach may miss</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft">{p.misses}</p>
+            </div>
+          </div>
+
           <h3 className="label mt-12 text-ink">Four central principles</h3>
           <div className="mt-5 grid gap-px border border-ink/25 bg-ink/25 sm:grid-cols-2">
             {p.principles.map((principle) => (
@@ -70,7 +102,7 @@ export function PhilosopherModal({
             </div>
           </div>
 
-          <div className="mt-10">
+          <div className="mt-10 flex flex-wrap items-center gap-6">
             <button
               type="button"
               onClick={() => {
@@ -81,7 +113,15 @@ export function PhilosopherModal({
             >
               {p.free ? "Get my free reading" : `Ask ${p.name}`}
             </button>
+            <a
+              href="#sample"
+              onClick={onClose}
+              className="link-underline"
+            >
+              See this method applied
+            </a>
           </div>
+
         </div>
       </div>
     </Modal>

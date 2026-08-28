@@ -35,19 +35,19 @@ export const specimens: Specimen[] = [
         body: "You have not asked which job pays better. You already know. You keep opening the email because you are hoping the number will start to feel like permission, and it has not, nine days running.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "Picture a Tuesday in March next year, 7pm, in each job. Where are you sitting, and who is waiting for you?",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "A life is made of its ordinary days, not its offer letters. The right choice is the one whose Tuesdays you can practise for years without becoming someone you would rather not be.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "Tonight, write the two Tuesdays out in full, in plain sentences. Tomorrow, ask the new manager one direct question: what happened the last three weekends. Decide by Friday.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "Nine days of re-reading is an answer you have not agreed to hear yet.",
       },
     ],
@@ -58,27 +58,27 @@ export const specimens: Specimen[] = [
     kind: "A relationship",
     question:
       "My sister said something about my parenting at Easter. It is August. I have drafted a text about it maybe thirty times and sent none of them.",
-    philosopher: "Seneca",
-    method: "Stoicism",
+    philosopher: "Epictetus",
+    method: "Stoic agency",
     sections: [
       {
         heading: "What stands out",
         body: "The remark took four seconds. You have carried it for four months, and the thirty drafts were not attempts to reach her. They were rehearsals of being right, and each one made the silence a little heavier to break.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "Do you want the apology, or do you want your sister back? Answer honestly, because they need different sentences.",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "Anger promises justice and delivers occupation. You can think she was wrong and still be the one who speaks first. Being the first to speak costs nothing you actually own.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "Delete the drafts. Send seven words with no case in them: I miss you, can I call Sunday. Say the Easter thing out loud on the phone, once, then let her answer.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "You have already spent four months on four seconds. That rate is yours to set.",
       },
     ],
@@ -97,19 +97,19 @@ export const specimens: Specimen[] = [
         body: "You are comparing your whole life to three photographs of doors. You do not know their deposit, their in-laws' loan, their commute, or how they feel on a Sunday. You are losing a contest whose rules you were never shown.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "If nobody could ever see the deed, would you still want the house, or would you want what you imagine it proves?",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "What other people think of your life sits outside your control. Your savings rate, your work, your attention, and what you do with a free Saturday sit inside it. Spend yourself there.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "For two weeks, open the feed once a day, at lunch, not in the evening. Each night write one line: what I actually did today. Read the fourteen lines together.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "The envy tells you what you want. It does not tell you the schedule is real.",
       },
     ],
@@ -128,19 +128,19 @@ export const specimens: Specimen[] = [
         body: "You are treating this as a failure of knowledge, and it is not. Eleven visits is not ignorance. What you have trained since January is the gap between agreeing at 10pm and deciding at 6am, half asleep, alone.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "What is the smallest version of this that you could not talk yourself out of on your worst morning?",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "Do not announce what you have understood; show it in the one act available now. Training beats intention, and a plan that only works when you feel strong is not a plan.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "Move it off the morning. Put clothes and shoes by the door tonight, and for ten days do fifteen minutes after work, twice a week, no matter how thin it feels. Do not add anything until day eleven.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "You are not short on willpower. You are short on a version small enough to survive a bad night's sleep.",
       },
     ],
@@ -159,19 +159,19 @@ export const specimens: Specimen[] = [
         body: "The fear has no shape yet, so it can be everything at once, and that is why forty calendar checks feel productive. Unnamed, it makes every ordinary hour into the hour before the news.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "State the feared thing in one plain sentence, with a date and a number in it. What does it say?",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "Fear thrives in shadow and thins in daylight. Brought into the open and examined, a thing has a true size, usually smaller than the shadow and usually survivable.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "Write on one page: how many months of costs you have, who you would message in week one, and the three people you should have coffee with this month anyway. Then move the calendar check to twice a day, morning and after lunch.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "A named fear can be answered and planned for. An unnamed one only asks to be checked again.",
       },
     ],
@@ -190,19 +190,19 @@ export const specimens: Specimen[] = [
         body: "You say wasted, which means you are holding a standard for a life well spent. You have never written it down or read it aloud, yet it arrives every Sunday at six and passes judgement on your whole week.",
       },
       {
-        heading: "The question",
+        heading: "One better question",
         body: "Wasted against what, and who set that measure? Name the person whose approval the standard is waiting for.",
       },
       {
-        heading: "The principle",
+        heading: "The method",
         body: "An unexamined standard governs you more firmly than one you argue with. Define the word before you let it sentence you.",
       },
       {
-        heading: "The practice",
+        heading: "One experiment",
         body: "This Sunday, write one sentence defining a life well spent. Cross out every clause that exists to impress someone. Then put one thing from what remains into next week's calendar, with a time.",
       },
       {
-        heading: "Sit with this",
+        heading: "Return to this",
         body: "A borrowed measure can only ever find you short.",
       },
     ],
