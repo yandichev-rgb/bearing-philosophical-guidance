@@ -441,10 +441,16 @@ const CLINICAL_TERMS = [
   "your archetype is",
   "you are suffering from",
   "you have been diagnosed",
+  "diagnosable",
+  "showing symptoms of",
+  "your symptoms",
+  "personality disorder",
   "this is clinical",
+  "clinically",
   "you have depression",
   "you have anxiety disorder",
 ];
+
 
 const STOP_WORDS = new Set([
   "the", "and", "that", "this", "with", "have", "been", "from", "they", "them", "their", "what",
