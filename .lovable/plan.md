@@ -1,44 +1,37 @@
-# Deepening the philosophical analysis
+# Fix the reading wait, and stop showing "we couldn't prepare" for a quota block
 
-The current pipeline (`src/lib/readings.server.ts` + `src/lib/philosopher-profiles.server.ts`) generates a reading in a single pass with gemini-2.5-flash, one or two concepts, and a 350–500 word cap. Those are the four levers that bound depth today. Here is what can be done, roughly in order of impact per unit of effort.
+## What is actually happening
 
-## 1. Two-pass generation: draft, then adversarial critique (highest impact)
+Two separate problems, both confirmed from the logs and the database.
 
-Add a second model call after the first draft:
-- Pass 1 generates the reading as today.
-- Pass 2 receives the draft plus the reader's intake and acts as the philosopher's own sharpest critic: "Attack this interpretation. What did it miss? What did it assume? What would this philosopher object to in it?"
-- Pass 3 (or a single revise call) rewrites the reading incorporating the critique, keeping the same schema.
+1. **The generation itself is working.** Every recent pipeline run finished successfully in roughly 14–25 seconds (context check ~0.5s, analysis ~8s, writing ~7s) with zero validation failures. Nothing is timing out.
 
-This is the standard way to get noticeably deeper output without touching anything else. Cost roughly triples per reading, so it pairs naturally with making deep mode a member-only feature or a per-reading "Go deeper" action.
+2. **Your last real attempts were blocked by the free-reading cap, not by a failure.** The free tier allows 3 readings per visitor per day, and this browser reached 3 today at 20:32 UTC. The cap is checked *after* the reading is generated, and the modal's failure screen ignores the real message and always prints "We couldn't prepare your reading." So a used-up daily allowance looks identical to a broken generator.
 
-## 2. Upgrade the model for generation
+3. **There is no waiting state.** During the 15–25 second generation the modal stays on the last intake question and only the button label changes to "Preparing your reading" — so it reads as if nothing is happening, and then it appears to "give up".
 
-`READING_MODEL` is `google/gemini-2.5-flash`. Switching to `google/gemini-3.1-pro-preview` (or an OpenAI reasoning model via the Responses API) gives a clear quality jump on interpretive reasoning. This is a one-line change and can be combined with, or used as a cheap first step before, two-pass generation.
+## What I will change
 
-## 3. Loosen the constraints that cap depth
+### A real preparing screen
+- While a reading is being prepared, the modal switches to its own centred "preparing" panel in the existing papyrus/serif style: the compass seal with a slow, quiet rotation (no spinners, no gradients), a heading such as "Preparing your reading", and staged reassurance lines that advance with the actual pipeline stages ("Reading your answers" → "Choosing the philosophical lens" → "Writing your reading"), plus a note that this usually takes 20–30 seconds.
+- The intake answers stay untouched behind it; the panel cannot be dismissed by accident, and closing still preserves the draft.
+- Respect reduced-motion preferences: the seal fades gently instead of rotating.
+- The same panel is used when retrying and when continuing after clarifying questions.
 
-In `SHARED_RULES`:
-- Raise the word budget from 350–500 to, say, 500–750 for a "deep reading" variant.
-- Allow two or three concepts instead of one or two, with the rule that each must earn its place in the argument.
-- Require a counter-reading field: one paragraph naming the strongest alternative interpretation and why it was set aside. This is the single most depth-adding structural field, and it fits the existing "Limits of this interpretation" slot naturally.
+### Check the free allowance before spending a call
+- The free-reading allowance is checked *before* the pipeline runs, so an exhausted allowance no longer waits 25 seconds and no longer burns an AI call. The reading is still only counted once a real reading exists.
 
-## 4. Per-philosopher depth upgrades
-
-Each profile in `philosopher-profiles.server.ts` can be deepened with:
-- A "first moves" section: the two or three diagnostic questions the method always asks of a situation, so the model runs them in order rather than improvising.
-- A small worked-example fragment (one short abstract case, clearly marked as not reusable copy) so the model sees the target register of rigour.
-- More granular source mapping (already done for Aristotle; extend to Plato, Jung, Nietzsche) so concepts are tied to specific passages the explanation can lean on.
-
-## 5. Always-clarify for thin intake
-
-Today clarifying questions trigger only when intake is judged vague. Raising that bar (or always asking one follow-up before the full reading) gives the model more concrete material, which is what depth mostly comes from.
-
-## Recommendation
-
-Do (2) first as a quick win, then (1) as the real step change, then (3) and (4) as refinement. Tell me which of these you want and I will plan the concrete edits for that subset — or approve this plan and I will implement 1–3, leaving per-philosopher profile deepening (4) as a follow-up.
+### Distinguish "out of free readings" from "generation failed"
+- A quota block gets its own screen: "You've used today's free readings", the reset timing, and the actions "Join Bearing" (membership), "Edit my answers", "Return to the Lyceum" — no "Try again", since retrying cannot succeed today.
+- A genuine generation failure keeps the existing wording and the Try again / Edit my answers / Return to the Lyceum actions.
+- Any specific server message (safety boundary, daily service ceiling, membership) is shown as written instead of being replaced by the generic failure text.
 
 ## Technical notes
 
-- Two-pass generation lives in `src/lib/readings.server.ts` (`generateReading`); the critique pass reuses the existing strict schema and validation.
-- Any schema additions (e.g. `counterReading`) need a migration for a new `readings` column plus mapping in `readings.functions.ts` and `ReadingBody.tsx`.
-- Cost: readings are already budget-guarded via `ai-budget.server.ts`; deeper readings will consume budget faster, so the member gating decision matters.
+- `src/components/InquiryModal.tsx`: add an explicit view state (`intake | preparing | clarify | reading | quota | failed`) driven by the discriminated `ReadingResult`, render the new preparing panel and quota panel, and surface `result.message` in the failure view. `retryable` from the error result decides whether "Try again" is offered.
+- `src/lib/readings.functions.ts`: move the free-tier allowance check ahead of `runReadingPipeline` (a non-consuming peek), keep `claimFreeReading` as the post-success consume, and return `{ kind: "quota" }` so the client can present it distinctly. Add a small read-only quota peek helper in `src/lib/ai-budget.server.ts`.
+- `src/lib/reading-types.ts`: add the `quota` variant to `ReadingResult`.
+- Stage progress in the preparing panel is client-side timed against measured stage durations — no extra requests, no streaming changes.
+- Tests: extend `src/lib/readings.test.ts` for the pre-check returning the quota result without any model call, and for error results preserving their own message.
+
+Unchanged: visual system, layout of the reading itself, auth, membership, Stripe, privacy behaviour, saving, follow-ups, and the pipeline's reasoning stages.
