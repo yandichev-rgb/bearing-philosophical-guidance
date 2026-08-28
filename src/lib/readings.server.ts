@@ -230,8 +230,8 @@ export async function generateFollowUpWithAI(input: {
     `The challenge put to them: ${input.reading.challenge || "Not recorded."}`,
     `What the lens may miss: ${input.reading.limits || "Not recorded."}`,
     `The experiment: ${input.reading.exercise}`,
+    `The better question they were left with: ${input.reading.question}`,
 
-    `Sit with this: ${input.reading.question}`,
   ].join("\n");
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
