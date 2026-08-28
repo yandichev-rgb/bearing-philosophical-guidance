@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { isProfileSlug, type ProfileSlug } from "./philosopher-profiles.server";
+import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
 import {
   generateFollowUpWithAI,
   generateReadingWithAI,
@@ -29,10 +29,16 @@ const readingSchema = z.object({
   philosopherSlug: z.string(),
   headline: z.string(),
   noticed: z.string(),
+  tension: z.string(),
+  method: z.string(),
+  grounding: z.string(),
+  challenge: z.string(),
+  limits: z.string(),
+  question: z.string(),
+  exercise: z.string(),
+  returnPrompt: z.string(),
   assumption: z.string(),
   principle: z.string(),
-  exercise: z.string(),
-  question: z.string(),
   note: z.string(),
 });
 
@@ -60,7 +66,8 @@ export const generateMemberReading = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { philosopherSlug, ...answers } = data;
-    if (!isProfileSlug(philosopherSlug)) throw new Error("Unknown philosopher.");
+    if (!isProfileSlug(philosopherSlug) || isRetiredSlug(philosopherSlug))
+      throw new Error("Unknown philosopher.");
     if (philosopherSlug !== "aristotle") {
       const isMember = await hasActiveMembership(context.supabase, context.userId);
       // Returned, not thrown: the modal shows the membership invitation instead
@@ -118,6 +125,12 @@ export const saveReading = createServerFn({ method: "POST" })
       exercise: reading.exercise,
       question: reading.question,
       note: reading.note,
+      tension: reading.tension,
+      method: reading.method,
+      grounding: reading.grounding,
+      challenge: reading.challenge,
+      limits: reading.limits,
+      return_prompt: reading.returnPrompt,
       })
       .select("id")
       .single();
@@ -132,7 +145,9 @@ export const listMyReadings = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("readings")
-      .select("id, philosopher_slug, headline, exercise, question, created_at")
+      .select(
+        "id, philosopher_slug, headline, exercise, question, created_at, tension, method, grounding, challenge, limits, return_prompt, noticed, assumption, principle, note",
+      )
       .order("created_at", { ascending: false })
       .limit(50);
     if (error) throw new Error("Your readings could not be loaded.");
@@ -186,7 +201,7 @@ export const askFollowUp = createServerFn({ method: "POST" })
     const { data: reading, error: readingError } = await context.supabase
       .from("readings")
       .select(
-        "id, philosopher_slug, headline, noticed, assumption, principle, exercise, question, inquiry_id",
+        "id, philosopher_slug, headline, noticed, assumption, principle, exercise, question, inquiry_id, tension, method, challenge, limits",
       )
       .eq("id", data.readingId)
       .maybeSingle();
@@ -228,6 +243,10 @@ export const askFollowUp = createServerFn({ method: "POST" })
         principle: reading.principle,
         exercise: reading.exercise,
         question: reading.question,
+        tension: reading.tension,
+        method: reading.method,
+        challenge: reading.challenge,
+        limits: reading.limits,
       },
       history: prior.map((row) => ({ question: row.question, answer: row.answer })),
       question: data.question,
