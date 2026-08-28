@@ -8,6 +8,7 @@ const HEADINGS: Record<string, string> = {
   plato: "A Platonic Reading",
   "marcus-aurelius": "Through Marcus Aurelius",
   epictetus: "Through Epictetus",
+  nietzsche: "Through Nietzsche",
   seneca: "Through Seneca",
 };
 

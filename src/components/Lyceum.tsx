@@ -8,7 +8,7 @@ const prompts: Record<string, string> = {
   "marcus-aurelius": "Bring what you cannot control.",
   epictetus: "Bring the thing you know and do not do.",
   plato: "Bring a fear with no shape yet.",
-  seneca: "Bring the resentment you keep warm.",
+  nietzsche: "Bring the standard you are afraid of failing.",
 };
 
 export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
