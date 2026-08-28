@@ -51,6 +51,33 @@ const readingSchema = z.object({
   note: z.string(),
 });
 
+/**
+ * Broad submissions ("I feel lost") get two or three adaptive questions before
+ * anything is written. A short local check keeps the call off detailed entries.
+ */
+export const checkInquiryFocus = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => answersSchema.parse(data))
+  .handler(async ({ data }) => {
+    const words = [data.situation, data.tried, data.stakes]
+      .join(" ")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean).length;
+    if (data.clarifications.length > 0 || words > 70) {
+      return { needsClarification: false as const, questions: [] as string[] };
+    }
+
+    await assertDailyBudget();
+    const result = await generateDiagnosticQuestions(data);
+    await logAiUsage({
+      philosopherSlug: "diagnostic",
+      model: DIAGNOSTIC_MODEL,
+      tier: "free",
+      usage: result.usage,
+    });
+    return { needsClarification: result.needsClarification, questions: result.questions };
+  });
+
 
 /** The free tier: one complete Aristotle reading, no account required. */
 export const generateFreeReading = createServerFn({ method: "POST" })
