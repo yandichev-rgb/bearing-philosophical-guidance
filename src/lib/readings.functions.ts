@@ -71,6 +71,16 @@ async function produce(input: {
   userId?: string;
 }): Promise<ReadingResult> {
   await assertDailyBudget();
+
+  // The free allowance is checked before any model call, so an exhausted
+  // allowance answers immediately instead of after a full generation.
+  if (input.tier === "free") {
+    const remaining = await peekFreeReadingsRemaining();
+    if (remaining !== null && remaining <= 0) {
+      return { kind: "quota", message: READING_QUOTA_MESSAGE };
+    }
+  }
+
   const models = readingModels();
   const { result, usage, telemetry } = await runReadingPipeline(input.slug, input.answers);
 
