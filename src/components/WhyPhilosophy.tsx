@@ -38,15 +38,18 @@ export function WhyPhilosophy() {
 
           <Reveal delay={0.08}>
             <p className="drop-initial leading-relaxed text-ink-soft">
-              Generic advice begins with what you should do. Bearing begins by finding the assumption,
-              habit, or fear shaping the problem. Aristotle examines character and repetition.
-              Socratic inquiry tests the belief underneath. Stoicism separates what is yours to act on
-              from what is not.
+              Generic advice begins with what you should do. Bearing begins by deciding what the
+              problem actually is, and the methods disagree about that. Aristotle looks at habit and
+              character. Socratic inquiry tests the definition you are relying on. Stoicism divides
+              what is yours to act on from what is not. Nietzsche asks where your standard came from
+              and whose interest it served.
             </p>
             <p className="mt-5 italic text-oxblood">
-              You leave with a clearer view of the situation and one thing worth trying next.
+              Every reading names the work its ideas come from, and says plainly what that lens may
+              miss.
             </p>
           </Reveal>
+
         </div>
 
 
