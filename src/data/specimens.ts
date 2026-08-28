@@ -58,8 +58,8 @@ export const specimens: Specimen[] = [
     kind: "A relationship",
     question:
       "My sister said something about my parenting at Easter. It is August. I have drafted a text about it maybe thirty times and sent none of them.",
-    philosopher: "Epictetus",
-    method: "Stoic agency",
+    philosopher: "Carl Jung",
+    method: "Analytical psychology",
     sections: [
       {
         heading: "The bearing",
@@ -120,8 +120,8 @@ export const specimens: Specimen[] = [
     kind: "A recurring pattern",
     question:
       "I have paid for the gym since January and been eleven times. I know exactly what to do and every morning I turn the alarm off before I am properly awake.",
-    philosopher: "Epictetus",
-    method: "Stoicism",
+    philosopher: "Aristotle",
+    method: "Virtue ethics",
     sections: [
       {
         heading: "The bearing",
