@@ -61,6 +61,28 @@ export async function assertDailyBudget(): Promise<void> {
   }
 }
 
+/**
+ * Reads, without consuming, how many free readings this visitor has left today.
+ * Returns null when the count cannot be established, so a failed check never
+ * blocks a reading.
+ */
+export async function peekFreeReadingsRemaining(): Promise<number | null> {
+  try {
+    const hash = await visitorHash();
+    const { data, error } = await (await admin())
+      .from("free_reading_quota")
+      .select("used")
+      .eq("visitor_hash", hash)
+      .eq("day", new Date().toISOString().slice(0, 10))
+      .maybeSingle();
+    if (error) return null;
+    const used = Number(data?.used ?? 0);
+    return Math.max(0, FREE_READINGS_PER_DAY - used);
+  } catch {
+    return null;
+  }
+}
+
 /** Consumes one free reading for this visitor. Throws when the cap is reached. */
 export async function claimFreeReading(): Promise<void> {
   let hash: string;
