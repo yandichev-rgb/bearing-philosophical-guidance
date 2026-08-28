@@ -107,7 +107,6 @@ export function InquiryModal({
 
   const { session } = useAuth();
   const { isMember } = useMembership();
-  const checkFocus = useServerFn(checkInquiryFocus);
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
