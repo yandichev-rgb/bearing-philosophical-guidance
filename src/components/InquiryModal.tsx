@@ -101,6 +101,9 @@ export function InquiryModal({
   const [savedReadingId, setSavedReadingId] = useState<string | null>(null);
   const [clarify, setClarify] = useState<{ question: string; answer: string }[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [retryable, setRetryable] = useState(true);
+  const [quota, setQuota] = useState<string | null>(null);
+  const [stage, setStage] = useState(0);
   const [lastClarifications, setLastClarifications] = useState<
     { question: string; answer: string }[]
   >([]);
@@ -117,6 +120,17 @@ export function InquiryModal({
     if (!open || !initialKind) return;
     setAnswers((current) => (current.kind ? current : { ...current, kind: initialKind }));
   }, [open, initialKind]);
+
+  // Staged reassurance while the pipeline works. Timed against measured stage
+  // durations; it makes no extra requests.
+  useEffect(() => {
+    if (!pending) return;
+    const timers = [
+      window.setTimeout(() => setStage(1), 2500),
+      window.setTimeout(() => setStage(2), 11000),
+    ];
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [pending]);
 
   if (!open) return null;
 
@@ -161,14 +175,18 @@ export function InquiryModal({
     setNeedsMembership(false);
     setClarify(null);
     setFailed(false);
+    setQuota(null);
   };
 
 
   const runReading = async (clarifications: { question: string; answer: string }[]) => {
     setPending(true);
+    setStage(0);
     setError(null);
     setNeedsMembership(false);
     setFailed(false);
+    setQuota(null);
+    setRetryable(true);
     setLastClarifications(clarifications);
 
     const payload = { ...answers, clarifications };
@@ -193,12 +211,18 @@ export function InquiryModal({
         setClarify(result.questions.map((question) => ({ question, answer: "" })));
         return;
       }
+      if (result.kind === "quota") {
+        setQuota(result.message);
+        return;
+      }
       if (result.kind === "safety") {
         setFailed(true);
+        setRetryable(false);
         setError(result.message);
         return;
       }
       setFailed(true);
+      setRetryable(result.retryable);
       setError(result.message || GENERATION_ERROR);
 
     } catch (caught) {
