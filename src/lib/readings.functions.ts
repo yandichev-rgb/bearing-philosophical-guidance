@@ -4,6 +4,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
 import {
+  DIAGNOSTIC_MODEL,
+  generateDiagnosticQuestions,
   generateFollowUpWithAI,
   generateReadingWithAI,
   READING_MODEL,
@@ -23,6 +25,15 @@ const answersSchema = z.object({
     .default(""),
 
   duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
+  clarifications: z
+    .array(
+      z.object({
+        question: z.string().trim().max(400),
+        answer: z.string().trim().max(2000),
+      }),
+    )
+    .max(3)
+    .default([]),
 });
 
 const readingSchema = z.object({
@@ -32,7 +43,7 @@ const readingSchema = z.object({
   tension: z.string(),
   method: z.string(),
   grounding: z.string(),
-  challenge: z.string(),
+  challenge: z.string().default(""),
   limits: z.string(),
   question: z.string(),
   exercise: z.string(),
@@ -41,6 +52,34 @@ const readingSchema = z.object({
   principle: z.string(),
   note: z.string(),
 });
+
+/**
+ * Broad submissions ("I feel lost") get two or three adaptive questions before
+ * anything is written. A short local check keeps the call off detailed entries.
+ */
+export const checkInquiryFocus = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => answersSchema.parse(data))
+  .handler(async ({ data }) => {
+    const words = [data.situation, data.tried, data.stakes]
+      .join(" ")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean).length;
+    if (data.clarifications.length > 0 || words > 70) {
+      return { needsClarification: false as const, questions: [] as string[] };
+    }
+
+    await assertDailyBudget();
+    const result = await generateDiagnosticQuestions(data);
+    await logAiUsage({
+      philosopherSlug: "diagnostic",
+      model: DIAGNOSTIC_MODEL,
+      tier: "free",
+      usage: result.usage,
+    });
+    return { needsClarification: result.needsClarification, questions: result.questions };
+  });
+
 
 /** The free tier: one complete Aristotle reading, no account required. */
 export const generateFreeReading = createServerFn({ method: "POST" })

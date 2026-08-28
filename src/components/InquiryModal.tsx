@@ -16,6 +16,7 @@ import { ReadingBody, type ReadingLike } from "./ReadingBody";
 import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
+  checkInquiryFocus,
   generateFreeReading,
   generateMemberReading,
   saveReading,
@@ -124,9 +125,11 @@ export function InquiryModal({
   const [needsMembership, setNeedsMembership] = useState(false);
   const [saved, setSaved] = useState(false);
   const [savedReadingId, setSavedReadingId] = useState<string | null>(null);
+  const [clarify, setClarify] = useState<{ question: string; answer: string }[] | null>(null);
 
   const { session } = useAuth();
   const { isMember } = useMembership();
+  const checkFocus = useServerFn(checkInquiryFocus);
   const generate = useServerFn(generateFreeReading);
   const generateAs = useServerFn(generateMemberReading);
   const save = useServerFn(saveReading);
@@ -173,23 +176,21 @@ export function InquiryModal({
     setSavedReadingId(null);
     setError(null);
     setNeedsMembership(false);
+    setClarify(null);
   };
 
 
-  const advance = async () => {
-    if (step < questions.length - 1) {
-      setStep(step + 1);
-      return;
-    }
+  const runReading = async (clarifications: { question: string; answer: string }[]) => {
     setPending(true);
     setError(null);
     setNeedsMembership(false);
 
+    const payload = { ...answers, clarifications };
     const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
     try {
       const result = memberPath
-        ? await generateAs({ data: { ...answers, philosopherSlug } })
-        : await generate({ data: answers });
+        ? await generateAs({ data: { ...payload, philosopherSlug } })
+        : await generate({ data: payload });
       if (result && (result as { needsMembership?: boolean }).needsMembership) {
         setNeedsMembership(true);
         setPending(false);
@@ -210,6 +211,27 @@ export function InquiryModal({
     } finally {
       setPending(false);
     }
+  };
+
+  const advance = async () => {
+    if (step < questions.length - 1) {
+      setStep(step + 1);
+      return;
+    }
+    setPending(true);
+    setError(null);
+    try {
+      const focus = await checkFocus({ data: { ...answers, clarifications: [] } });
+      if (focus.needsClarification && focus.questions.length >= 2) {
+        setClarify(focus.questions.map((question) => ({ question, answer: "" })));
+        setPending(false);
+        return;
+      }
+    } catch {
+      // A failed focus check should never block the reading.
+    }
+    setPending(false);
+    await runReading([]);
   };
 
 
@@ -340,6 +362,66 @@ export function InquiryModal({
             <p className="mt-10 border-t border-ink/20 pt-5 text-sm leading-relaxed text-ink-soft">
               {reading.note}
             </p>
+          </div>
+        ) : clarify ? (
+          <div>
+            <p className="label text-oxblood">Before the reading</p>
+            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+              A few particulars first.
+            </h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">
+              What you wrote is broad enough that any reading of it would be guesswork. Answer these
+              and the reading can work from your actual situation rather than a general one.
+            </p>
+
+            {clarify.map((item, index) => (
+              <label key={item.question} className="mt-8 block">
+                <span className="block leading-relaxed text-ink">{item.question}</span>
+                <textarea
+                  value={item.answer}
+                  onChange={(event) =>
+                    setClarify((current) =>
+                      (current ?? []).map((entry, position) =>
+                        position === index ? { ...entry, answer: event.target.value } : entry,
+                      ),
+                    )
+                  }
+                  rows={3}
+                  className="mt-3 w-full border border-ink/40 bg-papyrus-light/70 p-4 text-lg leading-relaxed text-ink placeholder:text-ink-soft/60"
+                  style={{ fontFamily: "var(--font-body)" }}
+                />
+              </label>
+            ))}
+
+            <div className="mt-8 flex flex-wrap items-center gap-6">
+              <button
+                type="button"
+                className="btn-ink"
+                disabled={pending || clarify.every((item) => item.answer.trim().length === 0)}
+                style={
+                  pending || clarify.every((item) => item.answer.trim().length === 0)
+                    ? { opacity: 0.45 }
+                    : undefined
+                }
+                onClick={() => runReading(clarify.filter((item) => item.answer.trim().length > 0))}
+              >
+                {pending ? "Preparing your reading" : "Create my reading"}{" "}
+                <span aria-hidden="true">→</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setClarify(null)}
+                className="link-underline"
+              >
+                Back to my answers
+              </button>
+            </div>
+
+            {error ? (
+              <p className="mt-5 text-sm text-oxblood" role="status">
+                {error}
+              </p>
+            ) : null}
           </div>
         ) : needsMembership ? (
           <div>

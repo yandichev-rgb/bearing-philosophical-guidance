@@ -71,26 +71,16 @@ export function SourceDrawer({ grounding }: { grounding: string }) {
 export function ReadingBody({ reading }: { reading: ReadingLike }) {
   return (
     <div>
-      <p className="label text-oxblood">What stands out</p>
+      <p className="label text-oxblood">The bearing</p>
       <p className="drop-initial mt-3 text-[1.0625rem] leading-relaxed text-ink">
         {reading.noticed}
       </p>
 
-      <Section label="The tension underneath" tone="oxblood">
-        <p className="mt-3 leading-relaxed text-ink">{reading.tension || reading.assumption}</p>
-      </Section>
-
-      <Section label="The method">
+      <Section label="The philosophical lens">
         <p className="mt-3 leading-relaxed text-ink-soft">{reading.method || reading.principle}</p>
       </Section>
 
-      {reading.challenge ? (
-        <Section label="The challenge" tone="oxblood">
-          <p className="mt-3 leading-relaxed text-ink">{reading.challenge}</p>
-        </Section>
-      ) : null}
-
-      <Section label="One better question" tone="oxblood">
+      <Section label="The better question" tone="oxblood">
         <p
           className="mt-3 text-[1.2rem] leading-snug text-ink"
           style={{ fontFamily: "var(--font-display)" }}
@@ -99,18 +89,18 @@ export function ReadingBody({ reading }: { reading: ReadingLike }) {
         </p>
       </Section>
 
-      <Section label="One experiment">
+      <Section label="The experiment">
         <p className="mt-3 leading-relaxed text-ink">{reading.exercise}</p>
       </Section>
 
       {reading.returnPrompt ? (
-        <Section label="Return">
+        <Section label="When you return">
           <p className="mt-3 leading-relaxed text-ink">{reading.returnPrompt}</p>
         </Section>
       ) : null}
 
       {reading.limits ? (
-        <Section label="What this lens may miss">
+        <Section label="What this reading could have wrong">
           <p className="mt-3 text-sm italic leading-relaxed text-ink-soft">{reading.limits}</p>
         </Section>
       ) : null}
@@ -119,3 +109,4 @@ export function ReadingBody({ reading }: { reading: ReadingLike }) {
     </div>
   );
 }
+

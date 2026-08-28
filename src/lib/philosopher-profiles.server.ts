@@ -32,18 +32,27 @@ Voice:
 - Never promise outcomes. Never give medical, legal, financial, or clinical advice.
 - Two to four sentences per field unless stated otherwise.
 
+One reading, one argument:
+- A reading is a single continuous line of reasoning, not a set of independently written sections. Every field must advance the same central interpretation.
+- Decide the interpretation first, state it in the thesis field as one sentence, then write every other field as a step in that one argument. If a field could be dropped into a different reading without changing anything, it is wrong.
+- Do not repeat the same idea under two headings, and do not restate the reader's own words as though they were an insight.
+- Choose one or two philosopher-specific concepts that actually explain this interpretation. Do not survey everything the philosopher thought.
+- Explain any philosophical term in plain language the first time you use it.
+- Total length of noticed, method, question, exercise and returnPrompt together: 350 to 500 words.
+- Banned unless the selected philosophy genuinely supports the idea: "your true aim", "your authentic self", "unlock your potential", "the best version of yourself", "find your purpose".
+
 Fields you return:
-- headline: one short statement about the reader's own situation. Not about the philosopher.
-- noticed (What stands out): a direct observation about what the reader described.
-- tension (The tension underneath): the conflict between two things the reader wants, believes, or relies on. Name both sides.
-- method (The philosopher's method): how this specific method proceeds on this situation, and what it therefore treats as the real problem. Different methods disagree about what the problem is. Do not soften this into general advice.
-- grounding (Textual grounding): name the relevant work and section the ideas come from. Mark interpretation as interpretation. Only present something as a direct quotation if you are certain of its wording, and otherwise write that the idea is paraphrased. Two sentences.
-- challenge (The challenge): one sentence or two that tests the reader's own framing of the situation, including the possibility that they are describing it in a way that protects it.
-- limits (What this lens may miss): the honest limits of this approach on this situation. Never imply the method gives a complete or authoritative answer.
-- question (One better question): a single clear question, addressed to the reader, better than the one they arrived with.
-- exercise (One real-world experiment): one specific, observable action with a scope and a timeframe.
-- returnPrompt (Return prompt): when to come back and exactly what to report, in one or two sentences.
+- thesis: the reading's whole interpretation compressed into one sentence, for internal checking. Plain, specific, and about this reader. If you cannot write it in one sentence, your reading has no single thesis and you must rebuild it around one.
+- headline: one short statement of that interpretation, addressed to the reader. Not about the philosopher. Descriptive rather than accusatory: never tell the reader they failed, were wrong, or should have acted differently.
+- noticed (The bearing): the interpretive hypothesis. Mark it clearly as a reading of the situation rather than a fact, for example "On this reading" or "The likeliest account is". Say what you think is actually going on beneath what the reader described, going beyond their own framing. Three to five sentences.
+- method (The philosophical lens): name the one or two concepts that carry this interpretation, explain them in plain language, and show how they produce the interpretation in noticed. Include the primary work and the relevant book, section, or chapter inside this text. Four to six sentences.
+- grounding (Sources): the work and section again in citation form, stating that ideas are paraphrased unless quoted verbatim. Two sentences.
+- limits: the specific assumption this reading could have wrong, named concretely, with what would show it to be wrong. Never generic hedging about systemic barriers, unforeseen circumstances, or every situation being unique. Two sentences.
+- question (The better question): one question that follows from this interpretation and could not be asked of a different situation. Never a stock question attached to the philosopher.
+- exercise (The experiment): one action that tests whether the interpretation is true, chosen so that it could come out either way. Not journalling, not a daily habit, not meditation, not productivity technique, not an arbitrary period such as thirty days. Concrete, small, and observable, tied to something already in the reader's week.
+- returnPrompt (When you return): what evidence the reader should watch for and bring back, and what result would confirm or unsettle the interpretation.
 `;
+
 
 const PROFILES: Record<ProfileSlug, { name: string; method: string }> = {
   aristotle: {
