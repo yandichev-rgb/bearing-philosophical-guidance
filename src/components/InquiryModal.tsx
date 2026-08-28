@@ -12,7 +12,7 @@ import {
 
 import { readingHeading } from "@/lib/reading-heading";
 import { ReadingFollowUps } from "./ReadingFollowUps";
-import { ReadingBody, type ReadingLike } from "./ReadingBody";
+import { ReadingBody, ReadingLayout, type ReadingLike } from "./ReadingBody";
 import { useMembership } from "@/hooks/useMembership";
 import { MEMBERSHIP } from "@/config/membership";
 import {
@@ -145,6 +145,11 @@ export function InquiryModal({
 
 
   const isResult = reading !== null;
+  const readingDate = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   const current = questions[step]!;
   const value = answers[current?.key ?? "situation"];
   const chips = current.chips;
@@ -254,7 +259,9 @@ export function InquiryModal({
       open={open}
       onClose={close}
       labelledBy="inquiry-title"
-      className="min-h-screen max-w-3xl sm:min-h-0"
+      className={
+        isResult ? "min-h-screen max-w-[1120px] sm:min-h-0" : "min-h-screen max-w-3xl sm:min-h-0"
+      }
     >
       <div className="flex items-center justify-between gap-4 border-b border-ink/25 px-5 py-4 sm:px-9">
         <div className="flex min-w-0 items-center gap-3">
@@ -273,97 +280,118 @@ export function InquiryModal({
         />
       </div>
 
-      <div className="px-5 py-10 sm:px-9 sm:py-14">
+      <div className={isResult ? "py-6 sm:py-8" : "px-5 py-10 sm:px-9 sm:py-14"}>
         {isResult ? (
           <div>
-            <p className="label text-oxblood">{readingHeading(reading.philosopherSlug)}</p>
-            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+            <h2 id="inquiry-title" className="sr-only">
               {reading.headline}
             </h2>
+            <ReadingLayout
+              slug={reading.philosopherSlug}
+              onAnotherLens={close}
+              utility={
+                <>
+                  <button type="button" onClick={close} className="nav-link">
+                    <span aria-hidden="true">←</span> Back to the Lyceum
+                  </button>
+                  <span className="folio">{readingDate}</span>
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                    {session ? (
+                      <button
+                        type="button"
+                        onClick={persist}
+                        disabled={saved}
+                        className="nav-link"
+                        style={saved ? { opacity: 0.5 } : undefined}
+                      >
+                        {saved ? "Saved" : "Save reading"}
+                      </button>
+                    ) : (
+                      <Link to="/auth" className="nav-link">
+                        Save reading
+                      </Link>
+                    )}
+                    <button type="button" onClick={close} className="nav-link">
+                      Compare another lens
+                    </button>
+                  </div>
+                </>
+              }
+            >
+              <ReadingBody reading={reading} slug={reading.philosopherSlug} />
 
-            <div className="mt-9">
-              <ReadingBody reading={reading} />
-            </div>
+              <div className="mt-10 border-t border-ink/15 pt-8">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+                  {session ? (
+                    <button type="button" className="btn-ink" onClick={persist} disabled={saved}>
+                      {saved ? "Saved" : "Save this reading"}
+                    </button>
+                  ) : (
+                    <Link to="/auth" className="btn-ink">
+                      Save this reading
+                    </Link>
+                  )}
+                  <button type="button" onClick={close} className="link-underline">
+                    Examine this through another lens
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReading(null);
+                      setSaved(false);
+                      setSavedReadingId(null);
+                      setStep(0);
+                      setAnswers(emptyAnswers);
+                    }}
+                    className="link-underline"
+                  >
+                    Start a new inquiry
+                  </button>
+                </div>
 
+                {saved ? (
+                  <p className="label mt-6 text-oxblood" role="status">
+                    Saved.{" "}
+                    <Link to="/readings" className="link-underline">
+                      View your readings
+                    </Link>
+                  </p>
+                ) : null}
+                {!session ? (
+                  <p className="mt-6 text-sm text-ink-soft">
+                    Sign in to keep this reading. No card required.
+                  </p>
+                ) : null}
+                {error ? (
+                  <p className="mt-5 text-sm text-oxblood" role="status">
+                    {error}
+                  </p>
+                ) : null}
 
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              {session ? (
-                <button type="button" className="btn-ink" onClick={persist} disabled={saved}>
-                  {saved ? "Saved" : "Save this reading"}
-                </button>
-              ) : (
-                <Link to="/auth" className="btn-ink">
-                  Save this reading
-                </Link>
-              )}
-              <button type="button" onClick={() => setReading(null)} className="link-underline">
-                Back
-              </button>
-            </div>
-
-            {saved ? (
-              <p className="label mt-6 text-oxblood" role="status">
-                Saved.{" "}
-                <Link to="/readings" className="link-underline">
-                  View your readings
-                </Link>
-              </p>
-            ) : null}
-            {!session ? (
-              <p className="label mt-6 text-ink-soft">
-                Sign in to keep this reading. No card required.
-              </p>
-            ) : null}
-            {error ? (
-              <p className="mt-5 text-sm text-oxblood" role="status">
-                {error}
-              </p>
-            ) : null}
-
-            {isMember ? (
-              savedReadingId ? (
-                <ReadingFollowUps readingId={savedReadingId} isMember />
-              ) : (
-                <p className="label mt-8 text-ink-soft">
-                  Save this reading to ask further questions about it.
-                </p>
-              )
-            ) : (
-              <section className="mt-10 border border-ink/25 bg-papyrus-light/70 p-6">
-                <p className="label text-oxblood">Further questions</p>
-                <h3
-                  className="mt-4 text-xl leading-snug text-ink"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  Something here you want pressed further?
-                </h3>
-                <p className="mt-4 leading-relaxed text-ink-soft">
-                  Members may ask up to {MEMBERSHIP.followUpsPerReading} further questions on any
-                  reading, answered through the same method, and may consult every thinker in the
-                  Lyceum rather than Aristotle alone.
-                </p>
-                <div className="mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-2">
-                  {MEMBERSHIP.plans.map((plan) => (
-                    <p key={plan.priceId} className="text-ink">
-                      <span style={{ fontFamily: "var(--font-display)" }}>{plan.price}</span>{" "}
-                      <span className="text-sm text-ink-soft">{plan.cadence}</span>
+                {isMember ? (
+                  savedReadingId ? (
+                    <ReadingFollowUps readingId={savedReadingId} isMember />
+                  ) : (
+                    <p className="mt-6 text-sm text-ink-soft">
+                      Save this reading to ask further questions about it.
                     </p>
-                  ))}
-                </div>
-                <div className="mt-6 flex flex-wrap items-center gap-6">
-                  <Link to="/membership" className="btn-ink">
-                    Join the Lyceum <span aria-hidden="true">→</span>
-                  </Link>
-                  <span className="label text-ink-soft">Cancel whenever you like.</span>
-                </div>
-              </section>
-            )}
+                  )
+                ) : (
+                  <p className="mt-6 max-w-[62ch] text-sm leading-relaxed text-ink-soft">
+                    Members may ask up to {MEMBERSHIP.followUpsPerReading} further questions on a
+                    reading and consult every thinker in the Lyceum.{" "}
+                    <Link to="/membership" className="link-underline">
+                      Membership
+                    </Link>
+                  </p>
+                )}
 
-            <p className="mt-10 border-t border-ink/20 pt-5 text-sm leading-relaxed text-ink-soft">
-              {reading.note}
-            </p>
+                <p className="mt-8 text-sm leading-relaxed text-ink-soft">{reading.note}</p>
+              </div>
+            </ReadingLayout>
           </div>
         ) : clarify ? (
+
           <div>
             <p className="label text-oxblood">Before the reading</p>
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">

@@ -126,6 +126,8 @@ function Readings() {
                     </h2>
                     <div className="mt-5 border-t border-ink/15 pt-5">
                       <ReadingBody
+                        hideHeader
+                        slug={reading.philosopher_slug}
                         reading={{
                           headline: reading.headline,
                           noticed: reading.noticed,
@@ -142,6 +144,7 @@ function Readings() {
                         }}
                       />
                     </div>
+
 
                     <ReadingFollowUps readingId={reading.id} isMember={isMember} />
                   </Sheet>
