@@ -17,7 +17,11 @@ export const DAILY_AI_BUDGET_USD = 5;
 /** Approximate gateway prices in dollars per million tokens. */
 const PRICES: Record<string, { input: number; output: number }> = {
   "google/gemini-2.5-flash": { input: 0.3, output: 2.5 },
+  "google/gemini-2.5-flash-lite": { input: 0.1, output: 0.4 },
+  "google/gemini-3.7-flash": { input: 0.3, output: 2.5 },
+  "google/gemini-3.1-pro-preview": { input: 1.25, output: 10 },
 };
+
 
 export type Usage = { promptTokens: number; completionTokens: number };
 

@@ -373,7 +373,6 @@ export const romanNumerals = ["I", "II", "III", "IV", "V", "VI"];
 /** Approaches no longer offered for new readings, kept so saved history still renders. */
 export const retiredPhilosopherNames: Record<string, string> = {
   seneca: "Seneca",
-  epictetus: "Epictetus",
 };
 
 
