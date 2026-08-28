@@ -76,6 +76,12 @@ const questions: Step[] = [
   },
 ];
 
+const PREPARING_STAGES = [
+  "Reading your answers closely.",
+  "Choosing the philosophical lens and the concepts it turns on.",
+  "Writing your reading, and checking every citation against the source.",
+];
+
 const GENERATION_ERROR =
   "We couldn't prepare your reading. Your answers have been preserved. Please try again.";
 
@@ -150,7 +156,13 @@ export function InquiryModal({
     (field) => field.trim().length === 0,
   );
   const offerResume =
-    draft.restored !== null && untouched && !isResult && !needsMembership && !failed;
+    draft.restored !== null &&
+    untouched &&
+    !isResult &&
+    !needsMembership &&
+    !failed &&
+    !pending &&
+    quota === null;
 
   const resumeDraft = () => {
     if (!draft.restored) return;
@@ -290,12 +302,65 @@ export function InquiryModal({
       <div className="h-[3px] w-full bg-ink/15">
         <div
           className="h-full bg-oxblood transition-[width] duration-300"
-          style={{ width: isResult ? "100%" : `${((step + 0.4) / questions.length) * 100}%` }}
+          style={{
+            width: isResult || pending ? "100%" : `${((step + 0.4) / questions.length) * 100}%`,
+          }}
         />
       </div>
 
       <div className={isResult ? "py-6 sm:py-8" : "px-5 py-10 sm:px-9 sm:py-14"}>
-        {isResult ? (
+        {pending ? (
+          <div className="flex min-h-[52vh] flex-col items-center justify-center text-center">
+            <Seal
+              size={96}
+              className="animate-[spin_14s_linear_infinite] motion-reduce:animate-none"
+            />
+            <p className="label mt-8 text-oxblood">{readingHeading(slug)}</p>
+            <h2 id="inquiry-title" className="display-lg mt-5 text-ink">
+              Preparing your reading.
+            </h2>
+            <p
+              className="mt-6 max-w-md leading-relaxed text-ink-soft"
+              role="status"
+              aria-live="polite"
+            >
+              {PREPARING_STAGES[Math.min(stage, PREPARING_STAGES.length - 1)]}
+            </p>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink-soft">
+              This usually takes twenty to thirty seconds. Your answers are kept exactly as you
+              wrote them.
+            </p>
+          </div>
+        ) : quota ? (
+          <div>
+            <p className="label text-oxblood">{readingHeading(slug)}</p>
+            <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
+              You've used today's free readings.
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft" role="status">
+              {quota}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-6">
+              <Link to="/membership" className="btn-ink">
+                Join Bearing <span aria-hidden="true">→</span>
+              </Link>
+              <button
+                type="button"
+                className="link-underline"
+                onClick={() => {
+                  setQuota(null);
+                  setClarify(null);
+                  setStep(0);
+                }}
+              >
+                Edit my answers
+              </button>
+              <button type="button" className="link-underline" onClick={close}>
+                Return to the Lyceum
+              </button>
+            </div>
+          </div>
+        ) : isResult ? (
           <div>
             <h2 id="inquiry-title" className="sr-only">
               {reading.title}
@@ -411,7 +476,7 @@ export function InquiryModal({
               We couldn't prepare your reading.
             </h2>
             <p className="mt-6 max-w-xl leading-relaxed text-ink-soft" role="status">
-              {GENERATION_ERROR}
+              {error || GENERATION_ERROR}
             </p>
             <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">
               Nothing has been written in your place. Bearing will not show you an example reading
@@ -419,16 +484,15 @@ export function InquiryModal({
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-6">
-              <button
-                type="button"
-                className="btn-ink"
-                disabled={pending}
-                style={pending ? { opacity: 0.45 } : undefined}
-                onClick={() => runReading(lastClarifications)}
-              >
-                {pending ? "Preparing your reading" : "Try again"}{" "}
-                <span aria-hidden="true">→</span>
-              </button>
+              {retryable ? (
+                <button
+                  type="button"
+                  className="btn-ink"
+                  onClick={() => runReading(lastClarifications)}
+                >
+                  Try again <span aria-hidden="true">→</span>
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="link-underline"
