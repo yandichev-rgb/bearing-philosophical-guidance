@@ -375,12 +375,11 @@ export async function generateFollowUpWithAI(input: {
     `What they had tried: ${input.answers.tried || "Not stated."}`,
     `What felt at stake: ${input.answers.stakes || "Not stated."}`,
     `The reading they received:`,
-    `Headline: ${input.reading.headline}`,
-    `What stands out: ${input.reading.noticed}`,
-    `The tension underneath: ${input.reading.tension || input.reading.assumption}`,
-    `The method applied: ${input.reading.method || input.reading.principle}`,
-    `The challenge put to them: ${input.reading.challenge || "Not recorded."}`,
-    `What the lens may miss: ${input.reading.limits || "Not recorded."}`,
+    `The one sentence interpretation it argued for: ${input.reading.tension || input.reading.assumption}`,
+    `The bearing: ${input.reading.noticed}`,
+    `The lens applied: ${input.reading.method || input.reading.principle}`,
+    `The assumption it could have wrong: ${input.reading.limits || "Not recorded."}`,
+
     `The experiment: ${input.reading.exercise}`,
     `The better question they were left with: ${input.reading.question}`,
 
