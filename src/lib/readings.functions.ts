@@ -4,13 +4,13 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
 import {
-  DIAGNOSTIC_MODEL,
-  generateDiagnosticQuestions,
+  FOLLOW_UP_MODEL,
+  forClient,
   generateFollowUpWithAI,
-  generateReadingWithAI,
-  READING_MODEL,
-  type GeneratedReading,
+  readingModels,
+  runReadingPipeline,
 } from "./readings.server";
+import { READING_ERROR_MESSAGE, type ReadingResult } from "./reading-types";
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
 import { assertDailyBudget, claimFreeReading, logAiUsage } from "./ai-budget.server";
@@ -23,7 +23,6 @@ const answersSchema = z.object({
     .enum(["A decision", "A recurring pattern", "A relationship", "A persistent fear"])
     .or(z.literal(""))
     .default(""),
-
   duration: z.enum(["Days", "Months", "Years"]).or(z.literal("")).default(""),
   clarifications: z
     .array(
@@ -36,72 +35,79 @@ const answersSchema = z.object({
     .default([]),
 });
 
+const sourceSchema = z.object({ work: z.string(), location: z.string() });
+
 const readingSchema = z.object({
   philosopherSlug: z.string(),
-  headline: z.string().min(1),
-  noticed: z.string().min(1),
-  tension: z.string(),
-  lensName: z.string().default(""),
+  title: z.string().min(1),
+  bearing: z.string().min(1),
+  throughLens: z.string().min(1),
   conceptsUsed: z.array(z.string()).default([]),
-  method: z.string(),
-  grounding: z.string(),
-  challenge: z.string().default(""),
-  limits: z.string(),
-  question: z.string().min(1),
-  practiceTitle: z.string().default(""),
-  practiceDuration: z.string().default(""),
-  practiceSteps: z.array(z.string()).default([]),
-  whatToObserve: z.string().default(""),
-  exercise: z.string(),
-  returnPrompt: z.string(),
-  assumption: z.string(),
-  principle: z.string(),
-  note: z.string(),
+  sources: z.array(sourceSchema).default([]),
+  betterQuestion: z.string().min(1),
+  practice: z.object({
+    title: z.string().default(""),
+    duration: z.string().default(""),
+    steps: z.array(z.string()).default([]),
+    whatToObserve: z.string().default(""),
+  }),
+  alternativeReading: z.string().default(""),
+  returnPrompt: z.string().default(""),
+  limitation: z.string().default(""),
+  intakeEvidenceUsed: z.array(z.string()).default([]),
+  citation: z.string().default(""),
+  lensName: z.string().default(""),
+  note: z.string().default(""),
 });
 
-
 /**
- * Broad submissions ("I feel lost") get two or three adaptive questions before
- * anything is written. A short local check keeps the call off detailed entries.
+ * Runs the pipeline and turns every outcome into a discriminated result. Nothing
+ * is counted or charged unless an actual reading came back.
  */
-export const checkInquiryFocus = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => answersSchema.parse(data))
-  .handler(async ({ data }) => {
-    const words = [data.situation, data.tried, data.stakes]
-      .join(" ")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean).length;
-    if (data.clarifications.length > 0 || words > 70) {
-      return { needsClarification: false as const, questions: [] as string[] };
-    }
+async function produce(input: {
+  slug: ProfileSlug;
+  answers: z.infer<typeof answersSchema>;
+  tier: "free" | "member";
+  userId?: string;
+}): Promise<ReadingResult> {
+  await assertDailyBudget();
+  const models = readingModels();
+  const { result, usage, telemetry } = await runReadingPipeline(input.slug, input.answers);
 
-    await assertDailyBudget();
-    const result = await generateDiagnosticQuestions(data);
+  // Usage is billed for every call actually made, including a rejected one.
+  if (usage.promptTokens > 0 || usage.completionTokens > 0) {
     await logAiUsage({
-      philosopherSlug: "diagnostic",
-      model: DIAGNOSTIC_MODEL,
-      tier: "free",
-      usage: result.usage,
+      userId: input.userId ?? null,
+      philosopherSlug: input.slug,
+      model: telemetry.models.writer ?? models.planner,
+      tier: input.tier,
+      usage,
     });
-    return { needsClarification: result.needsClarification, questions: result.questions };
-  });
+  }
 
+  if (result.kind !== "reading") return result;
+
+  // A free reading is only consumed once a real reading exists.
+  if (input.tier === "free") {
+    try {
+      await claimFreeReading();
+    } catch (error) {
+      return {
+        kind: "error",
+        message: error instanceof Error ? error.message : READING_ERROR_MESSAGE,
+        retryable: false,
+      };
+    }
+  }
+
+  return { kind: "reading", reading: forClient(result.reading) };
+}
 
 /** The free tier: one complete Aristotle reading, no account required. */
 export const generateFreeReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => answersSchema.parse(data))
-  .handler(async ({ data }) => {
-    await assertDailyBudget();
-    await claimFreeReading();
-    const { reading, usage } = await generateReadingWithAI("aristotle", data);
-    await logAiUsage({
-      philosopherSlug: "aristotle",
-      model: READING_MODEL,
-      tier: "free",
-      usage,
-    });
-    return reading;
+  .handler(async ({ data }): Promise<ReadingResult> => {
+    return produce({ slug: "aristotle", answers: data, tier: "free" });
   });
 
 /** Membership tier: any philosopher in the Lyceum. */
@@ -110,31 +116,28 @@ export const generateMemberReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
     answersSchema.extend({ philosopherSlug: z.string() }).parse(data),
   )
-  .handler(async ({ data, context }) => {
-    const { philosopherSlug, ...answers } = data;
-    if (!isProfileSlug(philosopherSlug) || isRetiredSlug(philosopherSlug))
-      throw new Error("Unknown philosopher.");
-    if (philosopherSlug !== "aristotle") {
-      const isMember = await hasActiveMembership(context.supabase, context.userId);
-      // Returned, not thrown: the modal shows the membership invitation instead
-      // of surfacing an unhandled server error.
-      if (!isMember) return { needsMembership: true as const };
-    }
+  .handler(
+    async ({
+      data,
+      context,
+    }): Promise<ReadingResult | { kind: "membership" }> => {
+      const { philosopherSlug, ...answers } = data;
+      if (!isProfileSlug(philosopherSlug) || isRetiredSlug(philosopherSlug)) {
+        return { kind: "error", message: "That thinker is not in the Lyceum.", retryable: false };
+      }
+      if (philosopherSlug !== "aristotle") {
+        const isMember = await hasActiveMembership(context.supabase, context.userId);
+        if (!isMember) return { kind: "membership" as const };
+      }
 
-    await assertDailyBudget();
-    const { reading, usage } = await generateReadingWithAI(
-      philosopherSlug as ProfileSlug,
-      answers,
-    );
-    await logAiUsage({
-      userId: context.userId,
-      philosopherSlug,
-      model: READING_MODEL,
-      tier: "member",
-      usage,
-    });
-    return reading;
-  });
+      return produce({
+        slug: philosopherSlug,
+        answers,
+        tier: "member",
+        userId: context.userId,
+      });
+    },
+  );
 
 /** Saves the inquiry and its reading against the signed-in account. */
 export const saveReading = createServerFn({ method: "POST" })
@@ -157,32 +160,35 @@ export const saveReading = createServerFn({ method: "POST" })
       .single();
     if (inquiryError || !inquiry) throw new Error("Your inquiry could not be saved.");
 
-    const reading = data.reading as GeneratedReading;
+    const reading = data.reading;
     const { data: saved, error: readingError } = await context.supabase
       .from("readings")
       .insert({
-      user_id: context.userId,
-      inquiry_id: inquiry.id,
-      philosopher_slug: reading.philosopherSlug,
-      headline: reading.headline,
-      noticed: reading.noticed,
-      assumption: reading.assumption,
-      principle: reading.principle,
-      exercise: reading.exercise,
-      question: reading.question,
-      note: reading.note,
-      tension: reading.tension,
-      method: reading.method,
-      grounding: reading.grounding,
-      challenge: reading.challenge,
-      limits: reading.limits,
-      return_prompt: reading.returnPrompt,
-      lens_name: reading.lensName,
-      concepts_used: reading.conceptsUsed,
-      practice_title: reading.practiceTitle,
-      practice_duration: reading.practiceDuration,
-      practice_steps: reading.practiceSteps,
-      what_to_observe: reading.whatToObserve,
+        user_id: context.userId,
+        inquiry_id: inquiry.id,
+        philosopher_slug: reading.philosopherSlug,
+        headline: reading.title,
+        noticed: reading.bearing,
+        method: reading.throughLens,
+        grounding: reading.citation,
+        question: reading.betterQuestion,
+        limits: reading.limitation,
+        return_prompt: reading.returnPrompt,
+        alternative_reading: reading.alternativeReading,
+        sources: reading.sources,
+        lens_name: reading.lensName,
+        concepts_used: reading.conceptsUsed,
+        practice_title: reading.practice.title,
+        practice_duration: reading.practice.duration,
+        practice_steps: reading.practice.steps,
+        what_to_observe: reading.practice.whatToObserve,
+        note: reading.note,
+        // Retired columns, written empty so old rows and new rows share a shape.
+        exercise: [...reading.practice.steps, reading.practice.whatToObserve].join(" "),
+        assumption: "",
+        principle: "",
+        tension: "",
+        challenge: "",
       })
       .select("id")
       .single();
@@ -198,9 +204,8 @@ export const listMyReadings = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("readings")
       .select(
-        "id, philosopher_slug, headline, exercise, question, created_at, tension, method, grounding, challenge, limits, return_prompt, noticed, assumption, principle, note, lens_name, concepts_used, practice_title, practice_duration, practice_steps, what_to_observe",
+        "id, philosopher_slug, headline, exercise, question, created_at, tension, method, grounding, challenge, limits, return_prompt, noticed, assumption, principle, note, lens_name, concepts_used, practice_title, practice_duration, practice_steps, what_to_observe, alternative_reading, sources",
       )
-
       .order("created_at", { ascending: false })
       .limit(50);
     if (error) throw new Error("Your readings could not be loaded.");
@@ -253,9 +258,7 @@ export const askFollowUp = createServerFn({ method: "POST" })
 
     const { data: reading, error: readingError } = await context.supabase
       .from("readings")
-      .select(
-        "id, philosopher_slug, headline, noticed, assumption, principle, exercise, question, inquiry_id, tension, method, challenge, limits",
-      )
+      .select("id, philosopher_slug, headline, noticed, exercise, question, inquiry_id, method, limits")
       .eq("id", data.readingId)
       .maybeSingle();
     if (readingError || !reading) throw new Error("That reading could not be found.");
@@ -292,13 +295,9 @@ export const askFollowUp = createServerFn({ method: "POST" })
       reading: {
         headline: reading.headline,
         noticed: reading.noticed,
-        assumption: reading.assumption,
-        principle: reading.principle,
-        exercise: reading.exercise,
-        question: reading.question,
-        tension: reading.tension,
         method: reading.method,
-        challenge: reading.challenge,
+        question: reading.question,
+        exercise: reading.exercise,
         limits: reading.limits,
       },
       history: prior.map((row) => ({ question: row.question, answer: row.answer })),
@@ -320,7 +319,7 @@ export const askFollowUp = createServerFn({ method: "POST" })
     await logAiUsage({
       userId: context.userId,
       philosopherSlug: reading.philosopher_slug,
-      model: READING_MODEL,
+      model: FOLLOW_UP_MODEL,
       tier: "member",
       usage,
     });
