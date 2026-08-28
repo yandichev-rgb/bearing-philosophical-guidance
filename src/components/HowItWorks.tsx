@@ -48,13 +48,13 @@ export function HowItWorks() {
         </Reveal>
 
 
-        <ol className="mt-14 grid gap-10 border-t border-ink/25 pt-10 md:grid-cols-3 md:gap-0">
+        <ol className="mt-14 grid gap-10 border-t border-ink/25 pt-10 md:grid-cols-3 lg:grid-cols-5 md:gap-0">
           {steps.map((step, index) => (
             <Reveal
               as="li"
               key={step.numeral}
               delay={index * 0.08}
-              className={index === 0 ? "md:pr-10" : "md:rule-v md:px-10 last:md:pr-0"}
+              className={index === 0 ? "md:pr-8" : "md:rule-v md:px-8 last:md:pr-0"}
             >
               <p
                 className="text-4xl text-oxblood"
