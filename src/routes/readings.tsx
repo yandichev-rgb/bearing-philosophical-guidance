@@ -7,6 +7,7 @@ import { listMyReadings, myReadingCosts } from "@/lib/readings.functions";
 import { readingHeading } from "@/lib/reading-heading";
 import { PageFrame, Sheet } from "@/components/PageFrame";
 import { Reveal } from "@/components/Reveal";
+import { ReadingBody } from "@/components/ReadingBody";
 import { ReadingFollowUps } from "@/components/ReadingFollowUps";
 import { useMembership } from "@/hooks/useMembership";
 
