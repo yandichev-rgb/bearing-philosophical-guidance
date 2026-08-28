@@ -149,7 +149,7 @@ export async function generateReadingWithAI(
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("The reading came back empty.");
 
-  const parsed = JSON.parse(content) as Omit<GeneratedReading, "philosopherSlug" | "note">;
+  const parsed = JSON.parse(content) as Record<(typeof FIELDS)[number], string>;
 
   return {
     usage: {
@@ -158,16 +158,24 @@ export async function generateReadingWithAI(
     },
     reading: {
       philosopherSlug: slug,
-      headline: parsed.headline || "Your situation already points to something you can practice.",
+      headline: parsed.headline || "Your situation already points to something you can test.",
       noticed: parsed.noticed,
-      assumption: parsed.assumption,
-      principle: parsed.principle,
-      exercise: parsed.exercise,
+      tension: parsed.tension,
+      method: parsed.method,
+      grounding: parsed.grounding,
+      challenge: parsed.challenge,
+      limits: parsed.limits,
       question: parsed.question,
+      exercise: parsed.exercise,
+      returnPrompt: parsed.returnPrompt,
+      // Legacy columns, written so older views and follow up context keep working.
+      assumption: parsed.tension,
+      principle: parsed.method,
       note: DISCLAIMER,
     },
   };
 }
+
 
 export type FollowUpResult = {
   answer: string;
