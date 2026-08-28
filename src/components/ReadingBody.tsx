@@ -86,7 +86,7 @@ export function PhilosopherRail({
   onAnotherLens,
 }: {
   slug: string;
-  onAnotherLens?: () => void;
+  onAnotherLens?: (() => void) | undefined;
 }) {
   const philosopher = philosophers.find((entry) => entry.slug === slug) ?? philosophers[0]!;
   const sources = philosopher.works.slice(0, 3);
@@ -146,8 +146,8 @@ function PracticeCard({
 }: {
   exercise: string;
   duration?: string | null;
-  onSave?: () => void;
-  saveLabel?: string;
+  onSave?: (() => void) | undefined;
+  saveLabel?: string | undefined;
 }) {
   const parts = sentences(exercise);
   const observe = parts.length > 2 ? parts[parts.length - 1]! : null;
@@ -323,7 +323,7 @@ export function ReadingLayout({
   slug: string;
   utility?: ReactNode;
   children: ReactNode;
-  onAnotherLens?: () => void;
+  onAnotherLens?: (() => void) | undefined;
 }) {
   return (
     <div className="mx-auto w-full max-w-[1120px] px-5 sm:px-6">
