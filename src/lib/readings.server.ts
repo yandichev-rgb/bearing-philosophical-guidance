@@ -578,13 +578,6 @@ export function validateReading(input: {
     }
     if (!allowedSourceIds.has(match[0])) problems.push("source_does_not_support_concept");
   }
-  const workTitles = sources.map((source) => normalise(source.work));
-  if (new Set(workTitles).size !== workTitles.length && sources.length > 1) {
-    // Two locations of the same work are fine; the citation renderer folds them
-    // into a single title, so this is only a problem when the work repeats with
-    // an identical location, already caught above.
-  }
-
   // The better question must be a question, and must follow the hypothesis.
   if (!(reading.betterQuestion ?? "").includes("?")) problems.push("better_question_malformed");
   const hypothesisWords = new Set(significantWords(plan.interpretiveHypothesis ?? ""));
