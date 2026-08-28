@@ -260,6 +260,7 @@ When true, write two or three questions that would most change the interpretatio
 - Each must be adapted to the words the person actually used, not a generic intake form.
 - Ask for particulars: a recent instance, who else is involved, what changed and when, what they would do if the obstacle vanished.
 - One sentence each, plain language, no philosophical vocabulary, no therapeutic tone, no em dashes.
+- Each question must open a different line of enquiry. Do not ask the same thing in three ways, and do not ask when the feeling began if you have already asked how long it has lasted.
 - Do not ask what they want from a reading, and do not ask them to rate anything.
 When false, return an empty array.
 `;

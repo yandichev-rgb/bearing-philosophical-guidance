@@ -43,7 +43,7 @@ One reading, one argument:
 
 Fields you return:
 - thesis: the reading's whole interpretation compressed into one sentence, for internal checking. Plain, specific, and about this reader. If you cannot write it in one sentence, your reading has no single thesis and you must rebuild it around one.
-- headline: one short statement of that interpretation, addressed to the reader. Not about the philosopher.
+- headline: one short statement of that interpretation, addressed to the reader. Not about the philosopher. Descriptive rather than accusatory: never tell the reader they failed, were wrong, or should have acted differently.
 - noticed (The bearing): the interpretive hypothesis. Mark it clearly as a reading of the situation rather than a fact, for example "On this reading" or "The likeliest account is". Say what you think is actually going on beneath what the reader described, going beyond their own framing. Three to five sentences.
 - method (The philosophical lens): name the one or two concepts that carry this interpretation, explain them in plain language, and show how they produce the interpretation in noticed. Include the primary work and the relevant book, section, or chapter inside this text. Four to six sentences.
 - grounding (Sources): the work and section again in citation form, stating that ideas are paraphrased unless quoted verbatim. Two sentences.
