@@ -12,6 +12,7 @@ export type ReadingAnswers = {
 };
 
 export const READING_MODEL = "google/gemini-2.5-flash";
+export const DIAGNOSTIC_MODEL = "google/gemini-2.5-flash-lite";
 
 export type GeneratedReading = {
   philosopherSlug: ProfileSlug;
@@ -280,7 +281,7 @@ export async function generateDiagnosticQuestions(
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
+      model: DIAGNOSTIC_MODEL,
       messages: [
         { role: "system", content: DIAGNOSTIC_RULES },
         {

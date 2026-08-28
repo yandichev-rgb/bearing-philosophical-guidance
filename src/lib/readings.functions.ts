@@ -4,6 +4,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
 import {
+  DIAGNOSTIC_MODEL,
+  generateDiagnosticQuestions,
   generateFollowUpWithAI,
   generateReadingWithAI,
   READING_MODEL,
