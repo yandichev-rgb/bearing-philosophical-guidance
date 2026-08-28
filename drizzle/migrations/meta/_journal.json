@@ -8,6 +8,13 @@
       "when": 1787946038372,
       "tag": "0000_deepen_reading_structure",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787949793075,
+      "tag": "0001_reading_structured_practice_fields",
+      "breakpoints": true
     }
   ]
 }

@@ -6,9 +6,10 @@ const prompts: Record<string, string> = {
   aristotle: "Bring a habit you cannot break.",
   socrates: "Bring a belief you have never argued with.",
   "marcus-aurelius": "Bring what you cannot control.",
-  epictetus: "Bring the thing you know and do not do.",
+
   plato: "Bring a fear with no shape yet.",
   nietzsche: "Bring the standard you are afraid of failing.",
+  "carl-jung": "Bring a reaction that felt larger than the situation.",
 };
 
 export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
@@ -43,7 +44,7 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
           </Reveal>
           <Reveal delay={0.08}>
             <p className="max-w-md leading-relaxed text-gold/85">
-              The Lyceum brings together six distinct philosophical approaches. Ask the same question
+              The Lyceum brings together six distinct approaches to examining a situation. Ask the same question
               through more than one lens and different parts of the situation come into view.
             </p>
           </Reveal>

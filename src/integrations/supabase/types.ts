@@ -197,62 +197,80 @@ export type Database = {
         Row: {
           assumption: string
           challenge: string | null
+          concepts_used: string[] | null
           created_at: string
           exercise: string
           grounding: string | null
           headline: string
           id: string
           inquiry_id: string
+          lens_name: string | null
           limits: string | null
           method: string | null
           note: string
           noticed: string
           philosopher_slug: string
+          practice_duration: string | null
+          practice_steps: string[] | null
+          practice_title: string | null
           principle: string
           question: string
           return_prompt: string | null
           tension: string | null
           user_id: string
+          what_to_observe: string | null
         }
         Insert: {
           assumption: string
           challenge?: string | null
+          concepts_used?: string[] | null
           created_at?: string
           exercise: string
           grounding?: string | null
           headline: string
           id?: string
           inquiry_id: string
+          lens_name?: string | null
           limits?: string | null
           method?: string | null
           note: string
           noticed: string
           philosopher_slug: string
+          practice_duration?: string | null
+          practice_steps?: string[] | null
+          practice_title?: string | null
           principle: string
           question: string
           return_prompt?: string | null
           tension?: string | null
           user_id: string
+          what_to_observe?: string | null
         }
         Update: {
           assumption?: string
           challenge?: string | null
+          concepts_used?: string[] | null
           created_at?: string
           exercise?: string
           grounding?: string | null
           headline?: string
           id?: string
           inquiry_id?: string
+          lens_name?: string | null
           limits?: string | null
           method?: string | null
           note?: string
           noticed?: string
           philosopher_slug?: string
+          practice_duration?: string | null
+          practice_steps?: string[] | null
+          practice_title?: string | null
           principle?: string
           question?: string
           return_prompt?: string | null
           tension?: string | null
           user_id?: string
+          what_to_observe?: string | null
         }
         Relationships: [
           {

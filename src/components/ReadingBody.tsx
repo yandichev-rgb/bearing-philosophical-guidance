@@ -22,6 +22,12 @@ export type ReadingLike = {
   challenge?: string | null;
   limits?: string | null;
   returnPrompt?: string | null;
+  lensName?: string | null;
+  conceptsUsed?: string[] | null;
+  practiceTitle?: string | null;
+  practiceDuration?: string | null;
+  practiceSteps?: string[] | null;
+  whatToObserve?: string | null;
 };
 
 const PROSE = "max-w-[68ch] text-[1.0625rem] leading-[1.7] text-ink sm:text-[1.1875rem]";
@@ -34,13 +40,14 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-/** Split prose into sentences so the practice can be shown as steps. */
+/** Split prose into sentences so a legacy practice can still be shown as steps. */
 function sentences(text: string): string[] {
   return text
     .split(/(?<=[.!?])\s+(?=[A-Z“"])/)
     .map((part) => part.trim())
     .filter(Boolean);
 }
+
 
 /** A quiet collapsed disclosure for secondary material. */
 export function Disclosure({ title, children }: { title: string; children: ReactNode }) {
@@ -64,18 +71,24 @@ export function Disclosure({ title, children }: { title: string; children: React
   );
 }
 
-/** Citations remain inspectable without interrupting the reading. */
-export function SourceDrawer({ grounding }: { grounding: string }) {
+/**
+ * Secondary reading notes. The source line itself is rendered once, inside the
+ * lens panel, so it is not repeated here.
+ */
+export function SourceDrawer({ grounding }: { grounding?: string | null }) {
   return (
     <Disclosure title="Sources and further reading">
-      <p className="max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft">{grounding}</p>
-      <p className="mt-4 max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft">
+      {grounding ? (
+        <p className="max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft">{grounding}</p>
+      ) : null}
+      <p className={`max-w-[68ch] text-[0.9375rem] leading-[1.7] text-ink-soft${grounding ? " mt-4" : ""}`}>
         Bearing applies philosophical methods without pretending to speak as historical thinkers.
         Ideas are presented as interpretation unless a quotation is given verbatim.
       </p>
     </Disclosure>
   );
 }
+
 
 /**
  * The compact philosopher rail: portrait, tradition, method note, and the
@@ -137,27 +150,32 @@ export function PhilosopherRail({
   );
 }
 
-/** The experiment, shown as a practical action card rather than more prose. */
+/**
+ * The experiment, shown as a practical action card. Numbering comes from the
+ * native ordered list marker only, so steps read 1, 2, 3 exactly once.
+ */
 function PracticeCard({
-  exercise,
+  title,
+  steps,
+  observe,
   duration,
   onSave,
   saveLabel,
 }: {
-  exercise: string;
+  title: string;
+  steps: string[];
+  observe?: string | null;
   duration?: string | null;
   onSave?: (() => void) | undefined;
   saveLabel?: string | undefined;
 }) {
-  const parts = sentences(exercise);
-  const observe = parts.length > 2 ? parts[parts.length - 1]! : null;
-  const steps = observe ? parts.slice(0, -1) : parts;
+  if (steps.length === 0) return null;
 
   return (
     <div className="border border-ink/25 bg-papyrus/40 p-6 sm:p-7">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="text-[1.25rem] leading-tight text-ink" style={{ fontFamily: "var(--font-display)" }}>
-          A practice to test this
+          {title}
         </p>
         {duration ? (
           <p className="text-[0.6875rem] tracking-[0.18em] text-ink-soft uppercase" style={{ fontFamily: "var(--font-display)" }}>
@@ -166,17 +184,10 @@ function PracticeCard({
         ) : null}
       </div>
 
-      <ol className="mt-5 space-y-4">
-        {steps.map((step, index) => (
-          <li key={step} className="flex gap-4">
-            <span
-              aria-hidden="true"
-              className="mt-[2px] shrink-0 text-[0.875rem] text-oxblood"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <span className="text-[1.0625rem] leading-[1.65] text-ink">{step}</span>
+      <ol className="mt-5 ml-6 list-decimal space-y-4 marker:text-[0.9375rem] marker:text-oxblood">
+        {steps.map((step) => (
+          <li key={step} className="pl-2 text-[1.0625rem] leading-[1.65] text-ink">
+            {step}
           </li>
         ))}
       </ol>
@@ -198,6 +209,7 @@ function PracticeCard({
     </div>
   );
 }
+
 
 /**
  * The reading surface. Five visually distinct parts, one interpretation,
@@ -221,7 +233,18 @@ export function ReadingBody({
     bearing.length > 2 ? [bearing.slice(0, half).join(" "), bearing.slice(half).join(" ")] : [reading.noticed];
   const lens = reading.method || reading.principle;
   const philosopher = slug ? philosophers.find((entry) => entry.slug === slug) : undefined;
-  const sourceLine = philosopher ? `Grounded in ${philosopher.works.slice(0, 2).join(" and ")}` : null;
+  // The source line is generated from the concepts the reading actually used.
+  const sourceLine = reading.grounding?.trim() || null;
+  const concepts = (reading.conceptsUsed ?? []).filter(Boolean);
+
+  // Structured practice when the reading has one, sentence split for older saved readings.
+  const legacy = sentences(reading.exercise || "");
+  const legacyObserve = legacy.length > 2 ? legacy[legacy.length - 1]! : null;
+  const practiceSteps = (reading.practiceSteps ?? []).filter(Boolean);
+  const steps = practiceSteps.length > 0 ? practiceSteps : legacyObserve ? legacy.slice(0, -1) : legacy;
+  const observe =
+    reading.whatToObserve?.trim() || (practiceSteps.length > 0 ? null : legacyObserve);
+
 
   return (
     <div>
@@ -255,8 +278,13 @@ export function ReadingBody({
       {lens ? (
         <section className="mt-10 border border-ink/15 bg-papyrus-light/70 p-6 sm:p-7">
           <SectionLabel>
-            Through {philosopher?.name ?? "this lens"}
+            Through {philosopher?.name ?? reading.lensName ?? "this lens"}
           </SectionLabel>
+          {concepts.length > 0 ? (
+            <p className="mb-3 text-[0.9375rem] text-ink" style={{ fontFamily: "var(--font-display)" }}>
+              {concepts.join(" · ")}
+            </p>
+          ) : null}
           <p className="max-w-[66ch] text-[1.0625rem] leading-[1.7] text-ink">{lens}</p>
           {reading.challenge ? (
             <p className="mt-4 max-w-[66ch] text-[1.0625rem] leading-[1.7] text-ink-soft">
@@ -281,9 +309,17 @@ export function ReadingBody({
         </p>
       </section>
 
-      <section className="mt-10">
-        <PracticeCard exercise={reading.exercise} onSave={onSavePractice} />
-      </section>
+      {steps.length > 0 ? (
+        <section className="mt-10">
+          <PracticeCard
+            title={reading.practiceTitle?.trim() || "A practice to test this"}
+            steps={steps}
+            observe={observe}
+            duration={reading.practiceDuration?.trim() || null}
+            onSave={onSavePractice}
+          />
+        </section>
+      ) : null}
 
       {reading.returnPrompt ? (
         <section className="mt-10 bg-papyrus/50 p-6 sm:p-7">
@@ -294,7 +330,7 @@ export function ReadingBody({
         </section>
       ) : null}
 
-      {reading.limits || reading.grounding ? (
+      {reading.limits || sourceLine ? (
         <div className="mt-10">
           {reading.limits ? (
             <Disclosure title="Limits of this interpretation">
@@ -303,8 +339,10 @@ export function ReadingBody({
               </p>
             </Disclosure>
           ) : null}
-          {reading.grounding ? <SourceDrawer grounding={reading.grounding} /> : null}
+          {/* The citation itself already appears once, above, in the lens panel. */}
+          <SourceDrawer />
         </div>
+
       ) : null}
     </div>
   );

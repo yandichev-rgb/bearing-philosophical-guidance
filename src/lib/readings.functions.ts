@@ -38,20 +38,27 @@ const answersSchema = z.object({
 
 const readingSchema = z.object({
   philosopherSlug: z.string(),
-  headline: z.string(),
-  noticed: z.string(),
+  headline: z.string().min(1),
+  noticed: z.string().min(1),
   tension: z.string(),
+  lensName: z.string().default(""),
+  conceptsUsed: z.array(z.string()).default([]),
   method: z.string(),
   grounding: z.string(),
   challenge: z.string().default(""),
   limits: z.string(),
-  question: z.string(),
+  question: z.string().min(1),
+  practiceTitle: z.string().default(""),
+  practiceDuration: z.string().default(""),
+  practiceSteps: z.array(z.string()).default([]),
+  whatToObserve: z.string().default(""),
   exercise: z.string(),
   returnPrompt: z.string(),
   assumption: z.string(),
   principle: z.string(),
   note: z.string(),
 });
+
 
 /**
  * Broad submissions ("I feel lost") get two or three adaptive questions before
@@ -170,6 +177,12 @@ export const saveReading = createServerFn({ method: "POST" })
       challenge: reading.challenge,
       limits: reading.limits,
       return_prompt: reading.returnPrompt,
+      lens_name: reading.lensName,
+      concepts_used: reading.conceptsUsed,
+      practice_title: reading.practiceTitle,
+      practice_duration: reading.practiceDuration,
+      practice_steps: reading.practiceSteps,
+      what_to_observe: reading.whatToObserve,
       })
       .select("id")
       .single();
@@ -185,8 +198,9 @@ export const listMyReadings = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("readings")
       .select(
-        "id, philosopher_slug, headline, exercise, question, created_at, tension, method, grounding, challenge, limits, return_prompt, noticed, assumption, principle, note",
+        "id, philosopher_slug, headline, exercise, question, created_at, tension, method, grounding, challenge, limits, return_prompt, noticed, assumption, principle, note, lens_name, concepts_used, practice_title, practice_duration, practice_steps, what_to_observe",
       )
+
       .order("created_at", { ascending: false })
       .limit(50);
     if (error) throw new Error("Your readings could not be loaded.");

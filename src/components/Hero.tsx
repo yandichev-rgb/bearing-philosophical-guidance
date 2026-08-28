@@ -100,7 +100,7 @@ export function Hero({
           <span aria-hidden="true" className="text-oxblood">
             ◆
           </span>
-          Six philosophical lenses
+          Six ways of examining a situation
         </p>
         <span aria-hidden="true" className="h-px w-6 bg-bronze" />
         <p className="label text-ink-soft">First Aristotle reading free</p>
