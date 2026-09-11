@@ -50,6 +50,8 @@ export type ReadingResult =
   | { kind: "reading"; reading: GeneratedReading }
   | { kind: "safety"; message: string }
   | { kind: "quota"; message: string }
+  /** A further reading, which needs one paid reading credit or a membership. */
+  | { kind: "payment_required"; readingNumber: number; message: string }
   | { kind: "error"; message: string; retryable: boolean };
 
 export const READING_ERROR_MESSAGE =
@@ -57,6 +59,18 @@ export const READING_ERROR_MESSAGE =
 
 export const READING_QUOTA_MESSAGE =
   "You have used today's free readings. Your answers have been preserved. Membership opens the full Lyceum, or you may return tomorrow.";
+
+/** Shown when a reader asks a further question after their free reading. */
+export const READING_PAYMENT_MESSAGE =
+  "Your first reading was free. Each further reading is $0.99, prepared in full, for this question alone.";
+
+
+/** The price of one further reading, for display and for Stripe. */
+export const SINGLE_READING = {
+  priceId: "individual_reading_once",
+  display: "$0.99",
+} as const;
+
 
 export const READING_SAFETY_MESSAGE =
   "What you have described asks for more than a philosophical reading can responsibly give. Bearing is for reflection, not for crisis support, medical, legal, or financial advice. If you are in danger or in crisis, please contact your local emergency services or a crisis line. You are welcome to bring a different question here.";

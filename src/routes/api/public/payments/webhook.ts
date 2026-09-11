@@ -82,6 +82,23 @@ async function cancelSubscription(subscription: any, env: StripeEnv) {
   if (userId) await syncMembership(userId, "canceled", null);
 }
 
+/** Marks a purchased single reading as paid so the reader may generate it. */
+async function markReadingCreditPaid(session: any) {
+  const token = session.metadata?.readingToken;
+  if (!token) return;
+  if (session.payment_status === "unpaid") return;
+  await getSupabase()
+    .from("reading_credits")
+    .update({
+      status: "paid",
+      paid_at: new Date().toISOString(),
+      stripe_payment_intent_id:
+        typeof session.payment_intent === "string" ? session.payment_intent : null,
+    })
+    .eq("token", token);
+}
+
+
 export const Route = createFileRoute("/api/public/payments/webhook")({
   server: {
     handlers: {
@@ -101,7 +118,12 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             case "customer.subscription.deleted":
               await cancelSubscription(event.data.object, env);
               break;
+            case "checkout.session.completed":
+            case "checkout.session.async_payment_succeeded":
+              await markReadingCreditPaid(event.data.object);
+              break;
             default:
+
               console.log("Unhandled payment event:", event.type);
           }
           return Response.json({ received: true });

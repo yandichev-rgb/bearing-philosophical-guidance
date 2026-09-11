@@ -50,6 +50,33 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          props: Json
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          props?: Json
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          props?: Json
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       free_reading_quota: {
         Row: {
           day: string
@@ -155,6 +182,84 @@ export type Database = {
           display_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reading_credits: {
+        Row: {
+          answers: Json | null
+          created_at: string
+          environment: string
+          id: string
+          paid_at: string | null
+          philosopher_slug: string | null
+          reading: Json | null
+          reading_number: number
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          token: string
+          updated_at: string
+          user_id: string | null
+          visitor_hash: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          created_at?: string
+          environment?: string
+          id?: string
+          paid_at?: string | null
+          philosopher_slug?: string | null
+          reading?: Json | null
+          reading_number?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          token: string
+          updated_at?: string
+          user_id?: string | null
+          visitor_hash?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          created_at?: string
+          environment?: string
+          id?: string
+          paid_at?: string | null
+          philosopher_slug?: string | null
+          reading?: Json | null
+          reading_number?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          token?: string
+          updated_at?: string
+          user_id?: string | null
+          visitor_hash?: string | null
+        }
+        Relationships: []
+      }
+      reading_entitlements: {
+        Row: {
+          created_at: string
+          free_used_at: string
+          id: string
+          user_id: string | null
+          visitor_hash: string | null
+        }
+        Insert: {
+          created_at?: string
+          free_used_at?: string
+          id?: string
+          user_id?: string | null
+          visitor_hash?: string | null
+        }
+        Update: {
+          created_at?: string
+          free_used_at?: string
+          id?: string
+          user_id?: string | null
+          visitor_hash?: string | null
         }
         Relationships: []
       }

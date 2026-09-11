@@ -10,15 +10,12 @@ import {
   readingModels,
   runReadingPipeline,
 } from "./readings.server";
-import { READING_QUOTA_MESSAGE, type ReadingResult } from "./reading-types";
+import { READING_PAYMENT_MESSAGE, type ReadingResult } from "./reading-types";
+
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
-import {
-  assertDailyBudget,
-  claimFreeReading,
-  logAiUsage,
-  peekFreeReadingsRemaining,
-} from "./ai-budget.server";
+import { assertDailyBudget, logAiUsage } from "./ai-budget.server";
+
 
 const answersSchema = z.object({
   situation: z.string().trim().min(1).max(4000),
@@ -74,17 +71,11 @@ async function produce(input: {
   answers: z.infer<typeof answersSchema>;
   tier: "free" | "member";
   userId?: string;
+  /** How the reader is entitled to this reading, decided before any model call. */
+  via?: "free" | "member" | "credit";
+  creditId?: string;
 }): Promise<ReadingResult> {
   await assertDailyBudget();
-
-  // The free allowance is checked before any model call, so an exhausted
-  // allowance answers immediately instead of after a full generation.
-  if (input.tier === "free") {
-    const remaining = await peekFreeReadingsRemaining();
-    if (remaining !== null && remaining <= 0) {
-      return { kind: "quota", message: READING_QUOTA_MESSAGE };
-    }
-  }
 
   const models = readingModels();
   const { result, usage, telemetry } = await runReadingPipeline(input.slug, input.answers);
@@ -102,24 +93,58 @@ async function produce(input: {
 
   if (result.kind !== "reading") return result;
 
-  // A free reading is only consumed once a real reading exists.
-  if (input.tier === "free") {
-    try {
-      await claimFreeReading();
-    } catch {
-      return { kind: "quota", message: READING_QUOTA_MESSAGE };
-    }
+  const reading = forClient(result.reading);
+
+  // The free reading is only spent once a real reading exists, and a paid credit
+  // is only marked used once its reading has been stored.
+  if (input.via === "free") {
+    const { consumeFreeReading } = await import("./reading-access.server");
+    await consumeFreeReading(input.userId);
+  } else if (input.via === "credit" && input.creditId) {
+    const { attachReadingToCredit } = await import("./reading-access.server");
+    await attachReadingToCredit({
+      creditId: input.creditId,
+      philosopherSlug: input.slug,
+      answers: input.answers,
+      reading,
+    });
   }
 
-  return { kind: "reading", reading: forClient(result.reading) };
+  return { kind: "reading", reading };
 }
 
-/** The free tier: one complete Aristotle reading, no account required. */
+/**
+ * The first reading: one complete Aristotle reading, free, no account required.
+ * Every further reading needs one paid credit or a membership, so the gate is
+ * resolved on the server before any model call.
+ */
 export const generateFreeReading = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => answersSchema.parse(data))
+  .inputValidator((data: unknown) =>
+    answersSchema.extend({ creditToken: z.string().max(80).optional() }).parse(data),
+  )
   .handler(async ({ data }): Promise<ReadingResult> => {
-    return produce({ slug: "aristotle", answers: data, tier: "free" });
+    const { creditToken, ...answers } = data;
+    const { resolveReadingAccess } = await import("./reading-access.server");
+    const access = await resolveReadingAccess({ creditToken });
+
+    if (!access.allowed) {
+      console.info("reading gate: payment required", { readingNumber: access.readingNumber });
+      return {
+        kind: "payment_required",
+        readingNumber: access.readingNumber,
+        message: READING_PAYMENT_MESSAGE,
+      };
+    }
+
+    return produce({
+      slug: "aristotle",
+      answers,
+      tier: "free",
+      via: access.via,
+      ...(access.via === "credit" ? { creditId: access.creditId } : {}),
+    });
   });
+
 
 /** Membership tier: any philosopher in the Lyceum. */
 export const generateMemberReading = createServerFn({ method: "POST" })
