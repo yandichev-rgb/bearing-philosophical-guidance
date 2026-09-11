@@ -1,30 +1,35 @@
-# Experiment: $0.99 for one full reading
+# Experiment: first reading free, each further reading $0.99
 
-A small, reversible test. The reading is generated first, a substantial free preview is shown, then a quiet paywall in Bearing's own voice unlocks the rest for a one-time $0.99.
+Small and reversible. Nothing changes inside a reading — every reading anyone receives is complete. What changes is how many readings are free.
 
-## What changes for the reader
+## What the reader experiences
 
-1. They answer the questions exactly as today and wait through the same preparing screen.
-2. They see: their own situation, the personal **Bearing** section, and **A better question**.
-3Beneath that, a continuation panel: "Your reading continues." with one button, "Read the full reading — $0.99", and the line "One-time purchase. No subscription."
-4. Payment happens inline on the page (same payment setup as membership, still in test mode).
-5. On success the full reading appears in place — same page, same reading, nothing to redo — with a short confirmation that it is unlocked. Refreshing keeps access.
-6. After they have read it, one quiet line offers membership as the ongoing option ("Want to examine this from another angle?").
+**First reading — free, exactly as today.** Same questions, same waiting screen, same complete reading: bearing, lens, better question, practice, when you return, sources, limits. No preview, no blur, no card, no checkout anywhere in it.
 
-Signed-in members are unaffected: they keep full readings, saved history, follow-ups, and both membership plans.
+**At the end of that reading**, a quiet panel in the existing visual language:
 
-Cancelled or failed payment leaves the preview and the button in place, and nothing is marked as bought.
+- "Have another question?"
+- "Your first reading was free. A second reading is $0.99."
+- Button: "Get another reading — $0.99"
+- Under it: "One-time purchase. No subscription."
+- Below that, one restrained line: membership for ongoing access to all six approaches, unlimited readings, saved history and follow-up questions.
+
+**Second and later readings.** The reader writes their new question as usual. When they ask for the reading, the page shows the $0.99 panel, headed "Ready for another question?" with "Your first Bearing was free. Your next reading is $0.99." Payment happens inline on the page using the payment setup already in the app (test mode). Once payment is confirmed the reading is generated and shown in full, with their question kept. Refreshing keeps that purchased reading. A cancelled or failed payment leaves the question intact, nothing marked as bought, and the button available to try again.
+
+Wording never suggests unlocking or continuing a reading — each purchase is a new, whole reading.
+
+**Members** are untouched: unlimited readings, saved history, follow-ups, and both plans ($8.99/month, $89.90/year) unchanged.
 
 ## Homepage
 
-Unchanged positioning ("first Aristotle reading is free", "no account or card to begin"). Only the wording of one line adjusts if needed so it matches the preview-then-continue flow.
+Unchanged, including "your first Aristotle reading is free" and "no account or card to begin". Only exact-count wording is corrected if any line implies more than one free reading.
 
 ## Technical notes
 
-- **Storage of the reading.** New table `single_readings` holding the generated reading, a random unlock token, a `paid` flag and the payment session id. Reachable only by the server (no client policies, service-role plus server functions).
-- **Preview vs. protected content.** `generateFreeReading` stores the full reading server-side and returns only the preview fields (title, bearing, better question) plus `readingId` and `unlockToken`. The remaining sections never reach the browser before payment, so page inspection or client state cannot reveal them.
-- **Unlock.** New server function `getPurchasedReading({ readingId, unlockToken })` returns the full reading only when the row is paid (or the caller is an active member). The browser keeps `readingId`/`unlockToken` in local storage so a refresh restores access.
-- **Payment.** New one-time product `single_reading` / price `single_reading_once` at $0.99 USD, created alongside the untouched membership products. Embedded checkout in `mode: "payment"` with `readingId` in metadata. Unlock is confirmed two ways: the existing webhook gains a `checkout.session.completed` branch, and the return path verifies the session server-side (`payment_status === "paid"`) for instant access.
-- **Analytics.** No analytics system exists, so add a minimal one: table `analytics_events` (event, session id, optional user id, non-sensitive JSON props) plus a `track` server function. Events: `reading_started`, `reading_completed`, `reading_preview_viewed`, `paywall_viewed`, `unlock_clicked`, `checkout_started`, `purchase_completed`, `purchase_failed`, `full_reading_unlocked`. Purchase events carry `product: single_reading`, `price: 0.99`, `currency: USD`, `reading_id`. No situations, stakes or reading text is recorded. Conversion counts only on confirmed payment. No dashboard; the events are queryable.
-- **Files touched:** `src/lib/readings.functions.ts`, `src/lib/readings.server.ts` (storage helper only), new `src/lib/single-reading.functions.ts`, `src/lib/analytics.functions.ts`, `src/components/InquiryModal.tsx`, `src/components/ReadingBody.tsx` (a `preview` mode flag), new `src/components/ReadingPaywall.tsx`, `src/routes/api/public/payments/webhook.ts`, one migration.
-- **Assumptions:** the $0.99 purchase stays anonymous (no account required), tied to the browser's stored token, matching the low-friction acquisition path; clearing browser storage loses the link unless signed in.
+- **First-vs-later.** A new table `reading_entitlements` records, per visitor (the existing server-side visitor fingerprint) and per signed-in account, that the one free reading has been used. The decision is made server-side inside the reading server function, so refreshing, clearing browser storage, or editing client state cannot produce a second free reading. The current 3-per-day free allowance becomes one free reading. No account is forced.
+- **Paid readings.** New table `reading_credits`: one row per $0.99 purchase, holding a random token, the payment session id, the environment, a status, and the generated reading once produced. The reading server function accepts a credit token and generates only when that credit is confirmed paid and unused; it then stores the reading on the credit so the reader can return to it. The token is kept in the browser, but it is only a pointer — authorisation is the server-side paid status.
+- **Payment.** New one-time product `individual_reading` / price `individual_reading_once` at $0.99 USD, alongside the untouched membership products. Embedded checkout in one-time payment mode with the credit token in metadata. Confirmation comes from Stripe two ways: the existing webhook gains a completed-checkout branch, and the return path verifies the session server-side for instant access. No card data touches the app.
+- **When the reading is generated.** Payment precedes generation for paid readings — the cleanest fit for the current architecture — and the panel states plainly that the first reading is free and the next is $0.99, so there is no ambiguity about what is being bought.
+- **Analytics.** No analytics system exists, so add a minimal one: table `analytics_events` (event name, session id, optional user id, small non-sensitive JSON) plus a `track` server function. Events: `reading_started`, `reading_completed`, `first_reading_completed`, `second_reading_started`, `second_reading_paywall_viewed`, `second_reading_checkout_started`, `second_reading_purchase_completed`, `second_reading_purchase_failed`, `second_reading_unlocked`. Purchase events carry `product: individual_reading`, `price: 0.99`, `currency: USD`, `reading_number`, `reading_id`, session id. No situations, stakes or reading text is stored. Only confirmed payment counts as a purchase. No dashboard; events stay queryable for the four ratios you named.
+- **Files touched:** `src/lib/readings.functions.ts`, `src/lib/ai-budget.server.ts` (entitlement logic), new `src/lib/reading-credits.functions.ts` and `src/lib/analytics.functions.ts`, `src/components/InquiryModal.tsx` (end-of-reading invitation and the paid-reading panel), new `src/components/AnotherReading.tsx`, `src/routes/api/public/payments/webhook.ts`, and one migration. Reading generation, prompts, sections and layout are not changed.
+- **Assumptions:** purchases stay anonymous, tied to the stored credit token, keeping the low-friction path; clearing browser storage loses the pointer to a purchased reading unless signed in. Free-reading entitlement is per visitor fingerprint, so people sharing one network may occasionally share the free allowance.
