@@ -21,6 +21,9 @@ const description =
 const ogImage = "https://id-preview--2152f947-ebb4-420b-b320-bed4b66c773e.lovable.app/og-bearing.jpg";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>): { reading?: string | undefined } => ({
+    reading: typeof search["reading"] === "string" ? search["reading"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title },
@@ -37,7 +40,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const { reading: readingParam } = Route.useSearch();
+  const [inquiryOpen, setInquiryOpen] = useState(readingParam === "continue");
   const [inquirySlug, setInquirySlug] = useState("aristotle");
   const [inquiryKind, setInquiryKind] = useState("");
   const [selected, setSelected] = useState<Philosopher | null>(null);
@@ -47,6 +51,7 @@ function Home() {
     setInquiryKind(kind);
     setInquiryOpen(true);
   };
+
 
   return (
     <div className="paper grain min-h-screen">

@@ -22,6 +22,14 @@ import {
   generateMemberReading,
   saveReading,
 } from "@/lib/readings.functions";
+import { ReadingPurchase } from "./ReadingPurchase";
+import { trackEvent, type AnalyticsEvent } from "@/lib/analytics.functions";
+import {
+  analyticsSessionId,
+  clearCreditToken,
+  readCreditToken,
+} from "@/lib/reading-credit-token";
+
 
 
 
@@ -85,6 +93,19 @@ const PREPARING_STAGES = [
 const GENERATION_ERROR =
   "We couldn't prepare your reading. Your answers have been preserved. Please try again.";
 
+/** Fire-and-forget experiment event. Carries no situation, stakes or reading text. */
+function track(event: AnalyticsEvent, props?: Record<string, string | number | boolean>) {
+  void trackEvent({
+    data: {
+      event,
+      ...(analyticsSessionId() ? { sessionId: analyticsSessionId()! } : {}),
+      ...(props ? { props } : {}),
+    },
+  }).catch(() => {});
+}
+
+
+
 
 export function InquiryModal({
   open,
@@ -109,6 +130,8 @@ export function InquiryModal({
   const [failed, setFailed] = useState(false);
   const [retryable, setRetryable] = useState(true);
   const [quota, setQuota] = useState<string | null>(null);
+  const [paywall, setPaywall] = useState<string | null>(null);
+
   const [stage, setStage] = useState(0);
   const [lastClarifications, setLastClarifications] = useState<
     { question: string; answer: string }[]
@@ -162,7 +185,9 @@ export function InquiryModal({
     !needsMembership &&
     !failed &&
     !pending &&
-    quota === null;
+    quota === null &&
+    paywall === null;
+
 
   const resumeDraft = () => {
     if (!draft.restored) return;
@@ -188,6 +213,8 @@ export function InquiryModal({
     setClarify(null);
     setFailed(false);
     setQuota(null);
+    setPaywall(null);
+
   };
 
 
@@ -198,15 +225,18 @@ export function InquiryModal({
     setNeedsMembership(false);
     setFailed(false);
     setQuota(null);
+    setPaywall(null);
     setRetryable(true);
     setLastClarifications(clarifications);
+    track("reading_started", { philosopher: philosopherSlug });
 
+    const creditToken = readCreditToken();
     const payload = { ...answers, clarifications };
     const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
     try {
       const result = memberPath
         ? await generateAs({ data: { ...payload, philosopherSlug } })
-        : await generate({ data: payload });
+        : await generate({ data: { ...payload, ...(creditToken ? { creditToken } : {}) } });
 
       if (result.kind === "membership") {
         setNeedsMembership(true);
@@ -217,16 +247,32 @@ export function InquiryModal({
       if (result.kind === "reading") {
         setReading(result.reading);
         setClarify(null);
+        track("reading_completed", { philosopher: result.reading.philosopherSlug });
+        if (creditToken) {
+          // The credit is spent; the reading now belongs to it.
+          clearCreditToken();
+          track("second_reading_unlocked");
+        } else {
+          track("first_reading_completed");
+        }
         return;
       }
       if (result.kind === "clarification") {
         setClarify(result.questions.map((question) => ({ question, answer: "" })));
         return;
       }
+      if (result.kind === "payment_required") {
+        // The first reading is always free. This is only reached for a further one.
+        setPaywall(result.message);
+        track("second_reading_started", { readingNumber: result.readingNumber });
+        track("second_reading_paywall_viewed", { readingNumber: result.readingNumber });
+        return;
+      }
       if (result.kind === "quota") {
         setQuota(result.message);
         return;
       }
+
       if (result.kind === "safety") {
         setFailed(true);
         setRetryable(false);
@@ -331,7 +377,19 @@ export function InquiryModal({
               wrote them.
             </p>
           </div>
+        ) : paywall ? (
+          <ReadingPurchase
+            message={paywall}
+            onEditAnswers={() => {
+              setPaywall(null);
+              setClarify(null);
+              setStep(0);
+            }}
+            onClose={close}
+            onCheckoutStarted={() => track("second_reading_checkout_started")}
+          />
         ) : quota ? (
+
           <div>
             <p className="label text-oxblood">{readingHeading(slug)}</p>
             <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
