@@ -43,9 +43,9 @@ export function ReadingPurchase({
 
   return (
     <div>
-      <p className="label text-oxblood">A further reading</p>
+      <p className="label text-oxblood">{free ? "A further reading" : "A reading in this lens"}</p>
       <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
-        Another question, another reading.
+        {free ? "Another question, another reading." : `Your reading with ${name}.`}
       </h2>
       <p className="mt-6 max-w-[62ch] leading-relaxed text-ink-soft">{message}</p>
       <p className="mt-4 max-w-[62ch] leading-relaxed text-ink-soft">
