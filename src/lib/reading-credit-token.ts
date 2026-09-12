@@ -48,3 +48,21 @@ export function analyticsSessionId(): string | undefined {
   }
   return id;
 }
+
+const SLUG_KEY = "bearing.pending-philosopher";
+
+/** Remembers which thinker a purchase was started for, so payment keeps the lens. */
+export function storePendingSlug(slug: string): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SLUG_KEY, slug);
+}
+
+export function readPendingSlug(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.localStorage.getItem(SLUG_KEY) ?? undefined;
+}
+
+export function clearPendingSlug(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(SLUG_KEY);
+}
