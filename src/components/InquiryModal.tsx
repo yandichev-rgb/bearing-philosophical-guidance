@@ -295,7 +295,7 @@ export function InquiryModal({
 
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "";
-      if (philosopherSlug !== "aristotle" && (!session || /membership/i.test(message))) {
+      if (/membership/i.test(message)) {
         setNeedsMembership(true);
         setError(null);
         setPending(false);
