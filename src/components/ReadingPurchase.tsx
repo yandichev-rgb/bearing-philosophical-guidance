@@ -6,6 +6,7 @@ import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { startReadingPurchase } from "@/lib/reading-credits.functions";
 import { storeCreditToken, storePendingSlug, visitorId } from "@/lib/reading-credit-token";
 import { SINGLE_READING } from "@/lib/reading-types";
+import { philosophers } from "@/data/philosophers";
 
 /**
  * The one place a reader is asked to pay for a further reading. The first
