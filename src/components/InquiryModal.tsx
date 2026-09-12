@@ -443,10 +443,10 @@ export function InquiryModal({
             </h2>
             <ReadingLayout
               slug={reading.philosopherSlug}
-              onAnotherLens={close}
+              onAnotherLens={toLyceum}
               utility={
                 <>
-                  <button type="button" onClick={close} className="nav-link">
+                  <button type="button" onClick={toLyceum} className="nav-link">
                     <span aria-hidden="true">←</span> Back to the Lyceum
                   </button>
                   <span className="folio">{readingDate}</span>
@@ -466,7 +466,7 @@ export function InquiryModal({
                         Save reading
                       </Link>
                     )}
-                    <button type="button" onClick={close} className="nav-link">
+                    <button type="button" onClick={toLyceum} className="nav-link">
                       Compare another lens
                     </button>
                   </div>
@@ -486,7 +486,7 @@ export function InquiryModal({
                       Save this reading
                     </Link>
                   )}
-                  <button type="button" onClick={close} className="link-underline">
+                  <button type="button" onClick={toLyceum} className="link-underline">
                     Examine this through another lens
                   </button>
                   <button
