@@ -203,6 +203,12 @@ export function InquiryModal({
     draft.clear();
   };
 
+  /** Closes the reading and lands the reader on the list of six approaches. */
+  const toLyceum = () => {
+    close();
+    void navigate({ to: "/", hash: "lyceum" });
+  };
+
   const close = () => {
     onClose();
     setStep(0);
