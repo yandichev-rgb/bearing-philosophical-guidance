@@ -13,11 +13,13 @@ import { SINGLE_READING } from "@/lib/reading-types";
  */
 export function ReadingPurchase({
   message,
+  philosopherSlug,
   onEditAnswers,
   onClose,
   onCheckoutStarted,
 }: {
   message: string;
+  philosopherSlug?: string;
   onEditAnswers: () => void;
   onClose: () => void;
   onCheckoutStarted?: () => void;
@@ -30,6 +32,7 @@ export function ReadingPurchase({
       data: {
         returnUrl: `${window.location.origin}/reading/return`,
         environment: getStripeEnvironment(),
+        ...(visitorId() ? { visitorId: visitorId()! } : {}),
       },
     });
     if ("error" in result) throw new Error(result.error);
