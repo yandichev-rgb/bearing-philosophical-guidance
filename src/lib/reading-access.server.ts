@@ -35,8 +35,8 @@ export type ReadingAccess =
   | { allowed: false; readingNumber: number };
 
 /** True when this visitor or account has already taken its one free reading. */
-async function freeReadingUsed(userId?: string): Promise<boolean> {
-  const hash = await visitorHash();
+async function freeReadingUsed(userId?: string, visitorId?: string): Promise<boolean> {
+  const hash = await visitorHash(visitorId);
   const db = await admin();
   const [{ data: byVisitor }, byUser] = await Promise.all([
     db.from("reading_entitlements").select("id").eq("visitor_hash", hash).maybeSingle(),
@@ -48,15 +48,15 @@ async function freeReadingUsed(userId?: string): Promise<boolean> {
 }
 
 /** How many readings this visitor has had, used only for analytics labels. */
-export async function readingNumber(userId?: string): Promise<number> {
-  const hash = await visitorHash();
+export async function readingNumber(userId?: string, visitorId?: string): Promise<number> {
+  const hash = await visitorHash(visitorId);
   const db = await admin();
   const { count } = await db
     .from("reading_credits")
     .select("id", { count: "exact", head: true })
     .eq("visitor_hash", hash)
     .not("reading", "is", null);
-  const used = await freeReadingUsed(userId);
+  const used = await freeReadingUsed(userId, visitorId);
   return (used ? 1 : 0) + (count ?? 0) + 1;
 }
 
@@ -67,6 +67,7 @@ export async function readingNumber(userId?: string): Promise<number> {
 export async function resolveReadingAccess(input: {
   creditToken?: string | undefined;
   userId?: string | undefined;
+  visitorId?: string | undefined;
   isMember?: boolean;
 }): Promise<ReadingAccess> {
   if (input.isMember) return { allowed: true, via: "member" };
@@ -82,15 +83,15 @@ export async function resolveReadingAccess(input: {
     }
   }
 
-  if (!(await freeReadingUsed(input.userId))) return { allowed: true, via: "free" };
+  if (!(await freeReadingUsed(input.userId, input.visitorId))) return { allowed: true, via: "free" };
 
-  return { allowed: false, readingNumber: await readingNumber(input.userId) };
+  return { allowed: false, readingNumber: await readingNumber(input.userId, input.visitorId) };
 }
 
 /** Marks the one free reading as taken, for this visitor and account. */
-export async function consumeFreeReading(userId?: string): Promise<void> {
+export async function consumeFreeReading(userId?: string, visitorId?: string): Promise<void> {
   try {
-    const hash = await visitorHash();
+    const hash = await visitorHash(visitorId);
     const db = await admin();
     await db.from("reading_entitlements").insert({ visitor_hash: hash, user_id: userId ?? null });
   } catch {
