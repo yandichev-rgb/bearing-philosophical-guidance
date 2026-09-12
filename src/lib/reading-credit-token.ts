@@ -6,6 +6,22 @@
 
 const KEY = "bearing.reading-credit";
 const SESSION_KEY = "bearing.session-id";
+const VISITOR_KEY = "bearing.visitor-id";
+
+/**
+ * A stable, random id for this browser. It carries no personal information and
+ * only tells the server "this is the same visitor as before", so the one free
+ * reading is counted per browser rather than per network address.
+ */
+export function visitorId(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  let id = window.localStorage.getItem(VISITOR_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    window.localStorage.setItem(VISITOR_KEY, id);
+  }
+  return id;
+}
 
 export function readCreditToken(): string | undefined {
   if (typeof window === "undefined") return undefined;
@@ -31,4 +47,22 @@ export function analyticsSessionId(): string | undefined {
     window.localStorage.setItem(SESSION_KEY, id);
   }
   return id;
+}
+
+const SLUG_KEY = "bearing.pending-philosopher";
+
+/** Remembers which thinker a purchase was started for, so payment keeps the lens. */
+export function storePendingSlug(slug: string): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SLUG_KEY, slug);
+}
+
+export function readPendingSlug(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.localStorage.getItem(SLUG_KEY) ?? undefined;
+}
+
+export function clearPendingSlug(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(SLUG_KEY);
 }

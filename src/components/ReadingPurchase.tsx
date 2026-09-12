@@ -4,7 +4,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { startReadingPurchase } from "@/lib/reading-credits.functions";
-import { storeCreditToken } from "@/lib/reading-credit-token";
+import { storeCreditToken, storePendingSlug, visitorId } from "@/lib/reading-credit-token";
 import { SINGLE_READING } from "@/lib/reading-types";
 
 /**
@@ -13,11 +13,13 @@ import { SINGLE_READING } from "@/lib/reading-types";
  */
 export function ReadingPurchase({
   message,
+  philosopherSlug,
   onEditAnswers,
   onClose,
   onCheckoutStarted,
 }: {
   message: string;
+  philosopherSlug?: string;
   onEditAnswers: () => void;
   onClose: () => void;
   onCheckoutStarted?: () => void;
@@ -30,6 +32,7 @@ export function ReadingPurchase({
       data: {
         returnUrl: `${window.location.origin}/reading/return`,
         environment: getStripeEnvironment(),
+        ...(visitorId() ? { visitorId: visitorId()! } : {}),
       },
     });
     if ("error" in result) throw new Error(result.error);
@@ -60,6 +63,7 @@ export function ReadingPurchase({
             className="btn-ink"
             onClick={() => {
               setError(null);
+              if (philosopherSlug) storePendingSlug(philosopherSlug);
               setCheckout(true);
               onCheckoutStarted?.();
             }}

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { clearPendingSlug, readPendingSlug } from "@/lib/reading-credit-token";
 
 import { BearingNav } from "@/components/BearingNav";
 import { Hero } from "@/components/Hero";
@@ -43,6 +45,16 @@ function Home() {
   const { reading: readingParam } = Route.useSearch();
   const [inquiryOpen, setInquiryOpen] = useState(readingParam === "continue");
   const [inquirySlug, setInquirySlug] = useState("aristotle");
+
+  // Coming back from a paid reading: keep the thinker the reader had chosen.
+  useEffect(() => {
+    if (readingParam !== "continue") return;
+    const pending = readPendingSlug();
+    if (pending) {
+      setInquirySlug(pending);
+      clearPendingSlug();
+    }
+  }, [readingParam]);
   const [inquiryKind, setInquiryKind] = useState("");
   const [selected, setSelected] = useState<Philosopher | null>(null);
 

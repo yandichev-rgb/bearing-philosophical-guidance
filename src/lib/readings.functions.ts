@@ -74,6 +74,7 @@ async function produce(input: {
   /** How the reader is entitled to this reading, decided before any model call. */
   via?: "free" | "member" | "credit";
   creditId?: string;
+  visitorId?: string | undefined;
 }): Promise<ReadingResult> {
   await assertDailyBudget();
 
@@ -99,7 +100,7 @@ async function produce(input: {
   // is only marked used once its reading has been stored.
   if (input.via === "free") {
     const { consumeFreeReading } = await import("./reading-access.server");
-    await consumeFreeReading(input.userId);
+    await consumeFreeReading(input.userId, input.visitorId);
   } else if (input.via === "credit" && input.creditId) {
     const { attachReadingToCredit } = await import("./reading-access.server");
     await attachReadingToCredit({
@@ -114,18 +115,30 @@ async function produce(input: {
 }
 
 /**
- * The first reading: one complete Aristotle reading, free, no account required.
- * Every further reading needs one paid credit or a membership, so the gate is
- * resolved on the server before any model call.
+ * The first reading: one complete reading, free, no account required, in the
+ * lens of whichever thinker was chosen. Every further reading needs one paid
+ * credit or a membership, so the gate is resolved before any model call.
  */
 export const generateFreeReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
-    answersSchema.extend({ creditToken: z.string().max(80).optional() }).parse(data),
+    answersSchema
+      .extend({
+        creditToken: z.string().max(80).optional(),
+        visitorId: z.string().max(80).optional(),
+        philosopherSlug: z.string().max(60).optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ data }): Promise<ReadingResult> => {
-    const { creditToken, ...answers } = data;
+    const { creditToken, visitorId, philosopherSlug, ...answers } = data;
+
+    const requested = philosopherSlug ?? "aristotle";
+    if (!isProfileSlug(requested) || isRetiredSlug(requested)) {
+      return { kind: "error", message: "That thinker is not in the Lyceum.", retryable: false };
+    }
+
     const { resolveReadingAccess } = await import("./reading-access.server");
-    const access = await resolveReadingAccess({ creditToken });
+    const access = await resolveReadingAccess({ creditToken, visitorId });
 
     if (!access.allowed) {
       console.info("reading gate: payment required", { readingNumber: access.readingNumber });
@@ -137,10 +150,11 @@ export const generateFreeReading = createServerFn({ method: "POST" })
     }
 
     return produce({
-      slug: "aristotle",
+      slug: requested,
       answers,
       tier: "free",
       via: access.via,
+      visitorId,
       ...(access.via === "credit" ? { creditId: access.creditId } : {}),
     });
   });
