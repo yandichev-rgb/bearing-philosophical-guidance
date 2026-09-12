@@ -390,6 +390,7 @@ export function InquiryModal({
         ) : paywall ? (
           <ReadingPurchase
             message={paywall}
+            philosopherSlug={philosopherSlug}
             onEditAnswers={() => {
               setPaywall(null);
               setClarify(null);
