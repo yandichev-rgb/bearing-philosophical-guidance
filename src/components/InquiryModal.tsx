@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
@@ -138,6 +138,7 @@ export function InquiryModal({
     { question: string; answer: string }[]
   >([]);
 
+  const navigate = useNavigate();
   const { session } = useAuth();
   const { isMember } = useMembership();
   const generate = useServerFn(generateFreeReading);
