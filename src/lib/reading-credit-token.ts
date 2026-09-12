@@ -6,6 +6,22 @@
 
 const KEY = "bearing.reading-credit";
 const SESSION_KEY = "bearing.session-id";
+const VISITOR_KEY = "bearing.visitor-id";
+
+/**
+ * A stable, random id for this browser. It carries no personal information and
+ * only tells the server "this is the same visitor as before", so the one free
+ * reading is counted per browser rather than per network address.
+ */
+export function visitorId(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  let id = window.localStorage.getItem(VISITOR_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    window.localStorage.setItem(VISITOR_KEY, id);
+  }
+  return id;
+}
 
 export function readCreditToken(): string | undefined {
   if (typeof window === "undefined") return undefined;
