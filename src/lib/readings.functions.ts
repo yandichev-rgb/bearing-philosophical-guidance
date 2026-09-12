@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
+import {
+  isProfileSlug,
+  isRetiredSlug,
+  philosopherName,
+  type ProfileSlug,
+} from "./philosopher-profiles.server";
 import {
   FOLLOW_UP_MODEL,
   forClient,
