@@ -46,7 +46,7 @@ export const startReadingPurchase = createServerFn({ method: "POST" })
 
         await supabaseAdmin.from("reading_credits").insert({
           token,
-          visitor_hash: await visitorHash(),
+          visitor_hash: await visitorHash(data.visitorId),
           stripe_session_id: session.id,
           environment: data.environment,
           status: "pending",
