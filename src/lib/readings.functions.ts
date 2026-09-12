@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { isProfileSlug, isRetiredSlug, type ProfileSlug } from "./philosopher-profiles.server";
+import {
+  isProfileSlug,
+  isRetiredSlug,
+  philosopherName,
+  type ProfileSlug,
+} from "./philosopher-profiles.server";
 import {
   FOLLOW_UP_MODEL,
   forClient,
@@ -10,7 +15,11 @@ import {
   readingModels,
   runReadingPipeline,
 } from "./readings.server";
-import { READING_PAYMENT_MESSAGE, type ReadingResult } from "./reading-types";
+import {
+  lockedReadingMessage,
+  READING_PAYMENT_MESSAGE,
+  type ReadingResult,
+} from "./reading-types";
 
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
@@ -115,9 +124,9 @@ async function produce(input: {
 }
 
 /**
- * The first reading: one complete reading, free, no account required, in the
- * lens of whichever thinker was chosen. Every further reading needs one paid
- * credit or a membership, so the gate is resolved before any model call.
+ * Aristotle gives one complete reading free, no account required. Every other
+ * approach, and every further Aristotle reading, needs one paid credit or a
+ * membership, so the gate is resolved before any model call.
  */
 export const generateFreeReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
@@ -138,14 +147,24 @@ export const generateFreeReading = createServerFn({ method: "POST" })
     }
 
     const { resolveReadingAccess } = await import("./reading-access.server");
-    const access = await resolveReadingAccess({ creditToken, visitorId });
+    const access = await resolveReadingAccess({
+      creditToken,
+      visitorId,
+      philosopherSlug: requested,
+    });
 
     if (!access.allowed) {
-      console.info("reading gate: payment required", { readingNumber: access.readingNumber });
+      console.info("reading gate: payment required", {
+        readingNumber: access.readingNumber,
+        philosopher: requested,
+      });
       return {
         kind: "payment_required",
         readingNumber: access.readingNumber,
-        message: READING_PAYMENT_MESSAGE,
+        message:
+          requested === "aristotle"
+            ? READING_PAYMENT_MESSAGE
+            : lockedReadingMessage(philosopherName(requested)),
       };
     }
 

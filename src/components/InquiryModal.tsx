@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Modal } from "./Modal";
 import { Seal, Wordmark } from "./Seal";
@@ -138,6 +138,7 @@ export function InquiryModal({
     { question: string; answer: string }[]
   >([]);
 
+  const navigate = useNavigate();
   const { session } = useAuth();
   const { isMember } = useMembership();
   const generate = useServerFn(generateFreeReading);
@@ -201,6 +202,12 @@ export function InquiryModal({
     setAnswers(emptyAnswers);
     setStep(0);
     draft.clear();
+  };
+
+  /** Closes the reading and lands the reader on the list of six approaches. */
+  const toLyceum = () => {
+    close();
+    void navigate({ to: "/", hash: "lyceum" });
   };
 
   const close = () => {
@@ -436,10 +443,10 @@ export function InquiryModal({
             </h2>
             <ReadingLayout
               slug={reading.philosopherSlug}
-              onAnotherLens={close}
+              onAnotherLens={toLyceum}
               utility={
                 <>
-                  <button type="button" onClick={close} className="nav-link">
+                  <button type="button" onClick={toLyceum} className="nav-link">
                     <span aria-hidden="true">←</span> Back to the Lyceum
                   </button>
                   <span className="folio">{readingDate}</span>
@@ -459,7 +466,7 @@ export function InquiryModal({
                         Save reading
                       </Link>
                     )}
-                    <button type="button" onClick={close} className="nav-link">
+                    <button type="button" onClick={toLyceum} className="nav-link">
                       Compare another lens
                     </button>
                   </div>
@@ -479,7 +486,7 @@ export function InquiryModal({
                       Save this reading
                     </Link>
                   )}
-                  <button type="button" onClick={close} className="link-underline">
+                  <button type="button" onClick={toLyceum} className="link-underline">
                     Examine this through another lens
                   </button>
                   <button

@@ -6,6 +6,7 @@ import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { startReadingPurchase } from "@/lib/reading-credits.functions";
 import { storeCreditToken, storePendingSlug, visitorId } from "@/lib/reading-credit-token";
 import { SINGLE_READING } from "@/lib/reading-types";
+import { philosophers } from "@/data/philosophers";
 
 /**
  * The one place a reader is asked to pay for a further reading. The first
@@ -24,6 +25,9 @@ export function ReadingPurchase({
   onClose: () => void;
   onCheckoutStarted?: () => void;
 }) {
+  const philosopher = philosophers.find((entry) => entry.slug === philosopherSlug);
+  const free = philosopher ? philosopher.free : true;
+  const name = philosopher?.name ?? "this thinker";
   const [checkout, setCheckout] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,9 +47,9 @@ export function ReadingPurchase({
 
   return (
     <div>
-      <p className="label text-oxblood">A further reading</p>
+      <p className="label text-oxblood">{free ? "A further reading" : "A reading in this lens"}</p>
       <h2 id="inquiry-title" className="display-lg mt-6 text-ink">
-        Another question, another reading.
+        {free ? "Another question, another reading." : `Your reading with ${name}.`}
       </h2>
       <p className="mt-6 max-w-[62ch] leading-relaxed text-ink-soft">{message}</p>
       <p className="mt-4 max-w-[62ch] leading-relaxed text-ink-soft">

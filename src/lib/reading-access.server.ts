@@ -69,6 +69,8 @@ export async function resolveReadingAccess(input: {
   userId?: string | undefined;
   visitorId?: string | undefined;
   isMember?: boolean;
+  /** Only Aristotle can be read for free; the other five are $0.99 each. */
+  philosopherSlug?: string | undefined;
 }): Promise<ReadingAccess> {
   if (input.isMember) return { allowed: true, via: "member" };
 
@@ -83,7 +85,10 @@ export async function resolveReadingAccess(input: {
     }
   }
 
-  if (!(await freeReadingUsed(input.userId, input.visitorId))) return { allowed: true, via: "free" };
+  const freeSlug = (input.philosopherSlug ?? "aristotle") === "aristotle";
+  if (freeSlug && !(await freeReadingUsed(input.userId, input.visitorId))) {
+    return { allowed: true, via: "free" };
+  }
 
   return { allowed: false, readingNumber: await readingNumber(input.userId, input.visitorId) };
 }
