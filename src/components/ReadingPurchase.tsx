@@ -63,6 +63,7 @@ export function ReadingPurchase({
             className="btn-ink"
             onClick={() => {
               setError(null);
+              if (philosopherSlug) storePendingSlug(philosopherSlug);
               setCheckout(true);
               onCheckoutStarted?.();
             }}
