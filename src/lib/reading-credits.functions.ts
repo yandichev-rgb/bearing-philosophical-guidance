@@ -15,7 +15,13 @@ const tokenSchema = z.string().regex(/^[a-f0-9-]{20,80}$/);
 
 export const startReadingPurchase = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
-    z.object({ returnUrl: z.string().url(), environment: envSchema }).parse(data),
+    z
+      .object({
+        returnUrl: z.string().url(),
+        environment: envSchema,
+        visitorId: z.string().max(80).optional(),
+      })
+      .parse(data),
   )
   .handler(
     async ({ data }): Promise<{ clientSecret: string; token: string } | { error: string }> => {
