@@ -232,11 +232,20 @@ export function InquiryModal({
 
     const creditToken = readCreditToken();
     const payload = { ...answers, clarifications };
-    const memberPath = Boolean(session) && philosopherSlug !== "aristotle";
+    // Members read with any thinker without a gate. Everyone else goes through the
+    // free/paid gate, still in the lens of the thinker they chose.
+    const memberPath = Boolean(session) && isMember;
     try {
       const result = memberPath
         ? await generateAs({ data: { ...payload, philosopherSlug } })
-        : await generate({ data: { ...payload, ...(creditToken ? { creditToken } : {}) } });
+        : await generate({
+            data: {
+              ...payload,
+              philosopherSlug,
+              ...(visitorId() ? { visitorId: visitorId()! } : {}),
+              ...(creditToken ? { creditToken } : {}),
+            },
+          });
 
       if (result.kind === "membership") {
         setNeedsMembership(true);
