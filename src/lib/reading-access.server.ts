@@ -69,6 +69,8 @@ export async function resolveReadingAccess(input: {
   userId?: string | undefined;
   visitorId?: string | undefined;
   isMember?: boolean;
+  /** Only Aristotle can be read for free; the other five are $0.99 each. */
+  philosopherSlug?: string | undefined;
 }): Promise<ReadingAccess> {
   if (input.isMember) return { allowed: true, via: "member" };
 
