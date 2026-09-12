@@ -15,7 +15,11 @@ import {
   readingModels,
   runReadingPipeline,
 } from "./readings.server";
-import { READING_PAYMENT_MESSAGE, type ReadingResult } from "./reading-types";
+import {
+  lockedReadingMessage,
+  READING_PAYMENT_MESSAGE,
+  type ReadingResult,
+} from "./reading-types";
 
 import { hasActiveMembership } from "./membership.server";
 import { FOLLOWUPS_PER_READING } from "@/config/membership";
