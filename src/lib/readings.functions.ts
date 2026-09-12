@@ -124,9 +124,9 @@ async function produce(input: {
 }
 
 /**
- * The first reading: one complete reading, free, no account required, in the
- * lens of whichever thinker was chosen. Every further reading needs one paid
- * credit or a membership, so the gate is resolved before any model call.
+ * Aristotle gives one complete reading free, no account required. Every other
+ * approach, and every further Aristotle reading, needs one paid credit or a
+ * membership, so the gate is resolved before any model call.
  */
 export const generateFreeReading = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
@@ -147,14 +147,24 @@ export const generateFreeReading = createServerFn({ method: "POST" })
     }
 
     const { resolveReadingAccess } = await import("./reading-access.server");
-    const access = await resolveReadingAccess({ creditToken, visitorId });
+    const access = await resolveReadingAccess({
+      creditToken,
+      visitorId,
+      philosopherSlug: requested,
+    });
 
     if (!access.allowed) {
-      console.info("reading gate: payment required", { readingNumber: access.readingNumber });
+      console.info("reading gate: payment required", {
+        readingNumber: access.readingNumber,
+        philosopher: requested,
+      });
       return {
         kind: "payment_required",
         readingNumber: access.readingNumber,
-        message: READING_PAYMENT_MESSAGE,
+        message:
+          requested === "aristotle"
+            ? READING_PAYMENT_MESSAGE
+            : lockedReadingMessage(philosopherName(requested)),
       };
     }
 
