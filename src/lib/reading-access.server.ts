@@ -85,7 +85,10 @@ export async function resolveReadingAccess(input: {
     }
   }
 
-  if (!(await freeReadingUsed(input.userId, input.visitorId))) return { allowed: true, via: "free" };
+  const freeSlug = (input.philosopherSlug ?? "aristotle") === "aristotle";
+  if (freeSlug && !(await freeReadingUsed(input.userId, input.visitorId))) {
+    return { allowed: true, via: "free" };
+  }
 
   return { allowed: false, readingNumber: await readingNumber(input.userId, input.visitorId) };
 }
