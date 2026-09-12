@@ -24,6 +24,9 @@ export function ReadingPurchase({
   onClose: () => void;
   onCheckoutStarted?: () => void;
 }) {
+  const philosopher = philosophers.find((entry) => entry.slug === philosopherSlug);
+  const free = philosopher ? philosopher.free : true;
+  const name = philosopher?.name ?? "this thinker";
   const [checkout, setCheckout] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
