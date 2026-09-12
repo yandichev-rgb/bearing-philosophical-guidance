@@ -13,11 +13,16 @@ async function admin() {
   return supabaseAdmin;
 }
 
-/** A stable, non reversible identifier for an anonymous visitor. */
-export async function visitorHash(): Promise<string> {
+/**
+ * A stable, non reversible identifier for an anonymous visitor. When the browser
+ * supplies its own random id we key on that, because network addresses change
+ * between visits and would otherwise hand out a new free reading each time.
+ */
+export async function visitorHash(visitorId?: string): Promise<string> {
   const ip = getRequestIP({ xForwardedFor: true }) ?? "unknown";
   const agent = getRequestHeader("user-agent") ?? "unknown";
-  const bytes = new TextEncoder().encode(`bearing:${ip}:${agent}`);
+  const seed = visitorId ? `vid:${visitorId}` : `${ip}:${agent}`;
+  const bytes = new TextEncoder().encode(`bearing:${seed}`);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, "0"))
