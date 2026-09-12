@@ -100,7 +100,7 @@ async function produce(input: {
   // is only marked used once its reading has been stored.
   if (input.via === "free") {
     const { consumeFreeReading } = await import("./reading-access.server");
-    await consumeFreeReading(input.userId);
+    await consumeFreeReading(input.userId, input.visitorId);
   } else if (input.via === "credit" && input.creditId) {
     const { attachReadingToCredit } = await import("./reading-access.server");
     await attachReadingToCredit({
