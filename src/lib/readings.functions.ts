@@ -74,6 +74,7 @@ async function produce(input: {
   /** How the reader is entitled to this reading, decided before any model call. */
   via?: "free" | "member" | "credit";
   creditId?: string;
+  visitorId?: string | undefined;
 }): Promise<ReadingResult> {
   await assertDailyBudget();
 
