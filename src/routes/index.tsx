@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { clearPendingSlug, readPendingSlug } from "@/lib/reading-credit-token";
 
 import { BearingNav } from "@/components/BearingNav";
 import { Hero } from "@/components/Hero";
