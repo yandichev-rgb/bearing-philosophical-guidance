@@ -65,15 +65,11 @@ export function Lyceum({ onSelect }: { onSelect: (p: Philosopher) => void }) {
                   </span>
                   {p.free ? (
                     <span className="label border border-oxblood px-2 py-1 text-oxblood">
-                      Begin here
+                      Free · begin here
                     </span>
                   ) : (
-                    <span
-                      aria-hidden="true"
-                      className="flex h-6 w-6 items-center justify-center rounded-full border border-bronze text-[10px] leading-none text-bronze"
-                      title="Members"
-                    >
-                      ◆
+                    <span className="label border border-bronze px-2 py-1 text-bronze transition-colors group-hover:border-oxblood group-hover:text-oxblood">
+                      $0.99
                     </span>
                   )}
                 </div>

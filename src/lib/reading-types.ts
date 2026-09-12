@@ -60,9 +60,14 @@ export const READING_ERROR_MESSAGE =
 export const READING_QUOTA_MESSAGE =
   "You have used today's free readings. Your answers have been preserved. Membership opens the full Lyceum, or you may return tomorrow.";
 
-/** Shown when a reader asks a further question after their free reading. */
+/** Shown when a reader asks a further question after their free Aristotle reading. */
 export const READING_PAYMENT_MESSAGE =
-  "Your first reading was free. Each further reading is $0.99, prepared in full, for this question alone.";
+  "Your Aristotle reading was free. Each further reading is $0.99, prepared in full, for this question alone.";
+
+/** Shown when a reader chooses one of the five approaches that are not free. */
+export function lockedReadingMessage(name: string): string {
+  return `Readings with ${name} are $0.99 each, prepared in full, for this question alone. Aristotle remains free.`;
+}
 
 
 /** The price of one further reading, for display and for Stripe. */
