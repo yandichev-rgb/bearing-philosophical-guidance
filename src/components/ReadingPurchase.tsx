@@ -4,7 +4,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { startReadingPurchase } from "@/lib/reading-credits.functions";
-import { storeCreditToken } from "@/lib/reading-credit-token";
+import { storeCreditToken, storePendingSlug, visitorId } from "@/lib/reading-credit-token";
 import { SINGLE_READING } from "@/lib/reading-types";
 
 /**
